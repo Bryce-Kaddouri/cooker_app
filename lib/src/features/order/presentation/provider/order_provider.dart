@@ -1,17 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:cooker_app/src/features/order/business/usecase/order_get_orders_by_date_usecase.dart';
 import 'package:cooker_app/src/features/order/data/model/order_model.dart';
-
-import '../../../cart/model/cart_model.dart';
-import '../../../product/data/model/product_model.dart';
+import 'package:flutter/material.dart';
 
 class OrderProvider with ChangeNotifier {
   OrderGetOrdersByDateUseCase orderGetOrdersByDateUseCase;
 
-
   OrderProvider({
     required this.orderGetOrdersByDateUseCase,
-
   });
 
   bool _isLoading = false;
@@ -29,69 +24,20 @@ class OrderProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  int _orderQty = 1;
-  int get orderQty => _orderQty;
+  Future<List<OrderModel>> getOrdersByDate(DateTime date) async {
+    List<OrderModel> orderList = [];
+    final result = await orderGetOrdersByDateUseCase.call(date);
 
-  void setOrderQty(int value) {
-    _orderQty = value;
-    notifyListeners();
+    await result.fold((l) async {
+      print(l.errorMessage);
+    }, (r) async {
+      print(r);
+      orderList = r;
+    });
+
+    print('order list from provider');
+    print(orderList.length);
+
+    return orderList;
   }
-
-  void decrementOrderQty() {
-    if (_orderQty > 1) {
-      _orderQty--;
-      notifyListeners();
-    }
-  }
-
-  void incrementOrderQty() {
-    _orderQty++;
-    notifyListeners();
-  }
-
-  ProductModel? _selectedProduct;
-  ProductModel? get selectedProduct => _selectedProduct;
-
-  void setSelectedProduct(ProductModel? value) {
-    _selectedProduct = value;
-    notifyListeners();
-  }
-
-  List<CartModel> _cartList = [];
-  List<CartModel> get cartList => _cartList;
-
-  void setCartList(List<CartModel> value) {
-    _cartList = value;
-    notifyListeners();
-  }
-
-  void addCartList(CartModel value) {
-    _cartList.add(value);
-    notifyListeners();
-  }
-
-  void removeCartList(CartModel value) {
-    _cartList.remove(value);
-    notifyListeners();
-  }
-
-  void clearCartList() {
-    _cartList.clear();
-    notifyListeners();
-  }
-
-  void updateQuantityCartList(int index, int quantity) {
-    _cartList[index].quantity = quantity;
-    notifyListeners();
-  }
-
-  double get totalAmount {
-    double total = 0;
-    for (var element in _cartList) {
-      total += element.quantity * element.product.price;
-    }
-    return total;
-  }
-
-
 }

@@ -1,10 +1,7 @@
+import 'package:cooker_app/src/core/constant/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:take_order_app/src/core/helper/date_helper.dart';
-import 'package:cooker_app/src/features/order/presentation/widget/date_item_widget.dart';
-import 'package:cooker_app/src/features/order/presentation/widget/drawer_widget.dart';
 
-import '../../data/model/order_model.dart';
 import '../provider/order_provider.dart';
 
 class OrderScreen extends StatefulWidget {
@@ -15,8 +12,8 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
-  ScrollController _mainScrollController = ScrollController();
-  ScrollController _testController = ScrollController();
+  /* ScrollController _mainScrollController = ScrollController();
+  ScrollController _testController = ScrollController();*/
 
   @override
   void initState() {
@@ -37,239 +34,1401 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: DrawerWidget(),
-      body: CustomScrollView(controller: _mainScrollController, slivers: [
-        SliverAppBar(
-          actions: [
-            IconButton(
-              onPressed: () async {
-                DateTime now = DateTime.now();
-                context.read<OrderProvider>().setSelectedDate(now);
-              },
-              icon: const Icon(Icons.calendar_today),
-            ),
-            IconButton(
-              onPressed: () async {
-                await selectDate().then((value) {
-                  if (value != null) {
-                    context.read<OrderProvider>().setSelectedDate(value);
-                  }
-                });
-              },
-              icon: const Icon(Icons.edit_calendar),
-            ),
-          ],
-          collapsedHeight: 60,
-          pinned: true,
-          floating: true,
-          expandedHeight: 140,
-          backgroundColor: Colors.blue,
-          centerTitle: false,
-          title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text(DateHelper.getMonthNameAndYear(
-                context.watch<OrderProvider>().selectedDate!)),
-          ]),
-          flexibleSpace: FlexibleSpaceBar(
-            background: Container(
-                color: Colors.blue,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-/*
-                      clipBehavior: Clip.none,
-*/
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          stops: [
-                            0.0,
-                            0.9,
-                            0.9,
-                            1.0,
-                          ],
-                          colors: [
-                            Colors.blue,
-                            Colors.blue,
-                            Colors.white,
-                            Colors.white,
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                      ),
-                      width: double.infinity,
-                      height: 80,
-                      child: GridView(
-                          controller: _testController,
-                          physics: NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 7,
-                            childAspectRatio: 1,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 0,
-                            mainAxisExtent: 80,
-                          ),
-                          children: [
-                            for (DateTime dateItem in DateHelper.getDaysInWeek(
-                                context.read<OrderProvider>().selectedDate!))
-                              DateItemWidget(
-                                selectedDate:
-                                    context.read<OrderProvider>().selectedDate!,
-                                value: 'test',
-                                dateItem: dateItem,
-                              ),
-                          ]),
-                    ),
-                  ],
-                )),
-          ),
+      /*  appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: AppColor.lightBlackTextColor,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         ),
-        FutureBuilder(
-          future: context
-              .read<OrderProvider>()
-              .getOrdersByDate(context.read<OrderProvider>().selectedDate!),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasData) {
-                List<Map<String, dynamic>> lstHourMap = [];
-
-                List<OrderModel> orderList = snapshot.data as List<OrderModel>;
-                print('order list length');
-                print(orderList.length);
-                List<int> lstHour = List.generate(24, (index) => index);
-
-                double sum = 0;
-                for (var hour in lstHour) {
-                  double height = 60;
-                  List<OrderModel> orderListOfTheHour = orderList
-                      .where((element) => element.time.hour == hour)
-                      .toList();
-                  height = height + (orderListOfTheHour.length * height);
-                  sum = sum + height;
-                  Map<String, dynamic> map = {
-                    'hour': hour,
-                    'order': orderListOfTheHour,
-                    'position': sum,
-                  };
-                  lstHourMap.add(map);
-                }
-
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      Map<String, dynamic> data = lstHourMap[index];
-                      return Row(
+        toolbarHeight: 70,
+        title: StatusBar(selectedIndex: 0),
+        actions: [
+          DateBar(),
+        ],
+      ),*/
+      body: CustomScrollView(
+        slivers: [
+          SliverPersistentHeader(
+            floating: true,
+            pinned: true,
+            delegate: SliverAppBarDelegate(
+              child: Container(
+                color: Theme.of(context).primaryColor,
+                child: Column(children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(30),
+                        bottomRight: Radius.circular(30),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          child: IconButton(
+                            icon: const Icon(Icons.menu),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ),
+                        StatusBar(selectedIndex: 0),
+                        DateBar(),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Theme.of(context).cardColor,
+                    ),
+                    padding: const EdgeInsets.all(10),
+                    height: 60,
+                    width: double.infinity,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Order List',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: AppColor.lightBlackTextColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.all(5),
+                          margin: const EdgeInsets.all(0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          constraints: BoxConstraints(
+                            maxWidth: 350,
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                height: 40,
+                                width: 40,
+                                child: Icon(
+                                  Icons.search,
+                                  color: AppColor.lightBlackTextColor,
+                                ),
+                              ),
+                              TextField(
+                                scrollPadding: const EdgeInsets.all(0),
+                                maxLines: 1,
+                                clipBehavior: Clip.antiAlias,
+                                textAlignVertical: TextAlignVertical.top,
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 10),
+                                  constraints: BoxConstraints(
+                                    maxWidth: 300,
+                                    minHeight: 40,
+                                    maxHeight: 40,
+                                  ),
+                                  hintText: 'Search by order ID',
+                                  fillColor: Theme.of(context).primaryColor,
+                                  filled: true,
+                                  hintStyle: TextStyle(
+                                    color: AppColor.lightBlackTextColor,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 16),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                height: 40,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.sort_by_alpha_rounded),
+                                    SizedBox(width: 8),
+                                    Text('Sort by'),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 16),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                height: 40,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.filter_alt_outlined),
+                                    SizedBox(width: 8),
+                                    Text('Filter'),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ]),
+              ),
+            ),
+          ),
+          FutureBuilder(
+            future: context
+                .read<OrderProvider>()
+                .getOrdersByDate(context.read<OrderProvider>().selectedDate!),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  return SliverToBoxAdapter(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      height: MediaQuery.of(context).size.height - 170,
+                      padding: const EdgeInsets.all(10),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                        color: Theme.of(context).cardColor,
+                      ),
+                      child: Column(
                         children: [
                           Container(
-                            alignment: Alignment.center,
-                            width: 60,
-                            child: Text(
-                              '${data['hour']} h',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                            height: 50,
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 20),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        flex: 1,
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          child: Text('Order ID'),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          child: Text('Customer'),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          child: Text('Status'),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          child: Text('Items'),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          child: Text('Total'),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          child: Text('Time'),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(width: 40),
+                              ],
                             ),
                           ),
                           Expanded(
                             child: Container(
-                              constraints: BoxConstraints(
-                                minHeight: 60,
-                              ),
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: Colors.grey,
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-                              child: Column(
-                                children: List.generate(
-                                  data['order'].length,
-                                  (index2) {
-                                    OrderModel orderModel =
-                                        data['order'][index2] as OrderModel;
-                                    return Card(
-                                      color: Colors.red,
-                                      child: Container(
-                                        height: 80,
-                                        padding: EdgeInsets.all(8),
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                                '${orderModel.time.format(context)}'),
-                                            Text(
-                                                '${orderModel.customer!.fName} ${orderModel.customer!.lName}'),
-                                          ],
+                              width: double.infinity,
+                              child: ListView(
+                                children: [
+                                  // pending orders
+                                  Container(
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 20),
+                                          alignment: Alignment.centerLeft,
+                                          child: Text('Pending (13)'),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                ),
+                                        Container(
+                                          child: Column(
+                                            children: List.generate(
+                                              4,
+                                              (index) => Container(
+                                                height: 70,
+                                                width: double.infinity,
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 5),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 5,
+                                                        horizontal: 20),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child: Text(
+                                                                '#${index + 1}',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child: Text(
+                                                                  'Customer Number $index'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child: StatusWidget(
+                                                                  status:
+                                                                      'Pending'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  Text('Items'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  Text('Total'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  Text('Time'),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 40,
+                                                      child: Container(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: IconButton(
+                                                          icon: Icon(Icons
+                                                              .arrow_forward_ios),
+                                                          onPressed: () {},
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  // coking orders
+                                  Container(
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 20),
+                                          alignment: Alignment.centerLeft,
+                                          child: Text('Cooking (3)'),
+                                        ),
+                                        Container(
+                                          child: Column(
+                                            children: List.generate(
+                                              3,
+                                              (index) => Container(
+                                                height: 70,
+                                                width: double.infinity,
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 5),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 5,
+                                                        horizontal: 20),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child: Text(
+                                                                '#${index + 1}',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child: Text(
+                                                                  'Customer Number $index'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child: StatusWidget(
+                                                                  status:
+                                                                      'Cooking'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  Text('Items'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  Text('Total'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  Text('Time'),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 40,
+                                                      child: Container(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: IconButton(
+                                                          icon: Icon(Icons
+                                                              .arrow_forward_ios),
+                                                          onPressed: () {},
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  // completed orders
+                                  Container(
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 20),
+                                          alignment: Alignment.centerLeft,
+                                          child: Text('Completed (7)'),
+                                        ),
+                                        Container(
+                                          child: Column(
+                                            children: List.generate(
+                                              3,
+                                              (index) => Container(
+                                                height: 70,
+                                                width: double.infinity,
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 5),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 5,
+                                                        horizontal: 20),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child: Text(
+                                                                '#${index + 1}',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child: Text(
+                                                                  'Customer Number $index'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child: StatusWidget(
+                                                                  status:
+                                                                      'Completed'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  Text('Items'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  Text('Total'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  Text('Time'),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 40,
+                                                      child: Container(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: IconButton(
+                                                          icon: Icon(Icons
+                                                              .arrow_forward_ios),
+                                                          onPressed: () {},
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  // canceled orders
+
+                                  Container(
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 20),
+                                          alignment: Alignment.centerLeft,
+                                          child: Text('Cancelled (0)'),
+                                        ),
+                                        Container(
+                                          child: Column(
+                                            children: List.generate(
+                                              3,
+                                              (index) => Container(
+                                                height: 70,
+                                                width: double.infinity,
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 5),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 5,
+                                                        horizontal: 20),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child: Text(
+                                                                '#${index + 1}',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child: Text(
+                                                                  'Customer Number $index'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child: StatusWidget(
+                                                                  status:
+                                                                      'Cancelled'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  Text('Items'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  Text('Total'),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child:
+                                                                  Text('Time'),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 40,
+                                                      child: Container(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        child: IconButton(
+                                                          icon: Icon(Icons
+                                                              .arrow_forward_ios),
+                                                          onPressed: () {},
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ],
-                      );
-                    },
-                    childCount: lstHourMap.length,
-                  ),
-                );
+                      ),
+                    ),
+
+                    /*Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      height: MediaQuery.of(context).size.height,
+                      width: double.infinity,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.symmetric(vertical: 20),
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(25),
+                                color: Theme.of(context).cardColor,
+                              ),
+                              child: Column(
+                                children: [
+                                  */ /*Container(
+                                    height: 50,
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 5, horizontal: 20),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(14),
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Expanded(
+                                                flex: 1,
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  child: Text('Order ID'),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 2,
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  child: Text('Customer'),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 2,
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  child: Text('Status'),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 1,
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  child: Text('Items'),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 1,
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  child: Text('Total'),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 1,
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  child: Text('Time'),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(width: 40),
+                                      ],
+                                    ),
+                                  ),*/ /*
+                                  Expanded(
+                                    child: Container(
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 20),
+                                              alignment: Alignment.centerLeft,
+                                              child: Text('Pending (13)'),
+                                            ),
+                                            Container(
+                                              child: Column(
+                                                children: List.generate(
+                                                  4,
+                                                  (index) => Container(
+                                                    height: 70,
+                                                    width: double.infinity,
+                                                    margin: const EdgeInsets
+                                                        .symmetric(vertical: 5),
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 5,
+                                                        horizontal: 20),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              14),
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                    ),
+                                                    child: Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Expanded(
+                                                                flex: 1,
+                                                                child:
+                                                                    Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Text(
+                                                                    '#${index + 1}',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Expanded(
+                                                                flex: 2,
+                                                                child:
+                                                                    Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Text(
+                                                                      'Customer Number $index'),
+                                                                ),
+                                                              ),
+                                                              Expanded(
+                                                                flex: 2,
+                                                                child:
+                                                                    Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: StatusWidget(
+                                                                      status:
+                                                                          'Pending'),
+                                                                ),
+                                                              ),
+                                                              Expanded(
+                                                                flex: 1,
+                                                                child:
+                                                                    Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Text(
+                                                                      'Items'),
+                                                                ),
+                                                              ),
+                                                              Expanded(
+                                                                flex: 1,
+                                                                child:
+                                                                    Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Text(
+                                                                      'Total'),
+                                                                ),
+                                                              ),
+                                                              Expanded(
+                                                                flex: 1,
+                                                                child:
+                                                                    Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Text(
+                                                                      'Time'),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 40,
+                                                          child: Container(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            child: IconButton(
+                                                              icon: Icon(Icons
+                                                                  .arrow_forward_ios),
+                                                              onPressed: () {},
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 20),
+                                              alignment: Alignment.centerLeft,
+                                              child: Text('Cooking (3)'),
+                                            ),
+                                            Container(
+                                              child: Column(
+                                                children: List.generate(
+                                                  3,
+                                                  (index) => Container(
+                                                    height: 70,
+                                                    width: double.infinity,
+                                                    margin: const EdgeInsets
+                                                        .symmetric(vertical: 5),
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 5,
+                                                        horizontal: 20),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              14),
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                    ),
+                                                    child: Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Expanded(
+                                                                flex: 1,
+                                                                child:
+                                                                    Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Text(
+                                                                    '#${index + 1}',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Expanded(
+                                                                flex: 2,
+                                                                child:
+                                                                    Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Text(
+                                                                      'Customer Number $index'),
+                                                                ),
+                                                              ),
+                                                              Expanded(
+                                                                flex: 2,
+                                                                child:
+                                                                    Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: StatusWidget(
+                                                                      status:
+                                                                          'Cooking'),
+                                                                ),
+                                                              ),
+                                                              Expanded(
+                                                                flex: 1,
+                                                                child:
+                                                                    Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Text(
+                                                                      'Items'),
+                                                                ),
+                                                              ),
+                                                              Expanded(
+                                                                flex: 1,
+                                                                child:
+                                                                    Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Text(
+                                                                      'Total'),
+                                                                ),
+                                                              ),
+                                                              Expanded(
+                                                                flex: 1,
+                                                                child:
+                                                                    Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Text(
+                                                                      'Time'),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 40,
+                                                          child: Container(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            child: IconButton(
+                                                              icon: Icon(Icons
+                                                                  .arrow_forward_ios),
+                                                              onPressed: () {},
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),*/
+                  );
+                } else {
+                  return SliverToBoxAdapter(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Text("No order"),
+                    ),
+                  );
+                }
               } else {
                 return SliverToBoxAdapter(
                   child: Container(
+                    height: MediaQuery.of(context).size.height - 200,
+                    width: double.infinity,
                     alignment: Alignment.center,
-                    child: Text("No order"),
+                    child: CircularProgressIndicator(),
                   ),
                 );
               }
-            } else {
-              return SliverToBoxAdapter(
-                child: Container(
-                  height: MediaQuery.of(context).size.height - 200,
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            }
-          },
-        )
-      ]),
+            },
+          ),
+        ],
+      ),
     );
   }
 }
 
-class HorizontalSliverList extends StatelessWidget {
-  final List<Widget> children;
-  final EdgeInsets listPadding;
-  final Widget? divider;
-
-  const HorizontalSliverList({
-    required this.children,
-    this.listPadding = const EdgeInsets.all(8),
-    this.divider,
-  });
+class StatusBar extends StatelessWidget {
+  int selectedIndex;
+  StatusBar({super.key, required this.selectedIndex});
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Padding(
-          padding: listPadding,
-          child: Row(children: [
-            for (var i = 0; i < children.length; i++) ...[
-              children[i],
-              if (i != children.length - 1) addDivider(),
-            ],
-          ]),
+    return Container(
+      padding: const EdgeInsets.all(5),
+      height: 50,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25),
+        color: Theme.of(context).cardColor,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            alignment: Alignment.center,
+            height: 40,
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: selectedIndex == 0 ? Theme.of(context).primaryColor : null,
+            ),
+            child: Text(
+              'All (23)',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColor.lightBlackTextColor,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          Container(
+            alignment: Alignment.center,
+            height: 40,
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: selectedIndex == 1 ? Theme.of(context).primaryColor : null,
+            ),
+            child: Text(
+              'Pending (13)',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColor.lightBlackTextColor,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          Container(
+            alignment: Alignment.center,
+            height: 40,
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: selectedIndex == 1 ? Theme.of(context).primaryColor : null,
+            ),
+            child: Text(
+              'Cooking (3)',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColor.lightBlackTextColor,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          Container(
+            alignment: Alignment.center,
+            height: 40,
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: selectedIndex == 1 ? Theme.of(context).primaryColor : null,
+            ),
+            child: Text(
+              'Completed (7)',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColor.lightBlackTextColor,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class DateBar extends StatelessWidget {
+  const DateBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(5),
+      height: 50,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25),
+        color: Theme.of(context).cardColor,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            alignment: Alignment.center,
+            height: 40,
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text(
+              'Wednesday 12th May 2021',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColor.lightBlackTextColor,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
+          Container(
+            alignment: Alignment.center,
+            height: 40,
+            width: 40,
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Theme.of(context).primaryColor,
+            ),
+            child: Icon(
+              Icons.calendar_month_outlined,
+              color: AppColor.lightBlackTextColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class StatusWidget extends StatelessWidget {
+  final String status;
+  const StatusWidget({super.key, required this.status});
+
+  Color getBgColor() {
+    switch (status) {
+      case 'Cancelled':
+        return AppColor.canceledBackgroundColor;
+      case 'Pending':
+        return AppColor.pendingBackgroundColor;
+      case 'Cooking':
+        return AppColor.cookingBackgroundColor;
+      case 'Completed':
+        return AppColor.completedBackgroundColor;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Color getFgColor() {
+    switch (status) {
+      case 'Cancelled':
+        return AppColor.canceledForegroundColor;
+      case 'Pending':
+        return AppColor.pendingForegroundColor;
+      case 'Cooking':
+        return AppColor.cookingForegroundColor;
+      case 'Completed':
+        return AppColor.completedForegroundColor;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: getBgColor(),
+      ),
+      child: Text(
+        status,
+        style: TextStyle(
+          color: getFgColor(),
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
   }
+}
 
-  Widget addDivider() =>
-      divider ?? Padding(padding: const EdgeInsets.symmetric(horizontal: 8));
+// sliver delegate app bar
+class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  SliverAppBarDelegate({required this.child});
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  double get maxExtent => 150;
+
+  @override
+  double get minExtent => 150;
+
+  @override
+  bool shouldRebuild(covariant SliverAppBarDelegate oldDelegate) {
+    return false;
+  }
 }

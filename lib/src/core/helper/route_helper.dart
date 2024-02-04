@@ -1,5 +1,3 @@
-
-
 /*class Routes {
   static const String home = '/home';
   static const String login = '/login';
@@ -22,14 +20,13 @@
   ];
 }*/
 
-import 'package:cooker_app/src/features/order/presentation/order_screen.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../features/auth/presentation/provider/auth_provider.dart';
 import '../../features/auth/presentation/screen/signin_screen.dart';
+import '../../features/order/presentation/screen/order_screen.dart';
 
 class RouterHelper {
   static back() {
@@ -58,10 +55,8 @@ class RouterHelper {
       routes: [
         GoRoute(
           path: '/home',
-          builder: (context, state) => OrderScreen(
-          ),
+          builder: (context, state) => OrderScreen(),
         ),
-
         GoRoute(
           path: '/login',
           builder: (context, state) => SignInScreen(),
@@ -70,5 +65,3 @@ class RouterHelper {
     );
   }
 }
-
-

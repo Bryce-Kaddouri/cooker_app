@@ -1,3 +1,4 @@
+import 'package:cooker_app/src/core/constant/light_theme.dart';
 import 'package:cooker_app/src/core/helper/route_helper.dart';
 import 'package:cooker_app/src/features/auth/business/repository/auth_repository.dart';
 import 'package:cooker_app/src/features/auth/business/usecase/auth_get_user_usecase.dart';
@@ -8,6 +9,11 @@ import 'package:cooker_app/src/features/auth/business/usecase/auth_on_auth_chang
 import 'package:cooker_app/src/features/auth/data/datasource/auth_datasource.dart';
 import 'package:cooker_app/src/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:cooker_app/src/features/auth/presentation/provider/auth_provider.dart';
+import 'package:cooker_app/src/features/order/business/repository/order_repository.dart';
+import 'package:cooker_app/src/features/order/business/usecase/order_get_orders_by_date_usecase.dart';
+import 'package:cooker_app/src/features/order/data/datasource/order_datasource.dart';
+import 'package:cooker_app/src/features/order/data/repository/order_repository_impl.dart';
+import 'package:cooker_app/src/features/order/presentation/provider/order_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -19,12 +25,18 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 Future<void> main() async {
   await Supabase.initialize(
     url: 'https://qlhzemdpzbonyqdecfxn.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsaHplbWRwemJvbnlxZGVjZnhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQ4ODY4MDYsImV4cCI6MjAyMDQ2MjgwNn0.lcUJMI3dvMDT7LaO7MiudIkdxAZOZwF_hNtkQtF3OC8',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsaHplbWRwemJvbnlxZGVjZnhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQ4ODY4MDYsImV4cCI6MjAyMDQ2MjgwNn0.lcUJMI3dvMDT7LaO7MiudIkdxAZOZwF_hNtkQtF3OC8',
   );
 
-  final supabaseAdmin = SupabaseClient('https://qlhzemdpzbonyqdecfxn.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsaHplbWRwemJvbnlxZGVjZnhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQ4ODY4MDYsImV4cCI6MjAyMDQ2MjgwNn0.lcUJMI3dvMDT7LaO7MiudIkdxAZOZwF_hNtkQtF3OC8');
+  final supabaseAdmin = SupabaseClient(
+      'https://qlhzemdpzbonyqdecfxn.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsaHplbWRwemJvbnlxZGVjZnhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQ4ODY4MDYsImV4cCI6MjAyMDQ2MjgwNn0.lcUJMI3dvMDT7LaO7MiudIkdxAZOZwF_hNtkQtF3OC8');
   final supabaseClient = Supabase.instance;
-  AuthRepository authRepository = AuthRepositoryImpl(dataSource: AuthDataSource());
+  AuthRepository authRepository =
+      AuthRepositoryImpl(dataSource: AuthDataSource());
+  OrderRepository orderRepository =
+      OrderRepositoryImpl(orderDataSource: OrderDataSource());
   /*CategoryRepository categoryRepository = CategoryRepositoryImpl(dataSource: CategoryDataSource());
   ProductRepository productRepository = ProductRepositoryImpl(dataSource: ProductDataSource());
   UserRepository userRepository = UserRepositoryImpl(dataSource: UserDataSource());*/
@@ -38,11 +50,20 @@ Future<void> main() async {
         ChangeNotifierProvider<AuthProvider>(
           create: (context) => AuthProvider(
             authLoginUseCase: AuthLoginUseCase(authRepository: authRepository),
-            authLogoutUseCase: AuthLogoutUseCase(authRepository: authRepository),
-            authGetUserUseCase: AuthGetUserUseCase(authRepository: authRepository),
-            authIsLoggedInUseCase: AuthIsLoggedInUseCase(authRepository: authRepository),
-            authOnAuthChangeUseCase: AuthOnAuthOnAuthChangeUseCase(authRepository: authRepository),
+            authLogoutUseCase:
+                AuthLogoutUseCase(authRepository: authRepository),
+            authGetUserUseCase:
+                AuthGetUserUseCase(authRepository: authRepository),
+            authIsLoggedInUseCase:
+                AuthIsLoggedInUseCase(authRepository: authRepository),
+            authOnAuthChangeUseCase:
+                AuthOnAuthOnAuthChangeUseCase(authRepository: authRepository),
           ),
+        ),
+        ChangeNotifierProvider<OrderProvider>(
+          create: (context) => OrderProvider(
+              orderGetOrdersByDateUseCase: OrderGetOrdersByDateUseCase(
+                  orderRepository: orderRepository)),
         ),
         /*ChangeNotifierProvider<CategoryProvider>(
           create: (context) => CategoryProvider(
@@ -90,22 +111,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
   GoRouter router = RouterHelper().getRouter();
-  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp.router(
-      theme: ThemeData(
-        /*primarySwatch: Colors.blue,*/
-        appBarTheme: AppBarTheme(
-          backgroundColor:    Color.fromRGBO(244, 245, 247, 1),
-
-          elevation: 0,
-          iconTheme: IconThemeData(color: Colors.black),
-
-        ),
-        scaffoldBackgroundColor: Color.fromRGBO(244, 245, 247, 1),
-      ),
+      debugShowCheckedModeBanner: false,
+      theme: LightTheme.themeData,
       defaultTransition: Transition.fadeIn,
       scaffoldMessengerKey: scaffoldMessengerKey,
       routerDelegate: router.routerDelegate,

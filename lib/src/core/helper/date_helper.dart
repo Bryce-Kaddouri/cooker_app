@@ -2,6 +2,11 @@
 import 'package:intl/intl.dart';
 
 class DateHelper {
+  // get the full formatted date (Wednesday, 12 May 2021)
+  static String getFullFormattedDate(DateTime date) {
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
+  }
+
   static String getFormattedDate(DateTime date) {
     return DateFormat('yyyy-MM-dd').format(date);
   }

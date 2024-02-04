@@ -1,4 +1,6 @@
 import 'package:cooker_app/src/core/constant/app_color.dart';
+import 'package:cooker_app/src/core/helper/date_helper.dart';
+import 'package:cooker_app/src/features/order/data/model/order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -34,22 +36,6 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /*  appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        foregroundColor: AppColor.lightBlackTextColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        toolbarHeight: 70,
-        title: StatusBar(selectedIndex: 0),
-        actions: [
-          DateBar(),
-        ],
-      ),*/
       body: CustomScrollView(
         slivers: [
           SliverPersistentHeader(
@@ -203,10 +189,23 @@ class _OrderScreenState extends State<OrderScreen> {
           FutureBuilder(
             future: context
                 .read<OrderProvider>()
-                .getOrdersByDate(context.read<OrderProvider>().selectedDate!),
+                .getOrdersByDate(context.watch<OrderProvider>().selectedDate!),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {
+                  List<OrderModel> orders = snapshot.data as List<OrderModel>;
+                  List<OrderModel> pendingOrders = orders
+                      .where((element) => element.status.name == 'Pending')
+                      .toList();
+                  List<OrderModel> cookingOrders = orders
+                      .where((element) => element.status.name == 'Cooking')
+                      .toList();
+                  List<OrderModel> completedOrders = orders
+                      .where((element) => element.status.name == 'Completed')
+                      .toList();
+                  List<OrderModel> cancelledOrders = orders
+                      .where((element) => element.status.name == 'Cancelled')
+                      .toList();
                   return SliverToBoxAdapter(
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -286,900 +285,44 @@ class _OrderScreenState extends State<OrderScreen> {
                           ),
                           Expanded(
                             child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 0),
                               width: double.infinity,
-                              child: ListView(
-                                children: [
-                                  // pending orders
-                                  Container(
-                                    child: Column(
+                              child: orders.isNotEmpty
+                                  ? ListView(
                                       children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 20),
-                                          alignment: Alignment.centerLeft,
-                                          child: Text('Pending (13)'),
-                                        ),
-                                        Container(
-                                          child: Column(
-                                            children: List.generate(
-                                              4,
-                                              (index) => Container(
-                                                height: 70,
-                                                width: double.infinity,
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 5),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 5,
-                                                        horizontal: 20),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(14),
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                '#${index + 1}',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 2,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                  'Customer Number $index'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 2,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: StatusWidget(
-                                                                  status:
-                                                                      'Pending'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child:
-                                                                  Text('Items'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child:
-                                                                  Text('Total'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child:
-                                                                  Text('Time'),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 40,
-                                                      child: Container(
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: IconButton(
-                                                          icon: Icon(Icons
-                                                              .arrow_forward_ios),
-                                                          onPressed: () {},
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
+                                        // pending orders
+                                        if (pendingOrders.isNotEmpty)
+                                          OrdersItemViewByStatus(
+                                            status: 'Pending',
+                                            orders: pendingOrders,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // coking orders
-                                  Container(
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 20),
-                                          alignment: Alignment.centerLeft,
-                                          child: Text('Cooking (3)'),
-                                        ),
-                                        Container(
-                                          child: Column(
-                                            children: List.generate(
-                                              3,
-                                              (index) => Container(
-                                                height: 70,
-                                                width: double.infinity,
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 5),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 5,
-                                                        horizontal: 20),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(14),
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                '#${index + 1}',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 2,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                  'Customer Number $index'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 2,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: StatusWidget(
-                                                                  status:
-                                                                      'Cooking'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child:
-                                                                  Text('Items'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child:
-                                                                  Text('Total'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child:
-                                                                  Text('Time'),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 40,
-                                                      child: Container(
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: IconButton(
-                                                          icon: Icon(Icons
-                                                              .arrow_forward_ios),
-                                                          onPressed: () {},
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
+                                        if (cookingOrders.isNotEmpty)
+                                          OrdersItemViewByStatus(
+                                            status: 'Cooking',
+                                            orders: cookingOrders,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // completed orders
-                                  Container(
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 20),
-                                          alignment: Alignment.centerLeft,
-                                          child: Text('Completed (7)'),
-                                        ),
-                                        Container(
-                                          child: Column(
-                                            children: List.generate(
-                                              3,
-                                              (index) => Container(
-                                                height: 70,
-                                                width: double.infinity,
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 5),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 5,
-                                                        horizontal: 20),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(14),
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                '#${index + 1}',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 2,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                  'Customer Number $index'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 2,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: StatusWidget(
-                                                                  status:
-                                                                      'Completed'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child:
-                                                                  Text('Items'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child:
-                                                                  Text('Total'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child:
-                                                                  Text('Time'),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 40,
-                                                      child: Container(
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: IconButton(
-                                                          icon: Icon(Icons
-                                                              .arrow_forward_ios),
-                                                          onPressed: () {},
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
+                                        if (completedOrders.isNotEmpty)
+                                          OrdersItemViewByStatus(
+                                            status: 'Completed',
+                                            orders: completedOrders,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  // canceled orders
-
-                                  Container(
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 20),
-                                          alignment: Alignment.centerLeft,
-                                          child: Text('Cancelled (0)'),
-                                        ),
-                                        Container(
-                                          child: Column(
-                                            children: List.generate(
-                                              3,
-                                              (index) => Container(
-                                                height: 70,
-                                                width: double.infinity,
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 5),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 5,
-                                                        horizontal: 20),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(14),
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                '#${index + 1}',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 2,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                  'Customer Number $index'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 2,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: StatusWidget(
-                                                                  status:
-                                                                      'Cancelled'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child:
-                                                                  Text('Items'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child:
-                                                                  Text('Total'),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child:
-                                                                  Text('Time'),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 40,
-                                                      child: Container(
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: IconButton(
-                                                          icon: Icon(Icons
-                                                              .arrow_forward_ios),
-                                                          onPressed: () {},
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
+                                        if (cancelledOrders.isNotEmpty)
+                                          OrdersItemViewByStatus(
+                                            status: 'Cancelled',
+                                            orders: cancelledOrders,
                                           ),
-                                        ),
                                       ],
+                                    )
+                                  : Container(
+                                      alignment: Alignment.center,
+                                      child: Text("No order"),
                                     ),
-                                  ),
-                                ],
-                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-
-                    /*Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      height: MediaQuery.of(context).size.height,
-                      width: double.infinity,
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              width: double.infinity,
-                              margin: const EdgeInsets.symmetric(vertical: 20),
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(25),
-                                color: Theme.of(context).cardColor,
-                              ),
-                              child: Column(
-                                children: [
-                                  */ /*Container(
-                                    height: 50,
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 5, horizontal: 20),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(14),
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Expanded(
-                                                flex: 1,
-                                                child: Container(
-                                                  alignment: Alignment.center,
-                                                  child: Text('Order ID'),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 2,
-                                                child: Container(
-                                                  alignment: Alignment.center,
-                                                  child: Text('Customer'),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 2,
-                                                child: Container(
-                                                  alignment: Alignment.center,
-                                                  child: Text('Status'),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 1,
-                                                child: Container(
-                                                  alignment: Alignment.center,
-                                                  child: Text('Items'),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 1,
-                                                child: Container(
-                                                  alignment: Alignment.center,
-                                                  child: Text('Total'),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 1,
-                                                child: Container(
-                                                  alignment: Alignment.center,
-                                                  child: Text('Time'),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(width: 40),
-                                      ],
-                                    ),
-                                  ),*/ /*
-                                  Expanded(
-                                    child: Container(
-                                      child: SingleChildScrollView(
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 20),
-                                              alignment: Alignment.centerLeft,
-                                              child: Text('Pending (13)'),
-                                            ),
-                                            Container(
-                                              child: Column(
-                                                children: List.generate(
-                                                  4,
-                                                  (index) => Container(
-                                                    height: 70,
-                                                    width: double.infinity,
-                                                    margin: const EdgeInsets
-                                                        .symmetric(vertical: 5),
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        vertical: 5,
-                                                        horizontal: 20),
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              14),
-                                                      color: Theme.of(context)
-                                                          .primaryColor,
-                                                    ),
-                                                    child: Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              Expanded(
-                                                                flex: 1,
-                                                                child:
-                                                                    Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: Text(
-                                                                    '#${index + 1}',
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              Expanded(
-                                                                flex: 2,
-                                                                child:
-                                                                    Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: Text(
-                                                                      'Customer Number $index'),
-                                                                ),
-                                                              ),
-                                                              Expanded(
-                                                                flex: 2,
-                                                                child:
-                                                                    Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: StatusWidget(
-                                                                      status:
-                                                                          'Pending'),
-                                                                ),
-                                                              ),
-                                                              Expanded(
-                                                                flex: 1,
-                                                                child:
-                                                                    Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: Text(
-                                                                      'Items'),
-                                                                ),
-                                                              ),
-                                                              Expanded(
-                                                                flex: 1,
-                                                                child:
-                                                                    Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: Text(
-                                                                      'Total'),
-                                                                ),
-                                                              ),
-                                                              Expanded(
-                                                                flex: 1,
-                                                                child:
-                                                                    Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: Text(
-                                                                      'Time'),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          width: 40,
-                                                          child: Container(
-                                                            alignment: Alignment
-                                                                .center,
-                                                            child: IconButton(
-                                                              icon: Icon(Icons
-                                                                  .arrow_forward_ios),
-                                                              onPressed: () {},
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 20),
-                                              alignment: Alignment.centerLeft,
-                                              child: Text('Cooking (3)'),
-                                            ),
-                                            Container(
-                                              child: Column(
-                                                children: List.generate(
-                                                  3,
-                                                  (index) => Container(
-                                                    height: 70,
-                                                    width: double.infinity,
-                                                    margin: const EdgeInsets
-                                                        .symmetric(vertical: 5),
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        vertical: 5,
-                                                        horizontal: 20),
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              14),
-                                                      color: Theme.of(context)
-                                                          .primaryColor,
-                                                    ),
-                                                    child: Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              Expanded(
-                                                                flex: 1,
-                                                                child:
-                                                                    Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: Text(
-                                                                    '#${index + 1}',
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              Expanded(
-                                                                flex: 2,
-                                                                child:
-                                                                    Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: Text(
-                                                                      'Customer Number $index'),
-                                                                ),
-                                                              ),
-                                                              Expanded(
-                                                                flex: 2,
-                                                                child:
-                                                                    Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: StatusWidget(
-                                                                      status:
-                                                                          'Cooking'),
-                                                                ),
-                                                              ),
-                                                              Expanded(
-                                                                flex: 1,
-                                                                child:
-                                                                    Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: Text(
-                                                                      'Items'),
-                                                                ),
-                                                              ),
-                                                              Expanded(
-                                                                flex: 1,
-                                                                child:
-                                                                    Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: Text(
-                                                                      'Total'),
-                                                                ),
-                                                              ),
-                                                              Expanded(
-                                                                flex: 1,
-                                                                child:
-                                                                    Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  child: Text(
-                                                                      'Time'),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          width: 40,
-                                                          child: Container(
-                                                            alignment: Alignment
-                                                                .center,
-                                                            child: IconButton(
-                                                              icon: Icon(Icons
-                                                                  .arrow_forward_ios),
-                                                              onPressed: () {},
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),*/
                   );
                 } else {
                   return SliverToBoxAdapter(
@@ -1328,8 +471,9 @@ class DateBar extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text(
-              'Wednesday 12th May 2021',
+            child: Text(
+              DateHelper.getDayInLetter(
+                  context.watch<OrderProvider>().selectedDate!),
               style: TextStyle(
                 fontSize: 16,
                 color: AppColor.lightBlackTextColor,
@@ -1346,9 +490,18 @@ class DateBar extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               color: Theme.of(context).primaryColor,
             ),
-            child: Icon(
-              Icons.calendar_month_outlined,
-              color: AppColor.lightBlackTextColor,
+            child: InkWell(
+              onTap: () async {
+                DateTime? date =
+                    await context.read<OrderProvider>().chooseDate();
+                if (date != null) {
+                  context.read<OrderProvider>().setSelectedDate(date);
+                }
+              },
+              child: Icon(
+                Icons.calendar_month_outlined,
+                color: AppColor.lightBlackTextColor,
+              ),
             ),
           ),
         ],
@@ -1405,6 +558,114 @@ class StatusWidget extends StatelessWidget {
           color: getFgColor(),
           fontWeight: FontWeight.bold,
         ),
+      ),
+    );
+  }
+}
+
+class OrdersItemViewByStatus extends StatelessWidget {
+  final String status;
+  final List<OrderModel> orders;
+  const OrdersItemViewByStatus(
+      {super.key, required this.status, required this.orders});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            alignment: Alignment.centerLeft,
+            child: Text('${status} (${orders.length})'),
+          ),
+          Container(
+            child: Column(
+              children: List.generate(
+                4,
+                (index) => Container(
+                  height: 70,
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '#${index + 1}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: Text('Customer Number $index'),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: StatusWidget(status: status),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: Text('Items'),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: Text('Total'),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: Text('Time'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_forward_ios),
+                            onPressed: () {},
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

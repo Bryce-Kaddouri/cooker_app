@@ -1,6 +1,7 @@
 import 'package:cooker_app/src/features/order/business/usecase/order_get_orders_by_date_usecase.dart';
 import 'package:cooker_app/src/features/order/data/model/order_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class OrderProvider with ChangeNotifier {
   OrderGetOrdersByDateUseCase orderGetOrdersByDateUseCase;
@@ -21,6 +22,17 @@ class OrderProvider with ChangeNotifier {
 
   void setSelectedDate(DateTime value) {
     _selectedDate = value;
+    notifyListeners();
+  }
+
+  Future<DateTime?> chooseDate() async {
+    DateTime? picked = await showDatePicker(
+      context: Get.context!,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015, 8),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate) _selectedDate = picked;
     notifyListeners();
   }
 

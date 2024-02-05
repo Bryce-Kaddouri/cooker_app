@@ -1,10 +1,13 @@
 import 'package:cooker_app/src/core/constant/app_color.dart';
 import 'package:cooker_app/src/core/helper/date_helper.dart';
 import 'package:cooker_app/src/core/helper/price_helper.dart';
+import 'package:cooker_app/src/features/category/model/category_model.dart';
 import 'package:cooker_app/src/features/order/data/model/order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../product/data/model/product_model.dart';
+import '../provider/filter_provider.dart';
 import '../provider/order_provider.dart';
 
 class OrderScreen extends StatefulWidget {
@@ -33,6 +36,8 @@ class _OrderScreenState extends State<OrderScreen> {
         firstDate: DateTime.now().subtract(Duration(days: 365)),
         lastDate: DateTime.now().add(Duration(days: 365)));
   }
+
+  List<ProductModel> allProductofTheDay = [];
 
   @override
   Widget build(BuildContext context) {
@@ -161,141 +166,401 @@ class _OrderScreenState extends State<OrderScreen> {
                                 ),
                               ),
                               SizedBox(width: 10),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 5, horizontal: 16),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                                height: 40,
-                                child: MenuAnchor(
-                                  // deplace the anchor to the right
-                                  alignmentOffset: Offset(300, 10),
-                                  style: MenuStyle(
-                                    fixedSize: MaterialStateProperty.all(
-                                      Size(300, 400),
-                                    ),
-                                    visualDensity:
-                                        VisualDensity.adaptivePlatformDensity,
-                                    backgroundColor: MaterialStateProperty.all(
-                                        Theme.of(context).primaryColor),
-                                    shadowColor:
-                                        MaterialStateProperty.all(Colors.black),
-                                    elevation: MaterialStateProperty.all(
-                                      1,
-                                    ),
-                                    padding: MaterialStateProperty.all(
-                                      EdgeInsets.all(0),
-                                    ),
-                                    surfaceTintColor: MaterialStateProperty.all(
-                                        Theme.of(context).primaryColor),
-                                    shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                        side: BorderSide(
-                                          width: 3,
-                                          color: Theme.of(context).cardColor,
+                              FutureBuilder(
+                                future: context
+                                    .read<OrderProvider>()
+                                    .getOrdersByDate(context
+                                        .read<OrderProvider>()
+                                        .selectedDate),
+                                builder: (context, snapProduct) {
+                                  if (snapProduct.connectionState ==
+                                      ConnectionState.done) {
+                                    if (snapProduct.hasData) {
+                                      List<OrderModel> lstOrders =
+                                          snapProduct.data as List<OrderModel>;
+                                      List<CategoryModel> lstCategory = context
+                                          .read<OrderProvider>()
+                                          .getAllCategoryOfSelectedDate(
+                                              lstOrders);
+
+                                      int selectedCategIndex = context
+                                          .watch<FilterProvider>()
+                                          .selectedCategoryFilter;
+                                      int selectedProdIndex = context
+                                          .watch<FilterProvider>()
+                                          .selectedProductFilter;
+
+                                      List<ProductModel> lstProducts = context
+                                          .read<OrderProvider>()
+                                          .getAllProductOfSelectedDate(
+                                              lstOrders);
+
+                                      if (selectedCategIndex != -1) {
+                                        lstProducts = lstProducts
+                                            .where((element) =>
+                                                element.category!.id ==
+                                                lstCategory[selectedCategIndex]
+                                                    .id)
+                                            .toList();
+                                      }
+
+                                      return Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 5, horizontal: 16),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          color: Theme.of(context).primaryColor,
                                         ),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                  ),
-                                  builder: (BuildContext context,
-                                      MenuController controller,
-                                      Widget? child) {
-                                    return IconButton(
-                                      onPressed: () {
-                                        if (controller.isOpen) {
-                                          controller.close();
-                                        } else {
-                                          // pop menu at the right of the anchor
-                                          controller.open();
-                                        }
-                                      },
-                                      icon: Row(
-                                        children: [
-                                          Icon(Icons.filter_alt_outlined),
-                                          SizedBox(width: 8),
-                                          Text('Filter'),
-                                        ],
-                                      ),
-                                      tooltip: 'Show menu',
-                                    );
-                                  },
-                                  menuChildren: [
-                                    Container(
-                                      height: 300,
-                                      width: 280,
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 10),
-                                            alignment: Alignment.centerLeft,
-                                            height: 40,
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                              border: Border(
-                                                bottom: BorderSide(
+                                        height: 40,
+                                        child: MenuAnchor(
+                                          // deplace the anchor to the right
+                                          alignmentOffset: Offset(300, 10),
+                                          style: MenuStyle(
+                                            fixedSize:
+                                                MaterialStateProperty.all(
+                                              Size(300, 400),
+                                            ),
+                                            visualDensity: VisualDensity
+                                                .adaptivePlatformDensity,
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Theme.of(context)
+                                                        .primaryColor),
+                                            shadowColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.black),
+                                            elevation:
+                                                MaterialStateProperty.all(
+                                              1,
+                                            ),
+                                            padding: MaterialStateProperty.all(
+                                              EdgeInsets.all(0),
+                                            ),
+                                            surfaceTintColor:
+                                                MaterialStateProperty.all(
+                                                    Theme.of(context)
+                                                        .primaryColor),
+                                            shape: MaterialStateProperty.all(
+                                              RoundedRectangleBorder(
+                                                side: BorderSide(
+                                                  width: 3,
                                                   color: Theme.of(context)
                                                       .cardColor,
-                                                  width: 3,
                                                 ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
                                               ),
-                                              borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(10),
-                                                topRight: Radius.circular(10),
-                                              ),
-                                              color: Theme.of(context)
-                                                  .primaryColor,
                                             ),
-                                            child: Text('Filter'),
                                           ),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 10),
-                                            alignment: Alignment.centerLeft,
-                                            width: double.infinity,
-                                            height: 100,
-                                            decoration: BoxDecoration(
-                                              border: Border(
-                                                bottom: BorderSide(
-                                                  color: Theme.of(context)
-                                                      .cardColor,
-                                                  width: 3,
-                                                ),
+                                          builder: (BuildContext context,
+                                              MenuController controller,
+                                              Widget? child) {
+                                            return IconButton(
+                                              onPressed: () {
+                                                if (controller.isOpen) {
+                                                  controller.close();
+                                                } else {
+                                                  // pop menu at the right of the anchor
+
+                                                  controller.open();
+                                                }
+                                              },
+                                              icon: Row(
+                                                children: [
+                                                  Icon(Icons
+                                                      .filter_alt_outlined),
+                                                  SizedBox(width: 8),
+                                                  Text('Filter'),
+                                                ],
                                               ),
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text('Category'),
-                                                    TextButton(
-                                                      onPressed: () {},
-                                                      child: Text(
-                                                        'Reset',
-                                                        style: TextStyle(
-                                                          color: Colors
-                                                              .greenAccent,
+                                              tooltip: 'Show menu',
+                                            );
+                                          },
+                                          menuChildren: [
+                                            Container(
+                                              height: 300,
+                                              width: 280,
+                                              child: Column(
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 10),
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    height: 40,
+                                                    width: double.infinity,
+                                                    decoration: BoxDecoration(
+                                                      border: Border(
+                                                        bottom: BorderSide(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .cardColor,
+                                                          width: 3,
                                                         ),
                                                       ),
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                        topLeft:
+                                                            Radius.circular(10),
+                                                        topRight:
+                                                            Radius.circular(10),
+                                                      ),
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
                                                     ),
-                                                  ],
-                                                ),
-                                              ],
+                                                    child: Text('Filter'),
+                                                  ),
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 10),
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    width: double.infinity,
+                                                    height: 100,
+                                                    decoration: BoxDecoration(
+                                                      border: Border(
+                                                        bottom: BorderSide(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .cardColor,
+                                                          width: 3,
+                                                        ),
+                                                      ),
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Text('Category'),
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                context
+                                                                    .read<
+                                                                        FilterProvider>()
+                                                                    .resetSelectedCategoryFilter();
+                                                              },
+                                                              child: Text(
+                                                                'Reset',
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .greenAccent,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Container(
+                                                          height: 50,
+                                                          child: SubmenuButton(
+                                                              controller: context
+                                                                  .read<
+                                                                      FilterProvider>()
+                                                                  .menuControllerCategory,
+                                                              onClose: () {
+                                                                print('closed');
+                                                              },
+                                                              alignmentOffset:
+                                                                  Offset(
+                                                                      14, 10),
+                                                              menuChildren:
+                                                                  List.generate(
+                                                                      lstCategory
+                                                                          .length,
+                                                                      (index) =>
+                                                                          Container(
+                                                                            child:
+                                                                                Container(
+                                                                              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                                                              decoration: BoxDecoration(
+                                                                                borderRadius: BorderRadius.circular(10),
+                                                                                color: Theme.of(context).cardColor,
+                                                                              ),
+                                                                              child: RadioListTile(
+                                                                                value: index,
+                                                                                groupValue: context.watch<FilterProvider>().selectedCategoryFilter,
+                                                                                title: Text(lstCategory[index].name),
+                                                                                onChanged: (value) {
+                                                                                  print(value);
+                                                                                  context.read<FilterProvider>().setSelectedCategoryFilter(value ?? -1);
+                                                                                  // close submenu
+                                                                                  Future.delayed(Duration(milliseconds: 500), () {
+                                                                                    context.read<FilterProvider>().menuControllerCategory.close();
+                                                                                  });
+                                                                                },
+                                                                              ),
+                                                                            ),
+                                                                          )),
+                                                              child: context
+                                                                          .watch<
+                                                                              FilterProvider>()
+                                                                          .selectedCategoryFilter ==
+                                                                      -1
+                                                                  ? Text(
+                                                                      'All',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .grey,
+                                                                      ),
+                                                                    )
+                                                                  : Container(
+                                                                      child:
+                                                                          Text(
+                                                                        lstCategory[context.watch<FilterProvider>().selectedCategoryFilter]
+                                                                            .name,
+                                                                        overflow:
+                                                                            TextOverflow.ellipsis,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              AppColor.lightBlackTextColor,
+                                                                        ),
+                                                                      ),
+                                                                    )),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 10),
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    width: double.infinity,
+                                                    height: 100,
+                                                    decoration: BoxDecoration(
+                                                      border: Border(
+                                                        bottom: BorderSide(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .cardColor,
+                                                          width: 3,
+                                                        ),
+                                                      ),
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Text('Product'),
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                context
+                                                                    .read<
+                                                                        FilterProvider>()
+                                                                    .resetSelectedProductFilter();
+                                                              },
+                                                              child: Text(
+                                                                'Reset',
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .greenAccent,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Container(
+                                                          height: 50,
+                                                          child: SubmenuButton(
+                                                              controller: context
+                                                                  .read<
+                                                                      FilterProvider>()
+                                                                  .menuController,
+                                                              onClose: () {
+                                                                print('closed');
+                                                              },
+                                                              alignmentOffset:
+                                                                  Offset(
+                                                                      14, 10),
+                                                              menuChildren:
+                                                                  List.generate(
+                                                                      lstProducts
+                                                                          .length,
+                                                                      (index) =>
+                                                                          Container(
+                                                                            child:
+                                                                                Container(
+                                                                              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                                                              decoration: BoxDecoration(
+                                                                                borderRadius: BorderRadius.circular(10),
+                                                                                color: Theme.of(context).cardColor,
+                                                                              ),
+                                                                              child: RadioListTile(
+                                                                                value: index,
+                                                                                groupValue: context.watch<FilterProvider>().selectedProductFilter,
+                                                                                title: Text(lstProducts[index].name),
+                                                                                onChanged: (value) {
+                                                                                  print(value);
+                                                                                  context.read<FilterProvider>().setSelectedProductFilter(value ?? -1);
+                                                                                  // close submenu
+                                                                                  Future.delayed(Duration(milliseconds: 500), () {
+                                                                                    context.read<FilterProvider>().menuController.close();
+                                                                                  });
+                                                                                },
+                                                                              ),
+                                                                            ),
+                                                                          )),
+                                                              child: context
+                                                                          .watch<
+                                                                              FilterProvider>()
+                                                                          .selectedProductFilter ==
+                                                                      -1
+                                                                  ? Text(
+                                                                      'All',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .grey,
+                                                                      ),
+                                                                    )
+                                                                  : Container(
+                                                                      child:
+                                                                          Text(
+                                                                        lstProducts[context.watch<FilterProvider>().selectedProductFilter]
+                                                                            .name,
+                                                                        overflow:
+                                                                            TextOverflow.ellipsis,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              AppColor.lightBlackTextColor,
+                                                                        ),
+                                                                      ),
+                                                                    )),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                          ],
+                                        ),
+                                      );
+                                    } else {
+                                      return Container();
+                                    }
+                                  } else {
+                                    return Container();
+                                  }
+                                },
                               )
                             ],
                           ),
@@ -327,6 +592,11 @@ class _OrderScreenState extends State<OrderScreen> {
                   List<OrderModel> cancelledOrders = orders
                       .where((element) => element.status.name == 'Cancelled')
                       .toList();
+
+                  /* setState(() {
+                    allProductofTheDay = lstProducts;
+                  });*/
+
                   return SliverToBoxAdapter(
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),

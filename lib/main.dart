@@ -13,6 +13,7 @@ import 'package:cooker_app/src/features/order/business/repository/order_reposito
 import 'package:cooker_app/src/features/order/business/usecase/order_get_orders_by_date_usecase.dart';
 import 'package:cooker_app/src/features/order/data/datasource/order_datasource.dart';
 import 'package:cooker_app/src/features/order/data/repository/order_repository_impl.dart';
+import 'package:cooker_app/src/features/order/presentation/provider/filter_provider.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/order_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
@@ -64,6 +65,9 @@ Future<void> main() async {
           create: (context) => OrderProvider(
               orderGetOrdersByDateUseCase: OrderGetOrdersByDateUseCase(
                   orderRepository: orderRepository)),
+        ),
+        ChangeNotifierProvider<FilterProvider>(
+          create: (context) => FilterProvider(),
         ),
         /*ChangeNotifierProvider<CategoryProvider>(
           create: (context) => CategoryProvider(

@@ -39,4 +39,36 @@ class FilterProvider with ChangeNotifier {
     _menuControllerCategory = value;
     notifyListeners();
   }
+
+  double _maxRangePrice = 100;
+  double get maxRangePrice => _maxRangePrice;
+
+  void setMaxRangePrice(double value) {
+    _maxRangePrice = value;
+
+    notifyListeners();
+  }
+
+  double _selectedMaxRangePrice = 1;
+  double get selectedMaxRangePrice => _selectedMaxRangePrice;
+
+  void setSelectedMaxRangePrice(double value) {
+    _selectedMaxRangePrice = value;
+    notifyListeners();
+  }
+
+  double _selectedMinRangePrice = 0;
+  double get selectedMinRangePrice => _selectedMinRangePrice;
+
+  void setSelectedMinRangePrice(double value) {
+    _selectedMinRangePrice = value;
+    notifyListeners();
+  }
+
+  void resetAllFilter() {
+    _selectedProductFilter = -1;
+    _selectedCategoryFilter = -1;
+    _maxRangePrice = 100;
+    notifyListeners();
+  }
 }

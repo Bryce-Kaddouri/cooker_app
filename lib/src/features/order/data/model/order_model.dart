@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-
 import '../../../cart/model/cart_model.dart';
 import '../../../customer/data/model/customer_model.dart';
 import '../../../employee/model/model/user_model.dart';
@@ -15,12 +14,13 @@ class OrderModel {
   final DateTime date;
   final TimeOfDay time;
 
- final CustomerModel customer;
+  final CustomerModel customer;
   final StatusModel status;
   final UserModel user;
 
   final List<CartModel> cart;
 
+  double totalAmount;
 
   OrderModel({
     this.id,
@@ -28,31 +28,22 @@ class OrderModel {
     required this.updatedAt,
     required this.date,
     required this.time,
-  required this.customer,
-     required this.status,
+    required this.customer,
+    required this.status,
     required this.user,
-
     required this.cart,
-
+    this.totalAmount = 0.0,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
-   /* List<dynamic> cart =
-        json['cart']['cart_items'];
-    print(cart);
-    String cartString = cart.toString();
-    var test = jsonEncode(cart);
-    print(test);
-    var test2 = jsonDecode(test);*/
-   /* print('*' * 50);
-    print(test2);*/
+    double totalAmount = 0.0;
+    List<CartModel> cart =
+        List<CartModel>.from(json['cart'].map((x) => CartModel.fromJson(x)));
+    for (var item in cart) {
+      totalAmount += item.product.price * item.quantity;
+    }
 
-    /*List<Map<String, dynamic>> jsonCart =
-        json['cart']['cart_items'].cast<Map<String, dynamic>>();
-
-*/
-
-
+    print('totalAmount: $totalAmount');
 
     return OrderModel(
       id: json['order_id'],
@@ -64,16 +55,13 @@ class OrderModel {
         minute: 30,
       ),
       /*json['order_is_paid'],*/
-     customer: CustomerModel.fromJson(json['customer']),
+      customer: CustomerModel.fromJson(json['customer']),
       status: StatusModel.fromJson(json['status']),
       user: UserModel.fromJson(json['user']),
-
-      cart: List<CartModel>.from(json['cart'].map((x) => CartModel.fromJson(x))),
-
+      cart: cart,
+      totalAmount: totalAmount,
     );
   }
-
-
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -82,7 +70,7 @@ class OrderModel {
         'date': date.toIso8601String(),
         'time': '${time.hour}:${time.minute}',
         'customer': customer.toJson(),
-    /* 'status': status.toJson(),
+        /* 'status': status.toJson(),
         'user': user.toJson(),
         'cart': cart.map((e) => e.toJson()).toList(),*/
       };

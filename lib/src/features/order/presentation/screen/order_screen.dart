@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../../../product/data/model/product_model.dart';
 import '../provider/filter_provider.dart';
 import '../provider/order_provider.dart';
+import 'dart:math' as math;
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
@@ -24,6 +25,13 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   void initState() {
     super.initState();
+    print('initState');
+  }
+
+  @override
+  didChangeDependencies() {
+    super.didChangeDependencies();
+    print('didChangeDependencies');
   }
 
   Future<DateTime?> selectDate() async {
@@ -204,6 +212,35 @@ class _OrderScreenState extends State<OrderScreen> {
                                             .toList();
                                       }
 
+                                      List<double> lstPrice = lstOrders
+                                          .map((e) => e.totalAmount)
+                                          .toList();
+
+                                      double maxRangePrice = lstPrice.isNotEmpty
+                                          ? lstPrice.reduce(math.max)
+                                          : 100;
+
+                                      // add post frame callback to set the max range price
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((timeStamp) {
+                                        context
+                                            .read<FilterProvider>()
+                                            .setMaxRangePrice(
+                                              maxRangePrice,
+                                            );
+
+                                        if (context
+                                                .read<FilterProvider>()
+                                                .selectedMaxRangePrice ==
+                                            -1) {
+                                          context
+                                              .read<FilterProvider>()
+                                              .setSelectedMaxRangePrice(
+                                                maxRangePrice,
+                                              );
+                                        }
+                                      });
+
                                       return Container(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 5, horizontal: 16),
@@ -279,7 +316,6 @@ class _OrderScreenState extends State<OrderScreen> {
                                           },
                                           menuChildren: [
                                             Container(
-                                              height: 300,
                                               width: 280,
                                               child: Column(
                                                 children: [
@@ -479,72 +515,111 @@ class _OrderScreenState extends State<OrderScreen> {
                                                         Container(
                                                           height: 50,
                                                           child: SubmenuButton(
-                                                              controller: context
-                                                                  .read<
-                                                                      FilterProvider>()
-                                                                  .menuController,
-                                                              onClose: () {
-                                                                print('closed');
-                                                              },
-                                                              alignmentOffset:
-                                                                  Offset(
-                                                                      14, 10),
-                                                              menuChildren:
-                                                                  List.generate(
-                                                                      lstProducts
-                                                                          .length,
-                                                                      (index) =>
-                                                                          Container(
-                                                                            child:
-                                                                                Container(
-                                                                              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                                                                              decoration: BoxDecoration(
-                                                                                borderRadius: BorderRadius.circular(10),
-                                                                                color: Theme.of(context).cardColor,
-                                                                              ),
-                                                                              child: RadioListTile(
-                                                                                value: index,
-                                                                                groupValue: context.watch<FilterProvider>().selectedProductFilter,
-                                                                                title: Text(lstProducts[index].name),
-                                                                                onChanged: (value) {
-                                                                                  print(value);
-                                                                                  context.read<FilterProvider>().setSelectedProductFilter(value ?? -1);
-                                                                                  // close submenu
-                                                                                  Future.delayed(Duration(milliseconds: 500), () {
-                                                                                    context.read<FilterProvider>().menuController.close();
-                                                                                  });
-                                                                                },
-                                                                              ),
+                                                            controller: context
+                                                                .read<
+                                                                    FilterProvider>()
+                                                                .menuController,
+                                                            onClose: () {
+                                                              print('closed');
+                                                            },
+                                                            alignmentOffset:
+                                                                Offset(14, 10),
+                                                            menuChildren:
+                                                                List.generate(
+                                                                    lstProducts
+                                                                        .length,
+                                                                    (index) =>
+                                                                        Container(
+                                                                          child:
+                                                                              Container(
+                                                                            padding:
+                                                                                const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                                                            decoration:
+                                                                                BoxDecoration(
+                                                                              borderRadius: BorderRadius.circular(10),
+                                                                              color: Theme.of(context).cardColor,
                                                                             ),
-                                                                          )),
-                                                              child: context
-                                                                          .watch<
-                                                                              FilterProvider>()
-                                                                          .selectedProductFilter ==
-                                                                      -1
-                                                                  ? Text(
-                                                                      'All',
+                                                                            child:
+                                                                                RadioListTile(
+                                                                              value: index,
+                                                                              groupValue: context.watch<FilterProvider>().selectedProductFilter,
+                                                                              title: Text(lstProducts[index].name),
+                                                                              onChanged: (value) {
+                                                                                print(value);
+                                                                                context.read<FilterProvider>().setSelectedProductFilter(value ?? -1);
+                                                                                // close submenu
+                                                                                Future.delayed(Duration(milliseconds: 500), () {
+                                                                                  context.read<FilterProvider>().menuController.close();
+                                                                                });
+                                                                              },
+                                                                            ),
+                                                                          ),
+                                                                        )),
+                                                            child: context
+                                                                        .watch<
+                                                                            FilterProvider>()
+                                                                        .selectedProductFilter ==
+                                                                    -1
+                                                                ? Text(
+                                                                    'All',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: Colors
+                                                                          .grey,
+                                                                    ),
+                                                                  )
+                                                                : Container(
+                                                                    child: Text(
+                                                                      lstProducts[context
+                                                                              .watch<FilterProvider>()
+                                                                              .selectedProductFilter]
+                                                                          .name,
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
                                                                       style:
                                                                           TextStyle(
-                                                                        color: Colors
-                                                                            .grey,
+                                                                        color: AppColor
+                                                                            .lightBlackTextColor,
                                                                       ),
-                                                                    )
-                                                                  : Container(
-                                                                      child:
-                                                                          Text(
-                                                                        lstProducts[context.watch<FilterProvider>().selectedProductFilter]
-                                                                            .name,
-                                                                        overflow:
-                                                                            TextOverflow.ellipsis,
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              AppColor.lightBlackTextColor,
-                                                                        ),
-                                                                      ),
-                                                                    )),
-                                                        )
+                                                                    ),
+                                                                  ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    height: 150,
+                                                    child: Column(
+                                                      children: [
+                                                        Text('Price range'),
+                                                        // slider with two thumbs
+                                                        RangeSlider(
+                                                          min: 0,
+                                                          max: context
+                                                              .watch<
+                                                                  FilterProvider>()
+                                                              .maxRangePrice,
+                                                          values: RangeValues(
+                                                              0,
+                                                              context
+                                                                  .watch<
+                                                                      FilterProvider>()
+                                                                  .selectedMaxRangePrice),
+                                                          labels: RangeLabels(
+                                                              'test', 'test1'),
+                                                          onChanged:
+                                                              (RangeValues
+                                                                  values) {
+                                                            print(values);
+                                                            context
+                                                                .read<
+                                                                    FilterProvider>()
+                                                                .setSelectedMaxRangePrice(
+                                                                    values.end);
+                                                          },
+                                                        ),
                                                       ],
                                                     ),
                                                   ),

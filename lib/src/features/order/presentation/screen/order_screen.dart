@@ -1,5 +1,6 @@
 import 'package:cooker_app/src/core/constant/app_color.dart';
 import 'package:cooker_app/src/core/helper/date_helper.dart';
+import 'package:cooker_app/src/core/helper/price_helper.dart';
 import 'package:cooker_app/src/features/order/data/model/order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -168,11 +169,131 @@ class _OrderScreenState extends State<OrderScreen> {
                                   color: Theme.of(context).primaryColor,
                                 ),
                                 height: 40,
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.filter_alt_outlined),
-                                    SizedBox(width: 8),
-                                    Text('Filter'),
+                                child: MenuAnchor(
+                                  // deplace the anchor to the right
+                                  alignmentOffset: Offset(300, 10),
+                                  style: MenuStyle(
+                                    fixedSize: MaterialStateProperty.all(
+                                      Size(300, 400),
+                                    ),
+                                    visualDensity:
+                                        VisualDensity.adaptivePlatformDensity,
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Theme.of(context).primaryColor),
+                                    shadowColor:
+                                        MaterialStateProperty.all(Colors.black),
+                                    elevation: MaterialStateProperty.all(
+                                      1,
+                                    ),
+                                    padding: MaterialStateProperty.all(
+                                      EdgeInsets.all(0),
+                                    ),
+                                    surfaceTintColor: MaterialStateProperty.all(
+                                        Theme.of(context).primaryColor),
+                                    shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                        side: BorderSide(
+                                          width: 3,
+                                          color: Theme.of(context).cardColor,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                  ),
+                                  builder: (BuildContext context,
+                                      MenuController controller,
+                                      Widget? child) {
+                                    return IconButton(
+                                      onPressed: () {
+                                        if (controller.isOpen) {
+                                          controller.close();
+                                        } else {
+                                          // pop menu at the right of the anchor
+                                          controller.open();
+                                        }
+                                      },
+                                      icon: Row(
+                                        children: [
+                                          Icon(Icons.filter_alt_outlined),
+                                          SizedBox(width: 8),
+                                          Text('Filter'),
+                                        ],
+                                      ),
+                                      tooltip: 'Show menu',
+                                    );
+                                  },
+                                  menuChildren: [
+                                    Container(
+                                      height: 300,
+                                      width: 280,
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            alignment: Alignment.centerLeft,
+                                            height: 40,
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                bottom: BorderSide(
+                                                  color: Theme.of(context)
+                                                      .cardColor,
+                                                  width: 3,
+                                                ),
+                                              ),
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(10),
+                                                topRight: Radius.circular(10),
+                                              ),
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                            child: Text('Filter'),
+                                          ),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            alignment: Alignment.centerLeft,
+                                            width: double.infinity,
+                                            height: 100,
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                bottom: BorderSide(
+                                                  color: Theme.of(context)
+                                                      .cardColor,
+                                                  width: 3,
+                                                ),
+                                              ),
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text('Category'),
+                                                    TextButton(
+                                                      onPressed: () {},
+                                                      child: Text(
+                                                        'Reset',
+                                                        style: TextStyle(
+                                                          color: Colors
+                                                              .greenAccent,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 ),
                               )
@@ -472,7 +593,7 @@ class DateBar extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              DateHelper.getDayInLetter(
+              DateHelper.getFullFormattedDate(
                   context.watch<OrderProvider>().selectedDate!),
               style: TextStyle(
                 fontSize: 16,
@@ -569,6 +690,14 @@ class OrdersItemViewByStatus extends StatelessWidget {
   const OrdersItemViewByStatus(
       {super.key, required this.status, required this.orders});
 
+  double getTotal(int index) {
+    double total = 0;
+    orders[index].cart.forEach((element) {
+      total += element.product.price * element.quantity;
+    });
+    return total;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -577,7 +706,7 @@ class OrdersItemViewByStatus extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 20),
             alignment: Alignment.centerLeft,
-            child: Text('${status} (${orders.length})'),
+            child: Text('$status (${orders.length})'),
           ),
           Container(
             child: Column(
@@ -615,7 +744,8 @@ class OrdersItemViewByStatus extends StatelessWidget {
                               flex: 2,
                               child: Container(
                                 alignment: Alignment.center,
-                                child: Text('Customer Number $index'),
+                                child: Text(
+                                    '${orders[index].customer.fName} ${orders[index].customer.lName}'),
                               ),
                             ),
                             Expanded(
@@ -629,21 +759,29 @@ class OrdersItemViewByStatus extends StatelessWidget {
                               flex: 1,
                               child: Container(
                                 alignment: Alignment.center,
-                                child: Text('Items'),
+                                child: Text('${orders[index].cart.length}'),
                               ),
                             ),
                             Expanded(
                               flex: 1,
                               child: Container(
                                 alignment: Alignment.center,
-                                child: Text('Total'),
+                                child: Text('${PriceHelper.getFormattedPrice(
+                                  getTotal(index),
+                                  showBefore: false,
+                                )}'),
                               ),
                             ),
                             Expanded(
                               flex: 1,
                               child: Container(
                                 alignment: Alignment.center,
-                                child: Text('Time'),
+                                child: Text(
+                                  '${orders[index].time.hour} : ${orders[index].time.minute}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ),
                           ],

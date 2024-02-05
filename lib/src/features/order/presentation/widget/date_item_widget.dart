@@ -54,7 +54,7 @@ class DateItemWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                DateHelper.getDayInLetter(dateItem),
+                DateHelper.getFullFormattedDate(dateItem),
                 style: TextStyle(
                     color: isToday ? Colors.black : Colors.grey, fontSize: 16),
               ),

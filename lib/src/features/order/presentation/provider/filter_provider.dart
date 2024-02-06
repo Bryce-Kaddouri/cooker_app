@@ -1,4 +1,3 @@
-import 'package:cooker_app/src/features/category/model/category_model.dart';
 import 'package:flutter/material.dart';
 
 class FilterProvider with ChangeNotifier {
@@ -62,6 +61,30 @@ class FilterProvider with ChangeNotifier {
 
   void setSelectedMinRangePrice(double value) {
     _selectedMinRangePrice = value;
+    notifyListeners();
+  }
+
+  bool _isFilteringByPrice = false;
+  bool get isFilteringByPrice => _isFilteringByPrice;
+
+  void setIsFilteringByPrice(bool value) {
+    _isFilteringByPrice = value;
+    notifyListeners();
+  }
+
+  TimeOfDay _selectedStartTime = TimeOfDay(hour: 0, minute: 0);
+  TimeOfDay get selectedStartTime => _selectedStartTime;
+
+  void setSelectedStartTime(TimeOfDay value) {
+    _selectedStartTime = value;
+    notifyListeners();
+  }
+
+  TimeOfDay _selectedEndTime = TimeOfDay(hour: 23, minute: 59);
+  TimeOfDay get selectedEndTime => _selectedEndTime;
+
+  void setSelectedEndTime(TimeOfDay value) {
+    _selectedEndTime = value;
     notifyListeners();
   }
 

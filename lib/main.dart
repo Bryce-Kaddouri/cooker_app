@@ -121,6 +121,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp.router(
+      title: 'Cooker App',
       debugShowCheckedModeBanner: false,
       theme: LightTheme.themeData,
       defaultTransition: Transition.fadeIn,

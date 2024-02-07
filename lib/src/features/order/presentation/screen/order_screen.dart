@@ -253,11 +253,11 @@ class _OrderScreenState extends State<OrderScreen> {
                                         height: 40,
                                         child: MenuAnchor(
                                           // deplace the anchor to the right
-                                          alignmentOffset: Offset(300, 10),
+                                          alignmentOffset: Offset(250, 10),
                                           style: MenuStyle(
                                             fixedSize:
                                                 MaterialStateProperty.all(
-                                              Size(300, 400),
+                                              Size(300, 430),
                                             ),
                                             visualDensity: VisualDensity
                                                 .adaptivePlatformDensity,
@@ -427,7 +427,48 @@ class _OrderScreenState extends State<OrderScreen> {
                                                                   ),
                                                                 ),
                                                                 onPressed:
-                                                                    () {},
+                                                                    () async {
+                                                                  TimeOfDay? time = await showTimePicker(
+                                                                          context:
+                                                                              context,
+                                                                          initialTime: context
+                                                                              .read<FilterProvider>()
+                                                                              .selectedStartTime)
+                                                                      .then((value) {
+                                                                    if (value !=
+                                                                        null) {
+                                                                      int startSeconds = value.hour *
+                                                                              3600 +
+                                                                          value.minute *
+                                                                              60;
+                                                                      int endSeconds = context.read<FilterProvider>().selectedEndTime.hour *
+                                                                              3600 +
+                                                                          context.read<FilterProvider>().selectedEndTime.minute *
+                                                                              60;
+
+                                                                      if (startSeconds <
+                                                                          endSeconds) {
+                                                                        context
+                                                                            .read<FilterProvider>()
+                                                                            .setSelectedStartTime(value);
+                                                                      } else {
+                                                                        ScaffoldMessenger.of(context)
+                                                                            .showSnackBar(
+                                                                          SnackBar(
+                                                                            showCloseIcon:
+                                                                                true,
+                                                                            backgroundColor:
+                                                                                Colors.red,
+                                                                            content:
+                                                                                Text('Start time must be less than end time'),
+                                                                            duration:
+                                                                                Duration(seconds: 2),
+                                                                          ),
+                                                                        );
+                                                                      }
+                                                                    }
+                                                                  });
+                                                                },
                                                                 child: Row(
                                                                   mainAxisAlignment:
                                                                       MainAxisAlignment
@@ -498,7 +539,57 @@ class _OrderScreenState extends State<OrderScreen> {
                                                                   ),
                                                                 ),
                                                                 onPressed:
-                                                                    () {},
+                                                                    () async {
+                                                                  TimeOfDay? time = await showTimePicker(
+                                                                          errorInvalidText:
+                                                                              'Invalid time',
+                                                                          context:
+                                                                              context,
+                                                                          initialTime: context
+                                                                              .read<
+                                                                                  FilterProvider>()
+                                                                              .selectedEndTime)
+                                                                      .then((TimeOfDay?
+                                                                          value) {
+                                                                    if (value !=
+                                                                        null) {
+                                                                      // check if the selected time is greater than the start time
+                                                                      int endSeconds = value.hour *
+                                                                              3600 +
+                                                                          value.minute *
+                                                                              60;
+                                                                      int startSeconds = context.read<FilterProvider>().selectedStartTime.hour *
+                                                                              3600 +
+                                                                          context.read<FilterProvider>().selectedStartTime.minute *
+                                                                              60;
+
+                                                                      print(
+                                                                          endSeconds);
+                                                                      print(
+                                                                          startSeconds);
+                                                                      if (endSeconds >
+                                                                          startSeconds) {
+                                                                        context
+                                                                            .read<FilterProvider>()
+                                                                            .setSelectedEndTime(value);
+                                                                      } else {
+                                                                        ScaffoldMessenger.of(context)
+                                                                            .showSnackBar(
+                                                                          SnackBar(
+                                                                            showCloseIcon:
+                                                                                true,
+                                                                            backgroundColor:
+                                                                                Colors.red,
+                                                                            content:
+                                                                                Text('End time must be greater than start time'),
+                                                                            duration:
+                                                                                Duration(seconds: 2),
+                                                                          ),
+                                                                        );
+                                                                      }
+                                                                    }
+                                                                  });
+                                                                },
                                                                 child: Row(
                                                                   mainAxisAlignment:
                                                                       MainAxisAlignment
@@ -867,6 +958,68 @@ class _OrderScreenState extends State<OrderScreen> {
                                               ],
                                             ),
                                             // end price filter
+                                            // reset all and apply now button
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  top: BorderSide(
+                                                    color: Theme.of(context)
+                                                        .cardColor,
+                                                    width: 3,
+                                                  ),
+                                                ),
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      context
+                                                          .read<
+                                                              FilterProvider>()
+                                                          .resetSelectedCategoryFilter();
+                                                      context
+                                                          .read<
+                                                              FilterProvider>()
+                                                          .resetSelectedProductFilter();
+                                                      context
+                                                          .read<
+                                                              FilterProvider>()
+                                                          .setIsFilteringByPrice(
+                                                              false);
+                                                    },
+                                                    child: Text(
+                                                      'Reset all',
+                                                      style: TextStyle(
+                                                        color:
+                                                            Colors.greenAccent,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      // close the menu
+                                                      context
+                                                          .read<
+                                                              FilterProvider>()
+                                                          .menuController
+                                                          .close();
+                                                    },
+                                                    child: Text(
+                                                      'Apply now',
+                                                      style: TextStyle(
+                                                        color:
+                                                            Colors.greenAccent,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
                                           ],
                                         ),
                                       );

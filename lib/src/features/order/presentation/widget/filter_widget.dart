@@ -1,3 +1,4 @@
+import 'package:cooker_app/src/features/order/presentation/provider/sort_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +20,7 @@ class FilterWidget extends StatelessWidget {
           .read<OrderProvider>()
           .getOrdersByDate(context
           .read<OrderProvider>()
-          .selectedDate),
+          .selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending),
       builder: (context, snapProduct) {
         if (snapProduct.connectionState ==
             ConnectionState.done) {

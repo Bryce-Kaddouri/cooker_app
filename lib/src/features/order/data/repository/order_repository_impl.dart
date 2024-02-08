@@ -1,3 +1,4 @@
+import 'package:cooker_app/src/features/order/business/getOrdersParam.dart';
 import 'package:dartz/dartz.dart';
 import 'package:cooker_app/src/core/data/exception/failure.dart';
 import 'package:cooker_app/src/features/order/data/datasource/order_datasource.dart';
@@ -26,8 +27,8 @@ class OrderRepositoryImpl implements OrderRepository {
 
   @override
   Future<Either<DatabaseFailure, List<OrderModel>>> getOrdersByDate(
-      DateTime date) async {
-    return await orderDataSource.getOrdersByDate(date);
+      GetOrdersParam param) async {
+    return await orderDataSource.getOrdersByDate(param.date, param.sortType, param.isAscending);
   }
 
 }

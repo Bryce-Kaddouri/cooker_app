@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import '../../../product/data/model/product_model.dart';
 import '../provider/filter_provider.dart';
 import '../provider/order_provider.dart';
+import '../provider/sort_provider.dart';
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
@@ -177,7 +178,7 @@ class _OrderScreenState extends State<OrderScreen> {
           FutureBuilder(
             future: context
                 .read<OrderProvider>()
-                .getOrdersByDate(context.watch<OrderProvider>().selectedDate!),
+                .getOrdersByDate(context.watch<OrderProvider>().selectedDate!, context.watch<SortProvider>().sortType, context.watch<SortProvider>().isAscending,),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {
@@ -583,7 +584,7 @@ class OrdersItemViewByStatus extends StatelessWidget {
           Container(
             child: Column(
               children: List.generate(
-                4,
+                orders.length,
                 (index) => Container(
                   height: 70,
                   width: double.infinity,
@@ -605,7 +606,7 @@ class OrdersItemViewByStatus extends StatelessWidget {
                               child: Container(
                                 alignment: Alignment.center,
                                 child: Text(
-                                  '#${index + 1}',
+                                  '#${orders[index].id}',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -617,7 +618,7 @@ class OrdersItemViewByStatus extends StatelessWidget {
                               child: Container(
                                 alignment: Alignment.center,
                                 child: Text(
-                                    '${orders[index].customer.fName} ${orders[index].customer.lName}'),
+                                    '${orders[index].customer.lName} ${orders[index].customer.fName}'),
                               ),
                             ),
                             Expanded(
@@ -631,7 +632,7 @@ class OrdersItemViewByStatus extends StatelessWidget {
                               flex: 1,
                               child: Container(
                                 alignment: Alignment.center,
-                                child: Text('${orders[index].cart.length}'),
+                                child: Text('${orders[index].nbTotalItemsCart}'),
                               ),
                             ),
                             Expanded(

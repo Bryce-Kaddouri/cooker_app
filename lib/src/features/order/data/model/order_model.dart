@@ -21,6 +21,7 @@ class OrderModel {
   final List<CartModel> cart;
 
   double totalAmount;
+  final int nbTotalItemsCart;
 
   OrderModel({
     this.id,
@@ -33,17 +34,14 @@ class OrderModel {
     required this.user,
     required this.cart,
     this.totalAmount = 0.0,
+    required this.nbTotalItemsCart,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
-    double totalAmount = 0.0;
     List<CartModel> cart =
         List<CartModel>.from(json['cart'].map((x) => CartModel.fromJson(x)));
-    for (var item in cart) {
-      totalAmount += item.product.price * item.quantity;
-    }
 
-    print('totalAmount: $totalAmount');
+
 
     return OrderModel(
       id: json['order_id'],
@@ -51,16 +49,19 @@ class OrderModel {
       updatedAt: DateTime.parse(json['order_updated_at']),
       date: DateTime.parse(json['order_date']),
       time: TimeOfDay(
-        hour: 11,
-        minute: 30,
+        hour: int.parse(json['order_time'].split(':')[0]),
+        minute: int.parse(json['order_time'].split(':')[1]),
       ),
       /*json['order_is_paid'],*/
       customer: CustomerModel.fromJson(json['customer']),
       status: StatusModel.fromJson(json['status']),
       user: UserModel.fromJson(json['user']),
       cart: cart,
-      totalAmount: totalAmount,
+      totalAmount: json['total_amount'],
+      nbTotalItemsCart: json['nb_items_cart'],
     );
+
+
   }
 
   Map<String, dynamic> toJson() => {
@@ -74,4 +75,5 @@ class OrderModel {
         'user': user.toJson(),
         'cart': cart.map((e) => e.toJson()).toList(),*/
       };
+
 }

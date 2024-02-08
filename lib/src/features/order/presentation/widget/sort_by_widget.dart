@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/sort_provider.dart';
 
 class SortByWidget extends StatelessWidget {
   const SortByWidget({super.key});
@@ -59,9 +62,27 @@ class SortByWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          Text('Time'),
-          RadioListTile(value: true, groupValue: true, onChanged: (value){}, title: Text('Ascending'),),
-          RadioListTile(value: false, groupValue: true, onChanged: (value){}, title: Text('Descending'),),
+
+            Container(
+              child: Row(
+                children: [
+                  Text('Time'),
+                  Checkbox(value: context.watch<SortProvider>().sortType == SortType.time, onChanged: (value){
+                    if(value == true){
+                      context.read<SortProvider>().setSortType(SortType.time);
+                    }
+                  })
+                ],
+              ),
+            ),
+          RadioListTile(value: true
+            , groupValue: context.watch<SortProvider>().isAscending, onChanged: context.watch<SortProvider>().sortType == SortType.time ?(value){
+            context.read<SortProvider>().setAscending(true);
+          } : null, title: Text('Ascending'), toggleable: false,),
+          RadioListTile(value: false
+              , groupValue: context.watch<SortProvider>().isAscending, onChanged: context.watch<SortProvider>().sortType == SortType.time ?(value){
+            context.read<SortProvider>().setAscending(false);
+          } : null, title: Text('Descending'),toggleable: false),
 
         ],)
       ),
@@ -71,9 +92,25 @@ class SortByWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
-              Text('Order ID'),
-              RadioListTile(value: true, groupValue: true, onChanged: (value){}, title: Text('Ascending'),),
-              RadioListTile(value: false, groupValue: true, onChanged: (value){}, title: Text('Descending'),),
+
+                Container(
+                  child: Row(
+                    children: [
+                      Text('Order ID'),
+                      Checkbox(value: context.watch<SortProvider>().sortType == SortType.orderId, onChanged: (value){
+                        if(value == true){
+                          context.read<SortProvider>().setSortType(SortType.orderId);
+                        }
+                      })
+                    ],
+                  ),
+                ),
+              RadioListTile(value: true, groupValue: context.watch<SortProvider>().isAscending, onChanged: context.watch<SortProvider>().sortType == SortType.orderId ?(value){
+                context.read<SortProvider>().setAscending(true);
+              } : null, title: Text('Ascending'),),
+              RadioListTile(value: false, groupValue: context.watch<SortProvider>().isAscending, onChanged: context.watch<SortProvider>().sortType == SortType.orderId ?(value){
+                context.read<SortProvider>().setAscending(false);
+              } : null, title: Text('Descending'),),
 
             ],)
         ),
@@ -82,9 +119,25 @@ class SortByWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              Text('Customer'),
-              RadioListTile(value: true, groupValue: true, onChanged: (value){}, title: Text('A-Z'),),
-              RadioListTile(value: false, groupValue: true, onChanged: (value){}, title: Text('Z-A'),),
+
+                Container(
+                  child: Row(
+                    children: [
+                      Text('Customer'),
+                      Checkbox(value: context.watch<SortProvider>().sortType == SortType.customer, onChanged: (value){
+                        if(value == true){
+                          context.read<SortProvider>().setSortType(SortType.customer);
+                        }
+                      })
+                    ],
+                  ),
+                ),
+              RadioListTile(value: true, groupValue: context.watch<SortProvider>().isAscending, onChanged: context.watch<SortProvider>().sortType == SortType.customer ?(value){
+                context.read<SortProvider>().setAscending(true);
+              } : null, title: Text('A-Z'),),
+              RadioListTile(value: false, groupValue: context.watch<SortProvider>().isAscending, onChanged: context.watch<SortProvider>().sortType == SortType.customer ?(value){
+                context.read<SortProvider>().setAscending(false);
+              } : null, title: Text('Z-A'),),
 
             ],)
         ),
@@ -93,9 +146,24 @@ class SortByWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              Text('Items'),
-              RadioListTile(value: true, groupValue: true, onChanged: (value){}, title: Text('Ascending'),),
-              RadioListTile(value: false, groupValue: true, onChanged: (value){}, title: Text('Descending'),),
+
+                Container(
+                  child: Row(
+                    children: [
+                      Text('Items'),
+                      Checkbox(value: context.watch<SortProvider>().sortType == SortType.items, onChanged: (value){
+                        if(value == true){
+                          context.read<SortProvider>().setSortType(SortType.items);
+                        }
+                      })
+                    ],
+                  ),
+                ),              RadioListTile(value: true, groupValue: context.watch<SortProvider>().isAscending, onChanged: context.watch<SortProvider>().sortType == SortType.items ?(value){
+                  context.read<SortProvider>().setAscending(true);
+                } : null, title: Text('Ascending'),),
+              RadioListTile(value: false, groupValue: context.watch<SortProvider>().isAscending, onChanged: context.watch<SortProvider>().sortType == SortType.items ?(value){
+                context.read<SortProvider>().setAscending(false);
+              } : null, title: Text('Descending'),),
 
             ],)
         ),
@@ -104,9 +172,24 @@ class SortByWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              Text('Total'),
-              RadioListTile(value: true, groupValue: true, onChanged: (value){}, title: Text('Ascending'),),
-              RadioListTile(value: false, groupValue: true, onChanged: (value){}, title: Text('Descending'),),
+              Container(
+                child: Row(
+                  children: [
+                    Text('Total'),
+                    Checkbox(value: context.watch<SortProvider>().sortType == SortType.total, onChanged: (value){
+                      if(value == true){
+                        context.read<SortProvider>().setSortType(SortType.total);
+                      }
+                    })
+                  ],
+                ),
+              ),
+              RadioListTile(value: true, groupValue: context.watch<SortProvider>().isAscending, onChanged: context.watch<SortProvider>().sortType == SortType.total ?(value){
+                context.read<SortProvider>().setAscending(true);
+              } : null, title: Text('Ascending'),),
+              RadioListTile(value: false, groupValue: context.watch<SortProvider>().isAscending, onChanged: context.watch<SortProvider>().sortType == SortType.total ?(value){
+                context.read<SortProvider>().setAscending(false);
+              } : null, title: Text('Descending'),),
 
             ],)
         ),

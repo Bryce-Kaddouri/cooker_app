@@ -15,6 +15,7 @@ import 'package:cooker_app/src/features/order/data/datasource/order_datasource.d
 import 'package:cooker_app/src/features/order/data/repository/order_repository_impl.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/filter_provider.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/order_provider.dart';
+import 'package:cooker_app/src/features/order/presentation/provider/sort_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -68,6 +69,9 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider<FilterProvider>(
           create: (context) => FilterProvider(),
+        ),
+        ChangeNotifierProvider<SortProvider>(
+          create: (context) => SortProvider(),
         ),
         /*ChangeNotifierProvider<CategoryProvider>(
           create: (context) => CategoryProvider(

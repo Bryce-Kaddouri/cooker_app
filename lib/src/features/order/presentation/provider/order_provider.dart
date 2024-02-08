@@ -1,8 +1,10 @@
 import 'dart:collection';
 
 import 'package:cooker_app/src/features/category/model/category_model.dart';
+import 'package:cooker_app/src/features/order/business/getOrdersParam.dart';
 import 'package:cooker_app/src/features/order/business/usecase/order_get_orders_by_date_usecase.dart';
 import 'package:cooker_app/src/features/order/data/model/order_model.dart';
+import 'package:cooker_app/src/features/order/presentation/provider/sort_provider.dart';
 import 'package:cooker_app/src/features/product/data/model/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -71,9 +73,10 @@ class OrderProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<OrderModel>> getOrdersByDate(DateTime date) async {
+  Future<List<OrderModel>> getOrdersByDate(DateTime date, SortType sortType, bool isAscending) async {
     List<OrderModel> orderList = [];
-    final result = await orderGetOrdersByDateUseCase.call(date);
+    GetOrdersParam param = GetOrdersParam(date: date, sortType: sortType, isAscending: isAscending);
+    final result = await orderGetOrdersByDateUseCase.call(param);
 
     await result.fold((l) async {
       print(l.errorMessage);

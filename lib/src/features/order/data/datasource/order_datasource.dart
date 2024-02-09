@@ -27,6 +27,30 @@ class OrderDataSource {
     }
   }
 
+  Stream<List<OrderModel>> getOrdersStream(DateTime date, SortType sortType, bool isAscending) {
+
+
+    try {
+      var response = _client.from('all_orders_view').stream(primaryKey: [
+        'order_id',
+        'order_date',
+      ]).eq('order_date', date.toIso8601String())
+          .order(getSortTypeString(sortType), ascending: isAscending);
+
+      return response.map((event) {
+        return event.map((e) => OrderModel.fromJson(e)).toList();
+      });
+    } on PostgrestException catch (error) {
+      print('postgrest error');
+      print(error);
+      return Stream.error(error);
+    } catch (e) {
+      print(e);
+      return Stream.error(e);
+    }
+
+  }
+
   Future<Either<DatabaseFailure, List<OrderModel>>> getOrdersByDate(
       DateTime date, SortType sortType, bool isAscending) async {
     try {

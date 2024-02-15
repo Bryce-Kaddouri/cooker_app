@@ -1,7 +1,10 @@
 import 'dart:async';
 
+import 'package:cooker_app/src/features/category/model/category_model.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/sort_provider.dart';
+import 'package:cooker_app/src/features/product/data/model/product_model.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/data/exception/failure.dart';
@@ -124,6 +127,7 @@ class OrderDataSource {
           .order(getSortTypeString(sortType), ascending: isAscending);
 
       print('response from getOrders');
+      print(response);
       for (var res in response) {
         print(res['customer_full_name']);
       }
@@ -147,7 +151,40 @@ class OrderDataSource {
     }
   }
 
-  Future<UserModel?> getUserById(String uid) async {
+  Future<ProductModel?> getProductById(int id) async {
+    try {
+      Map<String, dynamic> response = await _client
+          .from('products')
+          .select('''
+    *,
+    categories:category_id ( * )
+    ''')
+          .eq('id', id)
+
+          .single()
+
+        ;
+      print('response from getProductById');
+      print(response);
+      int productId = response['id'];
+      String productName = response['name'];
+      String productImageUrl = response['photo_url'];
+      double productPrice = response['price'];
+      CategoryModel productCategory = CategoryModel.fromJsonTable(response['categories']);
+      ProductModel productModel = ProductModel(id: productId, name: productName, imageUrl: productImageUrl, price: productPrice, category: productCategory);
+
+      return productModel;
+
+    } on PostgrestException catch (error) {
+      print('postgrest error');
+      print(error);
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<UserModel> getUserById(String uid) async {
     try {
       List<Map<String, dynamic>> response = await _client
           .from('employees_view')
@@ -159,18 +196,18 @@ class OrderDataSource {
         UserModel userModel = UserModel.fromJson(response[0]);
         return userModel;
       } else {
-        return null;
+        return UserModel(uid: '', fName: '', lName: '');
       }
     } on PostgrestException catch (error) {
       print('postgrest error');
       print(error);
-      return null;
+      return UserModel(uid: '', fName: '', lName: '');
     } catch (e) {
-      return null;
+      return UserModel(uid: '', fName: '', lName: '');
     }
   }
 
-  Future<CustomerModel?> getCustomerById(int id) async {
+  Future<CustomerModel> getCustomerById(int id) async {
     try {
       List<Map<String, dynamic>> response = await _client
           .from('customers')
@@ -183,18 +220,36 @@ class OrderDataSource {
             CustomerModel.fromJsonFromTable(response[0]);
         return customerModel;
       } else {
-        return null;
+        return CustomerModel(
+            id: 0,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            fName: '',
+            lName: '',
+            phoneNumber: '');
       }
     } on PostgrestException catch (error) {
       print('postgrest error');
       print(error);
-      return null;
+      return CustomerModel(
+          id: 0,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          fName: '',
+          lName: '',
+          phoneNumber: '');
     } catch (e) {
-      return null;
+      return CustomerModel(
+          id: 0,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          fName: '',
+          lName: '',
+          phoneNumber: '');
     }
   }
 
-  Future<StatusModel?> getStatusById(int id) async {
+  Future<StatusModel> getStatusById(int id) async {
     try {
       List<Map<String, dynamic>> response = await _client
           .from('status')
@@ -206,14 +261,14 @@ class OrderDataSource {
         StatusModel statusModel = StatusModel.fromJson(response[0]);
         return statusModel;
       } else {
-        return null;
+        return StatusModel(id: 0, name: '', step: 1, color: Colors.red);
       }
     } on PostgrestException catch (error) {
       print('postgrest error');
       print(error);
-      return null;
+      return StatusModel(id: 0, name: '', step: 1, color: Colors.red);
     } catch (e) {
-      return null;
+      return StatusModel(id: 0, name: '', step: 1, color: Colors.red);
     }
   }
 

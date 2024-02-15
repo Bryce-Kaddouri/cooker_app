@@ -21,6 +21,15 @@ class CategoryModel {
         isVisible: json['category_is_visible'],
       );
 
+  factory CategoryModel.fromJsonTable(Map<String, dynamic> json) => CategoryModel(
+    id: json['id'],
+    name: json['name'],
+    description: json['description'],
+    photoUrl: json['photo_url'],
+    isVisible: json['is_visible'],
+  );
+
+
   Map<String, dynamic> toJson() => {
         'category_id': id,
         'category_name': name,

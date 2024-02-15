@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:cooker_app/src/features/cart/model/cart_model.dart';
 import 'package:cooker_app/src/features/category/model/category_model.dart';
 import 'package:cooker_app/src/features/order/business/getOrdersParam.dart';
 import 'package:cooker_app/src/features/order/business/usecase/order_get_orders_by_date_usecase.dart';
@@ -124,5 +125,19 @@ class OrderProvider with ChangeNotifier {
     print(orderList.length);
 
     return orderList;
+  }
+
+  void addCartToOrder(int orderId, CartModel cart) {
+    print('order id');
+    print(orderId);
+    print(_orderList.length);
+    var  test = _orderList.firstWhere((element) => element.id == orderId);
+    print(test.toJson());
+    print('index');
+    int index = _orderList.indexOf(test);
+    print(index);
+
+    _orderList[index].cart.add(cart);
+    notifyListeners();
   }
 }

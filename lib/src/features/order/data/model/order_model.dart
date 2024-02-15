@@ -103,7 +103,9 @@ class OrderModel {
       ),
       /*json['order_is_paid'],*/
       customer: CustomerModel.fromJson(json['customer']),
-      status: StatusModel.fromJson(json['status']),
+      status: StatusModel.fromJson(json['status']
+
+      ),
       user: UserModel.fromJson(json['user']),
       cart: cart,
       totalAmount: json['total_amount'],
@@ -118,8 +120,8 @@ class OrderModel {
         'date': date.toIso8601String(),
         'time': '${time.hour}:${time.minute}',
         'customer': customer.toJson(),
-        /* 'status': status.toJson(),
+         'status': status.toJson(),
         'user': user.toJson(),
-        'cart': cart.map((e) => e.toJson()).toList(),*/
+        'cart': cart.map((e) => e.toJson()).toList(),
       };
 }

@@ -7,6 +7,11 @@ class DateHelper {
     return DateFormat('EEEE, d MMMM y').format(date);
   }
 
+  // get the full formatted date but reduce (Wed, 12 Nov 2021)
+  static String getFullFormattedDateReduce(DateTime date) {
+    return DateFormat('E, d MMM y').format(date);
+  }
+
   static String getFormattedDate(DateTime date) {
     return DateFormat('yyyy-MM-dd').format(date);
   }

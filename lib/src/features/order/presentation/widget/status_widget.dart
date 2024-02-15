@@ -1,13 +1,12 @@
-
+import 'package:cooker_app/src/core/constant/app_text_style.dart';
+import 'package:cooker_app/src/core/helper/responsive_helper.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../core/constant/app_color.dart';
 
 class StatusBar extends StatelessWidget {
   List<int> nbOrdersByStatus;
   int selectedIndex;
-  StatusBar({super.key, required this.selectedIndex, required this.nbOrdersByStatus});
-
+  StatusBar(
+      {super.key, required this.selectedIndex, required this.nbOrdersByStatus});
 
   @override
   Widget build(BuildContext context) {
@@ -24,20 +23,17 @@ class StatusBar extends StatelessWidget {
           Container(
             alignment: Alignment.center,
             height: 40,
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: selectedIndex == 0 ? Theme.of(context).primaryColor : null,
             ),
             child: InkWell(
-              child: Text(
-                'All (23)',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppColor.lightBlackTextColor,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
+              child: Text('All (23)', style: TextStyle(fontSize: 2)
+                  /* ResponsiveBreakpoints.of(context).between(MOBILE, TABLET)
+                          ? AppTextStyle.lightTextStyle(fontSize: 32)
+                          : AppTextStyle.regularTextStyle()),*/
+                  ),
             ),
           ),
           SizedBox(
@@ -53,11 +49,9 @@ class StatusBar extends StatelessWidget {
             ),
             child: Text(
               'Pending (13)',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColor.lightBlackTextColor,
-                fontWeight: FontWeight.normal,
-              ),
+              style: !ResponsiveHelper.isDesktop(context)
+                  ? AppTextStyle.lightTextStyle(fontSize: 10)
+                  : AppTextStyle.regularTextStyle(),
             ),
           ),
           SizedBox(
@@ -73,11 +67,9 @@ class StatusBar extends StatelessWidget {
             ),
             child: Text(
               'Cooking (3)',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColor.lightBlackTextColor,
-                fontWeight: FontWeight.normal,
-              ),
+              style: !ResponsiveHelper.isDesktop(context)
+                  ? AppTextStyle.lightTextStyle(fontSize: 10)
+                  : AppTextStyle.regularTextStyle(),
             ),
           ),
           SizedBox(
@@ -93,11 +85,9 @@ class StatusBar extends StatelessWidget {
             ),
             child: Text(
               'Completed (7)',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColor.lightBlackTextColor,
-                fontWeight: FontWeight.normal,
-              ),
+              style: !ResponsiveHelper.isDesktop(context)
+                  ? AppTextStyle.lightTextStyle(fontSize: 10)
+                  : AppTextStyle.regularTextStyle(fontSize: 20),
             ),
           )
         ],

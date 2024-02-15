@@ -18,8 +18,6 @@ import 'package:cooker_app/src/features/order/presentation/provider/order_provid
 import 'package:cooker_app/src/features/order/presentation/provider/sort_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -113,26 +111,25 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
 
+class _MyAppState extends State<MyApp> {
+  // This widget is the root of your application.
   GoRouter router = RouterHelper().getRouter();
-  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
-      GlobalKey<ScaffoldMessengerState>();
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp.router(
+    return MaterialApp.router(
       title: 'Cooker App',
       debugShowCheckedModeBanner: false,
       theme: LightTheme.themeData,
-      defaultTransition: Transition.fadeIn,
-      scaffoldMessengerKey: scaffoldMessengerKey,
-      routerDelegate: router.routerDelegate,
-      routeInformationParser: router.routeInformationParser,
-      routeInformationProvider: router.routeInformationProvider,
+      routerConfig: router,
+
       /* routingCallback: (routing) {
         print('route: ${routing?.current}');
 

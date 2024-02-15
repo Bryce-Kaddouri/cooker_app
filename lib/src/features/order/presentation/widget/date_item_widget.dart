@@ -1,10 +1,11 @@
+import 'package:cooker_app/src/core/helper/responsive_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/helper/date_helper.dart';
 import '../provider/order_provider.dart';
 
-class DateItemWidget extends StatelessWidget {
+class DateItemWidget extends StatefulWidget {
   DateTime selectedDate;
   String value;
   DateTime dateItem;
@@ -15,8 +16,13 @@ class DateItemWidget extends StatelessWidget {
       required this.dateItem});
 
   @override
+  State<DateItemWidget> createState() => _DateItemWidgetState();
+}
+
+class _DateItemWidgetState extends State<DateItemWidget> {
+  @override
   Widget build(BuildContext context) {
-    bool isToday = selectedDate.isAtSameMomentAs(dateItem);
+    bool isToday = widget.selectedDate.isAtSameMomentAs(widget.dateItem);
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -26,7 +32,7 @@ class DateItemWidget extends StatelessWidget {
       color: isToday ? Colors.white : Colors.transparent,
       child: InkWell(
         onTap: () {
-          context.read<OrderProvider>().setSelectedDate(dateItem);
+          context.read<OrderProvider>().setSelectedDate(widget.dateItem);
         },
         child: Container(
           decoration: BoxDecoration(
@@ -46,7 +52,7 @@ class DateItemWidget extends StatelessWidget {
                   ),
                 ),
               Text(
-                dateItem.day.toString(),
+                widget.dateItem.day.toString(),
                 style: TextStyle(
                   color: isToday ? Colors.black : Colors.grey,
                   fontWeight: FontWeight.bold,
@@ -54,7 +60,9 @@ class DateItemWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                DateHelper.getFullFormattedDate(dateItem),
+                ResponsiveHelper.isMobile(context)
+                    ? DateHelper.getFullFormattedDateReduce(widget.dateItem)
+                    : DateHelper.getFullFormattedDate(widget.dateItem),
                 style: TextStyle(
                     color: isToday ? Colors.black : Colors.grey, fontSize: 16),
               ),

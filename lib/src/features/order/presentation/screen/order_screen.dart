@@ -41,101 +41,68 @@ class _OrderScreenState extends State<OrderScreen> {
 
   @override
   void initState() {
+    /*initData();*/
+
+   /* Supabase.instance.client
+        .channel('cart')
+        .onPostgresChanges(
+        table: 'cart',
+        event: PostgresChangeEvent.all,
+        schema: 'public',
+        callback: (payload) async {
+          print(' ------------------- payload cart-------------------');
+          switch (payload.eventType) {
+            case PostgresChangeEvent.delete:
+              print('delete');
+              break;
+            case PostgresChangeEvent.insert:
+              print('insert - cart');
+              Future.delayed(Duration(seconds: 5), () {
+                print('insert cart');
+                OrderDataSource().getProductById(payload.newRecord['product_id']).then((product) {
+                  print('product');
+                  print(product);
+                  CartModel cart = CartModel(
+                    id: payload.newRecord['product_id'],
+                    isDone: payload.newRecord['is_done'],
+                    product: product!,
+                    quantity: payload.newRecord['quantity'],
+                  );
+                  print('product-');
+                  print(product);
+                  OrderModel order = context.read<OrderProvider>().orderList.firstWhere((element) => element.id == payload.newRecord['id']);
+                  print('order from cart channel');
+                  print(order);
+                });
+              });
+              break;
+            case PostgresChangeEvent.update:
+              print('update');
+              break;
+            default:
+          }
+          print(payload);
+          print(' ------------------- payload -------------------');
+
+        }).subscribe();*/
     var test = Supabase.instance.client
         .channel('all_orders_view')
         .onPostgresChanges(
+
             event: PostgresChangeEvent.all,
             schema: 'public',
             callback: (payload) async {
-              print(' ------------------- payload -------------------');
+              print(' ------------------- payload order-------------------');
               print(payload);
               print(' ------------------- payload -------------------');
-              switch (payload.eventType) {
-                case PostgresChangeEvent.delete:
-                  print('delete');
-                  break;
-                case PostgresChangeEvent.insert:
-                  switch (payload.table) {
-                    case 'orders':
-                      print('insert orders');
-                      OrderTableModel order =
-                          OrderTableModel.fromJson(payload.newRecord);
-                      print(order.userId);
-                      UserModel employee =
-                          await OrderDataSource().getUserById(order.userId);
-                      print('employee');
-                      print(employee);
-                      CustomerModel customer = await OrderDataSource()
-                          .getCustomerById(order.customerId);
-                      StatusModel status =
-                          await OrderDataSource().getStatusById(order.statusId);
-                      OrderModel newOrder = OrderModel(
-                        id: order.id,
-                        customer: customer!,
-                        user: employee!,
-                        time: order.time,
-                        status: status!,
-                        cart: [],
-                        createdAt: order.createdAt,
-                        updatedAt: order.updatedAt,
-                        date: order.date,
-                        nbTotalItemsCart: 0,
-                      );
-                      context.read<OrderProvider>().addOrder(newOrder);
-                      break;
-                    case 'products':
-                      print('insert products');
-                      break;
-                    case 'customers':
-                      print('insert customers');
-                      break;
-                    case 'categories':
-                      print('insert categories');
-                      break;
-                    case 'cart':
-                      print('insert cart');
-                      print(payload.newRecord);
-                      int orderId = payload.newRecord['id'];
-                      DateTime date = DateTime.parse(payload.newRecord['date']);
-                      bool isDone = payload.newRecord['is_done'];
-                      int productId = payload.newRecord['product_id'];
+              /*initData();*/
+              setState(() {
 
-                       ProductModel? product =    await OrderDataSource().getProductById(payload.newRecord['product_id']);
-                       CartModel cart = CartModel(
-                         id: orderId,
-                         isDone: payload.newRecord['is_done'],
-                         product: product!,
-                         quantity: payload.newRecord['quantity'],
-                       );
-                       print('product-');
-                        print(product);
+              });
 
-                        // add cart to order
-                        context.read<OrderProvider>().addCartToOrder(orderId, cart);
-
-                     /* CartModel cart = CartModel(
-                        id: payload.newRecord['id'],
-                        isDone: payload.newRecord['is_done'],
-
-                        product: payload.newRecord['product_id'],
-                        quantity: payload.newRecord['quantity'],
-
-                      );*/
-                      break;
-                    default:
-                      break;
-                  }
-                  print('insert');
-                  break;
-                case PostgresChangeEvent.update:
-                  print('update');
-                  break;
-                default:
-              }
             })
         .subscribe();
 
-    initData();
 
     super.initState();
   }
@@ -176,312 +143,7 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Builder(
-
-
-
-     builder: (BuildContext context) {
-       print('order list length');
-       print(context.watch<OrderProvider>().orderList.length);
-       print('order list ');
-        for(var order in context.watch<OrderProvider>().orderList){
-          print(order.toJson());
-        }
-       List<OrderModel> orders = context.watch<OrderProvider>().orderList;
-       List<OrderModel> pendingOrders = orders
-           .where((element) => element.status.name == 'Pending')
-           .toList();
-       List<OrderModel> cookingOrders = orders
-           .where((element) => element.status.name == 'Cooking')
-           .toList();
-       List<OrderModel> completedOrders = orders
-           .where((element) => element.status.name == 'Completed')
-           .toList();
-       List<OrderModel> cancelledOrders = orders
-           .where((element) => element.status.name == 'Cancelled')
-           .toList();
-       return CustomScrollView(slivers: [
-         SliverPersistentHeader(
-           floating: true,
-           pinned: true,
-           delegate: SliverAppBarDelegate(
-             child: Container(
-               color: Theme.of(context).primaryColor,
-               child: Column(children: [
-                 Container(
-                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                   height: 70,
-                   decoration: BoxDecoration(
-                     color: Theme.of(context).primaryColor,
-                     borderRadius: BorderRadius.only(
-                       bottomLeft: Radius.circular(30),
-                       bottomRight: Radius.circular(30),
-                     ),
-                   ),
-                   child: Row(
-                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                     children: [
-                       Container(
-                         child: IconButton(
-                           icon: const Icon(Icons.menu),
-                           onPressed: () {
-                             Navigator.of(context).pop();
-                           },
-                         ),
-                       ),
-                       StatusBar(selectedIndex: 0),
-                       DateBar(),
-                     ],
-                   ),
-                 ),
-                 Container(
-                   margin: const EdgeInsets.symmetric(horizontal: 20),
-                   alignment: Alignment.center,
-                   decoration: BoxDecoration(
-                     borderRadius: BorderRadius.circular(30),
-                     color: Theme.of(context).cardColor,
-                   ),
-                   padding: const EdgeInsets.all(10),
-                   height: 60,
-                   width: double.infinity,
-                   child: Row(
-                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                     children: [
-                       Text(
-                         'Order List',
-                         style: TextStyle(
-                           fontSize: 20,
-                           color: AppColor.lightBlackTextColor,
-                           fontWeight: FontWeight.bold,
-                         ),
-                       ),
-                       Container(
-                         alignment: Alignment.center,
-                         padding: const EdgeInsets.all(5),
-                         margin: const EdgeInsets.all(0),
-                         decoration: BoxDecoration(
-                           borderRadius: BorderRadius.circular(30),
-                           color: Theme.of(context).primaryColor,
-                         ),
-                         constraints: BoxConstraints(
-                           maxWidth: 350,
-                         ),
-                         child: Row(
-                           children: [
-                             Container(
-                               height: 40,
-                               width: 40,
-                               child: Icon(
-                                 Icons.search,
-                                 color: AppColor.lightBlackTextColor,
-                               ),
-                             ),
-                             TextField(
-                               scrollPadding: const EdgeInsets.all(0),
-                               maxLines: 1,
-                               clipBehavior: Clip.antiAlias,
-                               textAlignVertical:
-                               TextAlignVertical.top,
-                               decoration: InputDecoration(
-                                 contentPadding:
-                                 const EdgeInsets.symmetric(
-                                     vertical: 0, horizontal: 10),
-                                 constraints: BoxConstraints(
-                                   maxWidth: 300,
-                                   minHeight: 40,
-                                   maxHeight: 40,
-                                 ),
-                                 hintText: 'Search by order ID',
-                                 fillColor:
-                                 Theme.of(context).primaryColor,
-                                 filled: true,
-                                 hintStyle: TextStyle(
-                                   color: AppColor.lightBlackTextColor,
-                                 ),
-                                 border: OutlineInputBorder(
-                                   borderSide: BorderSide.none,
-                                 ),
-                               ),
-                             ),
-                           ],
-                         ),
-                       ),
-                       Container(
-                         child: Row(
-                           children: [
-                             SortByWidget(),
-                             SizedBox(width: 10),
-                             FilterWidget()
-                           ],
-                         ),
-                       ),
-                     ],
-                   ),
-                 ),
-               ]),
-             ),
-           ),
-         ),
-         SliverToBoxAdapter(
-           child: Container(
-             margin: const EdgeInsets.symmetric(horizontal: 20),
-             height: MediaQuery.of(context).size.height - 170,
-             padding: const EdgeInsets.all(10),
-             width: double.infinity,
-             decoration: BoxDecoration(
-               borderRadius: BorderRadius.circular(25),
-               color: Theme.of(context).cardColor,
-             ),
-             child: Column(
-               children: [
-                 Container(
-                   height: 50,
-                   width: double.infinity,
-                   padding: const EdgeInsets.symmetric(
-                       vertical: 5, horizontal: 20),
-                   decoration: BoxDecoration(
-                     borderRadius: BorderRadius.circular(14),
-                     color: Theme.of(context).primaryColor,
-                   ),
-                   child: Row(
-                     children: [
-                       Expanded(
-                         child: Row(
-                           mainAxisAlignment:
-                           MainAxisAlignment.spaceBetween,
-                           children: [
-                             Expanded(
-                               flex: 1,
-                               child: Container(
-                                 alignment: Alignment.center,
-                                 child: Text('Order ID'),
-                               ),
-                             ),
-                             Expanded(
-                               flex: 2,
-                               child: Container(
-                                 alignment: Alignment.center,
-                                 child: Text('Customer'),
-                               ),
-                             ),
-                             Expanded(
-                               flex: 2,
-                               child: Container(
-                                 alignment: Alignment.center,
-                                 child: Text('Status'),
-                               ),
-                             ),
-                             Expanded(
-                               flex: 1,
-                               child: Container(
-                                 alignment: Alignment.center,
-                                 child: Text('Items'),
-                               ),
-                             ),
-                             Expanded(
-                               flex: 1,
-                               child: Container(
-                                 alignment: Alignment.center,
-                                 child: Text('Total'),
-                               ),
-                             ),
-                             Expanded(
-                               flex: 1,
-                               child: Container(
-                                 alignment: Alignment.center,
-                                 child: Text('Time'),
-                               ),
-                             ),
-                           ],
-                         ),
-                       ),
-                       SizedBox(width: 40),
-                     ],
-                   ),
-                 ),
-                 Expanded(
-                   child: Container(
-                     padding: const EdgeInsets.symmetric(
-                         vertical: 10, horizontal: 0),
-                     width: double.infinity,
-                     child: orders.isNotEmpty
-                         ? ListView(
-                       children: [
-                         // pending orders
-                         if (pendingOrders.isNotEmpty)
-                           OrdersItemViewByStatus(
-                             status: 'Pending',
-                             orders: pendingOrders,
-                           ),
-                         if (cookingOrders.isNotEmpty)
-                           OrdersItemViewByStatus(
-                             status: 'Cooking',
-                             orders: cookingOrders,
-                           ),
-                         if (completedOrders.isNotEmpty)
-                           OrdersItemViewByStatus(
-                             status: 'Completed',
-                             orders: completedOrders,
-                           ),
-                         if (cancelledOrders.isNotEmpty)
-                           OrdersItemViewByStatus(
-                             status: 'Cancelled',
-                             orders: cancelledOrders,
-                           ),
-                       ],
-                     )
-                         : Container(
-                       alignment: Alignment.center,
-                       child: Text("No order"),
-                     ),
-                   ),
-                 ),
-               ],
-             ),
-           ),
-         )
-       ]);
-     },
-    )
-
-        /*StreamBuilder(
-          stream: OrderDataSource()
-              .getOrdersStream(
-                  context.watch<OrderProvider>().selectedDate!,
-                  context.watch<SortProvider>().sortType,
-                  context.watch<SortProvider>().isAscending)
-              .resume(),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.active:
-                if (!snapshot.hasData) {
-                  return Container(
-                    alignment: Alignment.center,
-                    child: Text("No order"),
-                  );
-                }
-                List<OrderModel> orders = [];
-
-                print('orders from snapshot');
-                print(snapshot.data);
-                List<Map<String, dynamic>> data =
-                    snapshot.data as List<Map<String, dynamic>>;
-                data.forEach((element) {
-                  orders.add(OrderModel.fromJson(element));
-                });
-                List<OrderModel> pendingOrders = orders
-                    .where((element) => element.status.name == 'Pending')
-                    .toList();
-                List<OrderModel> cookingOrders = orders
-                    .where((element) => element.status.name == 'Cooking')
-                    .toList();
-                List<OrderModel> completedOrders = orders
-                    .where((element) => element.status.name == 'Completed')
-                    .toList();
-                List<OrderModel> cancelledOrders = orders
-                    .where((element) => element.status.name == 'Cancelled')
-                    .toList();
-                return CustomScrollView(slivers: [
+        body: CustomScrollView(slivers: [
                   SliverPersistentHeader(
                     floating: true,
                     pinned: true,
@@ -680,71 +342,102 @@ class _OrderScreenState extends State<OrderScreen> {
                               ],
                             ),
                           ),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 0),
-                              width: double.infinity,
-                              child: orders.isNotEmpty
-                                  ? ListView(
-                                      children: [
-                                        // pending orders
-                                        if (pendingOrders.isNotEmpty)
-                                          OrdersItemViewByStatus(
-                                            status: 'Pending',
-                                            orders: pendingOrders,
-                                          ),
-                                        if (cookingOrders.isNotEmpty)
-                                          OrdersItemViewByStatus(
-                                            status: 'Cooking',
-                                            orders: cookingOrders,
-                                          ),
-                                        if (completedOrders.isNotEmpty)
-                                          OrdersItemViewByStatus(
-                                            status: 'Completed',
-                                            orders: completedOrders,
-                                          ),
-                                        if (cancelledOrders.isNotEmpty)
-                                          OrdersItemViewByStatus(
-                                            status: 'Cancelled',
-                                            orders: cancelledOrders,
-                                          ),
-                                      ],
-                                    )
-                                  : Container(
-                                      alignment: Alignment.center,
-                                      child: Text("No order"),
-                                    ),
-                            ),
-                          ),
+    FutureBuilder(
+    future: context
+        .read<OrderProvider>()
+        .getOrdersByDate(
+    context.read<OrderProvider>().selectedDate,
+    context.read<SortProvider>().sortType,
+    context.watch<SortProvider>().isAscending)
+    ,
+
+
+    builder: (BuildContext context, snapshot) {
+
+
+
+
+
+
+    switch (snapshot.connectionState) {
+    case ConnectionState.waiting:
+    return Container(
+    height: MediaQuery.of(context).size.height - 250,
+    width: double.infinity,
+    alignment: Alignment.center,
+    child: CircularProgressIndicator(),
+    );
+    default:
+    if (!snapshot.hasData) {
+    return Container(
+    color: Colors.red,
+    alignment: Alignment.center,
+    child: Text("No order"),
+    );
+    }
+    List<OrderModel> orders = snapshot.data!;
+    print('orders');
+    print(orders.length);
+
+
+    List<OrderModel> pendingOrders = orders
+        .where((element) => element.status.name == 'Pending')
+        .toList();
+    List<OrderModel> cookingOrders = orders
+        .where((element) => element.status.name == 'Cooking')
+        .toList();
+    List<OrderModel> completedOrders = orders
+        .where((element) => element.status.name == 'Completed')
+        .toList();
+    List<OrderModel> cancelledOrders = orders
+        .where((element) => element.status.name == 'Cancelled')
+        .toList();
+    print('pendingOrders');
+    return Expanded(
+    child: Container(
+    padding: const EdgeInsets.symmetric(
+    vertical: 10, horizontal: 0),
+    width: double.infinity,
+    child: orders.isNotEmpty
+    ? ListView(
+    children: [
+    // pending orders
+    if (pendingOrders.isNotEmpty)
+    OrdersItemViewByStatus(
+    status: 'Pending',
+    orders: pendingOrders,
+    ),
+    if (cookingOrders.isNotEmpty)
+    OrdersItemViewByStatus(
+    status: 'Cooking',
+    orders: cookingOrders,
+    ),
+    if (completedOrders.isNotEmpty)
+    OrdersItemViewByStatus(
+    status: 'Completed',
+    orders: completedOrders,
+    ),
+    if (cancelledOrders.isNotEmpty)
+    OrdersItemViewByStatus(
+    status: 'Cancelled',
+    orders: cancelledOrders,
+    ),
+    ],
+    )
+        : Container(
+    alignment: Alignment.center,
+    child: Text("No order"),
+    ),
+    ),
+    );
+    }}),
                         ],
                       ),
                     ),
                   )
-                ]);
-              case ConnectionState.waiting:
-                return Container(
-                  height: MediaQuery.of(context).size.height - 200,
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(),
-                );
-              case ConnectionState.none:
-                if (snapshot.hasData) {
-                  return Container();
-                } else {
-                  return Container(
-                    alignment: Alignment.center,
-                    child: Text("No order"),
-                  );
-                }
-              default:
-                return Container();
-            }
-            print(snapshot.data);
-            return Container();
-          }),*/
-        );
+                ]));
+
+
   }
 }
 
@@ -963,9 +656,11 @@ class StatusWidget extends StatelessWidget {
 
 class OrdersItemViewByStatus extends StatelessWidget {
   final String status;
-  final List<OrderModel> orders;
-  const OrdersItemViewByStatus(
+  List<OrderModel> orders;
+  OrdersItemViewByStatus(
       {super.key, required this.status, required this.orders});
+
+
 
   double getTotal(int index) {
     double total = 0;
@@ -983,7 +678,7 @@ class OrdersItemViewByStatus extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 20),
             alignment: Alignment.centerLeft,
-            child: Text('$status (${orders.length})'),
+            child: Text('${status} (${orders.length})'),
           ),
           Container(
             child: Column(

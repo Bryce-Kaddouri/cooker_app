@@ -72,7 +72,7 @@ class OrderModel {
   final List<CartModel> cart;
 
   double totalAmount;
-  final int nbTotalItemsCart;
+  int nbTotalItemsCart;
 
   OrderModel({
     this.id,

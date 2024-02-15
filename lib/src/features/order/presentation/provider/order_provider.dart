@@ -117,7 +117,6 @@ class OrderProvider with ChangeNotifier {
     await result.fold((l) async {
       print(l.errorMessage);
     }, (r) async {
-      print(r);
       orderList = r;
     });
 
@@ -127,17 +126,5 @@ class OrderProvider with ChangeNotifier {
     return orderList;
   }
 
-  void addCartToOrder(int orderId, CartModel cart) {
-    print('order id');
-    print(orderId);
-    print(_orderList.length);
-    var  test = _orderList.firstWhere((element) => element.id == orderId);
-    print(test.toJson());
-    print('index');
-    int index = _orderList.indexOf(test);
-    print(index);
 
-    _orderList[index].cart.add(cart);
-    notifyListeners();
-  }
 }

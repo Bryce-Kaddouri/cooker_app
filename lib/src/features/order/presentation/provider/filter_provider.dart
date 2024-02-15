@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../data/model/order_model.dart';
+
 class FilterProvider with ChangeNotifier {
   int _selectedProductFilter = -1;
   int get selectedProductFilter => _selectedProductFilter;
@@ -92,6 +94,13 @@ class FilterProvider with ChangeNotifier {
     _selectedProductFilter = -1;
     _selectedCategoryFilter = -1;
     _maxRangePrice = 100;
+    notifyListeners();
+  }
+
+  List<OrderModel> _filteredOrderList = [];
+  List<OrderModel> get filteredOrderList => _filteredOrderList;
+  void setFilteredOrderList(List<OrderModel> value) {
+    _filteredOrderList = value;
     notifyListeners();
   }
 }

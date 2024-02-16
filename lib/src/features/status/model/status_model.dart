@@ -29,4 +29,6 @@ class StatusModel {
         'status_color_green': color.green,
         'status_color_blue': color.blue,
       };
+
+
 }

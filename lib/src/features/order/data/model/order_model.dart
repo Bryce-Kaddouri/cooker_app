@@ -113,6 +113,10 @@ class OrderModel {
     );
   }
 
+  toStringForSearch() {
+    return '#$id ${time.hour}:${time.minute} ${customer.fName.toLowerCase()} ${customer.fName.toLowerCase()} ${status.name.toLowerCase()}';
+  }
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'createdAt': createdAt.toIso8601String(),

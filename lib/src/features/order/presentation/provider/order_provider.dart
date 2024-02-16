@@ -109,6 +109,7 @@ class OrderProvider with ChangeNotifier {
 
   Future<List<OrderModel>> getOrdersByDate(
       DateTime date, SortType sortType, bool isAscending) async {
+    print('------------ call getOrdersByDate ----------------');
     List<OrderModel> orderList = [];
     GetOrdersParam param = GetOrdersParam(
         date: date, sortType: sortType, isAscending: isAscending);
@@ -120,8 +121,7 @@ class OrderProvider with ChangeNotifier {
       orderList = r;
     });
 
-    print('order list from provider');
-    print(orderList.length);
+
 
     return orderList;
   }

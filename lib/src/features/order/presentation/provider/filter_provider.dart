@@ -103,4 +103,15 @@ class FilterProvider with ChangeNotifier {
     _filteredOrderList = value;
     notifyListeners();
   }
+
+  Status _selectedStatus = Status.all;
+  Status get selectedStatus => _selectedStatus;
+
+  void setSelectedStatus(Status value) {
+    _selectedStatus = value;
+    notifyListeners();
+  }
+
 }
+
+enum Status { all, pending, cooking, completed, cancelled }

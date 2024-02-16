@@ -22,5 +22,4 @@ class SortProvider with ChangeNotifier {
 
 enum SortType { orderId, customer, items,total, time }
 
-enum Status { all, pending, cooking, completed, cancelled }
 

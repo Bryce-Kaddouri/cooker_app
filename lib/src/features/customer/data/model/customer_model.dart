@@ -41,4 +41,6 @@ class CustomerModel {
         'l_name': lName,
         'phone_number': phoneNumber,
       };
+
+
 }

@@ -59,7 +59,7 @@ class SignInScreen extends StatelessWidget {
                         )
                         .then((value) {
                       if (value) {
-                        context.go('/home');
+                        context.go('/orders');
                       } else {
                         Get.snackbar(
                           'Error',

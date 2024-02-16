@@ -7,6 +7,7 @@ import 'package:cooker_app/src/core/helper/responsive_helper.dart';
 import 'package:cooker_app/src/features/order/data/model/order_model.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/filter_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -1045,7 +1046,15 @@ class OrderItemWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         color: Theme.of(context).primaryColor,
       ),
-      child: Row(
+      child:
+      InkWell(
+        onTap: (){
+          int orderId = order.id;
+          context.goNamed('order-details', pathParameters: {'id' : orderId.toString()});
+
+        },
+        child:
+      Row(
         children: [
           Expanded(
             child: Row(
@@ -1122,6 +1131,7 @@ class OrderItemWidget extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

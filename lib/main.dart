@@ -23,6 +23,8 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
+  usePathUrlStrategy();
+
   await Supabase.initialize(
     url: 'https://qlhzemdpzbonyqdecfxn.supabase.co',
     anonKey:
@@ -42,7 +44,6 @@ Future<void> main() async {
   UserRepository userRepository = UserRepositoryImpl(dataSource: UserDataSource());*/
 
   // set path strategy
-  usePathUrlStrategy();
 
   runApp(
     MultiProvider(

@@ -20,12 +20,14 @@
   ];
 }*/
 
+import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../features/auth/presentation/provider/auth_provider.dart';
 import '../../features/auth/presentation/screen/signin_screen.dart';
+import '../../features/details/presentation/screen/order_details_screen.dart';
 import '../../features/order/presentation/screen/order_screen.dart';
 
 class RouterHelper {
@@ -54,8 +56,20 @@ class RouterHelper {
       },
       routes: [
         GoRoute(
-          path: '/home',
+          name: 'orders',
+          path: '/orders',
           builder: (context, state) => OrderScreen(),
+          routes: [
+            GoRoute(
+              name: 'order-details',
+              path: ':id',
+              builder: (context, state) {
+                String idStr = state.pathParameters['id']!;
+                int orderId = int.parse(idStr);
+                return OrderDetailScreen(orderId: orderId);
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: '/login',

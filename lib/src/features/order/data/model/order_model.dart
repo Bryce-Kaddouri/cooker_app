@@ -59,7 +59,7 @@ class OrderTableModel {
 }
 
 class OrderModel {
-  final int? id;
+  final int id;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime date;
@@ -75,7 +75,7 @@ class OrderModel {
   int nbTotalItemsCart;
 
   OrderModel({
-    this.id,
+    required this.id,
     required this.createdAt,
     required this.updatedAt,
     required this.date,

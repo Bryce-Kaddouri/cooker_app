@@ -1,9 +1,10 @@
-import 'dart:ui';
+
 
 import 'package:cooker_app/src/core/constant/app_color.dart';
+import 'package:flutter/material.dart';
 
 class AppTextStyle {
-  static lightTextStyle(
+  static TextStyle lightTextStyle(
       {double? fontSize, Color? color, FontWeight? fontWeight}) {
     return TextStyle(
         fontSize: fontSize ?? 14,
@@ -11,7 +12,7 @@ class AppTextStyle {
         fontWeight: fontWeight ?? FontWeight.w300);
   }
 
-  static regularTextStyle(
+  static TextStyle  regularTextStyle(
       {double? fontSize, Color? color, FontWeight? fontWeight}) {
     return TextStyle(
         fontSize: fontSize ?? 14,
@@ -19,7 +20,7 @@ class AppTextStyle {
         fontWeight: fontWeight ?? FontWeight.normal);
   }
 
-  static boldTextStyle(
+  static TextStyle boldTextStyle(
       {double? fontSize, Color? color, FontWeight? fontWeight}) {
     return TextStyle(
         fontSize: fontSize ?? 14,

@@ -6,6 +6,7 @@ import 'package:cooker_app/src/core/helper/price_helper.dart';
 import 'package:cooker_app/src/core/helper/responsive_helper.dart';
 import 'package:cooker_app/src/features/order/data/model/order_model.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/filter_provider.dart';
+import 'package:cooker_app/src/features/status/model/status_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -189,24 +190,35 @@ class _OrderScreenState extends State<OrderScreen> {
                               ),
                             );
                           },
-                          suggestionsBuilder: (context, searchController) async{
+                          suggestionsBuilder:
+                              (context, searchController) async {
                             print('searchController.text');
                             print(searchController.text);
-                            List<OrderModel> orders = await context.read<OrderProvider>().getOrdersByDate(
-                                context.read<OrderProvider>().selectedDate,
-                                context.read<SortProvider>().sortType,
-                                context.read<SortProvider>().isAscending);
-                            List<OrderModel> filteredOrders = orders.where((element) {
+                            List<OrderModel> orders = await context
+                                .read<OrderProvider>()
+                                .getOrdersByDate(
+                                    context.read<OrderProvider>().selectedDate,
+                                    context.read<SortProvider>().sortType,
+                                    context.read<SortProvider>().isAscending);
+                            List<OrderModel> filteredOrders =
+                                orders.where((element) {
                               print('element.toStringForSearch()');
                               print(element.toStringForSearch());
-                              return element.toStringForSearch().contains(searchController.text.toLowerCase());
+                              return element.toStringForSearch().contains(
+                                  searchController.text.toLowerCase());
                             }).toList();
                             print('filteredOrders');
                             print(filteredOrders.length);
-                            return List.generate(filteredOrders.length, (index) => Container(padding: EdgeInsets.symmetric(horizontal: 10),child:OrderItemWidget(order: filteredOrders[index])));
+                            return List.generate(
+                                filteredOrders.length,
+                                (index) => Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    child: OrderItemWidget(
+                                        order: filteredOrders[index])));
                           }),
                     if (ResponsiveHelper.isDesktop(context))
-                      StatusBar( nbOrders: nbOrders),
+                      StatusBar(nbOrders: nbOrders),
                     DateBar(),
                   ],
                 ),
@@ -215,7 +227,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 Container(
                   padding:
                       const EdgeInsets.only(left: 20, bottom: 10, right: 20),
-                  child: StatusBar( nbOrders: nbOrders),
+                  child: StatusBar(nbOrders: nbOrders),
                 ),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -255,16 +267,13 @@ class _OrderScreenState extends State<OrderScreen> {
                             Container(
                               height: 40,
                               width: 40,
-                              child:
-
-                              Icon(
+                              child: Icon(
                                 Icons.search,
                                 color: AppColor.lightBlackTextColor,
                               ),
                             ),
                             TextField(
                               controller: searchController,
-
                               scrollPadding: const EdgeInsets.all(0),
                               maxLines: 1,
                               clipBehavior: Clip.antiAlias,
@@ -338,12 +347,11 @@ class _OrderScreenState extends State<OrderScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                           Container(
-                             width: 60,
-                              alignment: Alignment.center,
-                              child: Text('Order ID'),
-                            ),
-
+                          Container(
+                            width: 60,
+                            alignment: Alignment.center,
+                            child: Text('Order ID'),
+                          ),
                           Expanded(
                             flex: 2,
                             child: Container(
@@ -358,20 +366,22 @@ class _OrderScreenState extends State<OrderScreen> {
                               child: Text('Status'),
                             ),
                           ),
-                          if(!ResponsiveHelper.isMobile(context)) Expanded(
-                            flex: 1,
-                            child: Container(
-                              alignment: Alignment.center,
-                              child: Text('Items'),
+                          if (!ResponsiveHelper.isMobile(context))
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: Text('Items'),
+                              ),
                             ),
-                          ),
-                          if(!ResponsiveHelper.isMobile(context)) Expanded(
-                            flex: 1,
-                            child: Container(
-                              alignment: Alignment.center,
-                              child: Text('Total'),
+                          if (!ResponsiveHelper.isMobile(context))
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: Text('Total'),
+                              ),
                             ),
-                          ),
                           Expanded(
                             flex: 1,
                             child: Container(
@@ -382,7 +392,8 @@ class _OrderScreenState extends State<OrderScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(width: ResponsiveHelper.isMobile(context) ? 30 : 40),
+                    SizedBox(
+                        width: ResponsiveHelper.isMobile(context) ? 30 : 40),
                   ],
                 ),
               ),
@@ -409,10 +420,14 @@ class _OrderScreenState extends State<OrderScreen> {
                           );
                         }
                         List<OrderModel> orders = snapshot.data!;
-                        if(!ResponsiveHelper.isMobile(context)){
-                          orders = orders.where((element) => element.toStringForSearch().contains(searchController.text.toLowerCase())).toList();
+                        if (!ResponsiveHelper.isMobile(context)) {
+                          orders = orders
+                              .where((element) => element
+                                  .toStringForSearch()
+                                  .contains(
+                                      searchController.text.toLowerCase()))
+                              .toList();
                         }
-
 
                         List<OrderModel> pendingOrders = orders
                             .where(
@@ -431,9 +446,13 @@ class _OrderScreenState extends State<OrderScreen> {
                                 (element) => element.status.name == 'Cancelled')
                             .toList();
                         // add post frame callback to update the nbOrders
-                        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+                        WidgetsBinding.instance!
+                            .addPostFrameCallback((timeStamp) {
                           // check if the nbOrders has changed to avoid infinite loop
-                          if (nbOrders[0] != orders.length || nbOrders[1] != pendingOrders.length || nbOrders[2] != cookingOrders.length || nbOrders[3] != completedOrders.length) {
+                          if (nbOrders[0] != orders.length ||
+                              nbOrders[1] != pendingOrders.length ||
+                              nbOrders[2] != cookingOrders.length ||
+                              nbOrders[3] != completedOrders.length) {
                             setState(() {
                               nbOrders = [
                                 orders.length,
@@ -453,51 +472,104 @@ class _OrderScreenState extends State<OrderScreen> {
                                 ? ListView(
                                     children: [
                                       // pending orders
-                                      if (pendingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.pending))
+                                      if (pendingOrders.isNotEmpty &&
+                                          (context
+                                                      .watch<FilterProvider>()
+                                                      .selectedStatus ==
+                                                  Status.all ||
+                                              context
+                                                      .watch<FilterProvider>()
+                                                      .selectedStatus ==
+                                                  Status.pending))
                                         OrdersItemViewByStatus(
                                           status: 'Pending',
                                           orders: pendingOrders,
                                         ),
-                                      if (cookingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.cooking))
+                                      if (cookingOrders.isNotEmpty &&
+                                          (context
+                                                      .watch<FilterProvider>()
+                                                      .selectedStatus ==
+                                                  Status.all ||
+                                              context
+                                                      .watch<FilterProvider>()
+                                                      .selectedStatus ==
+                                                  Status.cooking))
                                         OrdersItemViewByStatus(
                                           status: 'Cooking',
                                           orders: cookingOrders,
                                         ),
-                                      if (completedOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.completed))
+                                      if (completedOrders.isNotEmpty &&
+                                          (context
+                                                      .watch<FilterProvider>()
+                                                      .selectedStatus ==
+                                                  Status.all ||
+                                              context
+                                                      .watch<FilterProvider>()
+                                                      .selectedStatus ==
+                                                  Status.completed))
                                         OrdersItemViewByStatus(
                                           status: 'Completed',
                                           orders: completedOrders,
                                         ),
-                                      if (cancelledOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.cancelled))
+                                      if (cancelledOrders.isNotEmpty &&
+                                          (context
+                                                      .watch<FilterProvider>()
+                                                      .selectedStatus ==
+                                                  Status.all ||
+                                              context
+                                                      .watch<FilterProvider>()
+                                                      .selectedStatus ==
+                                                  Status.cancelled))
                                         OrdersItemViewByStatus(
                                           status: 'Cancelled',
                                           orders: cancelledOrders,
                                         ),
 
                                       // if status != all and no order
-                                      if (context.watch<FilterProvider>().selectedStatus == Status.pending && pendingOrders.isEmpty)
+                                      if (context
+                                                  .watch<FilterProvider>()
+                                                  .selectedStatus ==
+                                              Status.pending &&
+                                          pendingOrders.isEmpty)
                                         Container(
-                                          height: MediaQuery.of(context).size.height - 300,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height -
+                                              300,
                                           alignment: Alignment.center,
                                           child: Text("No Pending Orders"),
                                         ),
-                                      if (context.watch<FilterProvider>().selectedStatus == Status.cooking && cookingOrders.isEmpty)
+                                      if (context
+                                                  .watch<FilterProvider>()
+                                                  .selectedStatus ==
+                                              Status.cooking &&
+                                          cookingOrders.isEmpty)
                                         Container(
-                                          height: MediaQuery.of(context).size.height - 300,
-
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height -
+                                              300,
                                           alignment: Alignment.center,
                                           child: Text("No Cooking Orders"),
                                         ),
-                                      if (context.watch<FilterProvider>().selectedStatus == Status.completed && completedOrders.isEmpty)
+                                      if (context
+                                                  .watch<FilterProvider>()
+                                                  .selectedStatus ==
+                                              Status.completed &&
+                                          completedOrders.isEmpty)
                                         Container(
-                                          height: MediaQuery.of(context).size.height - 300,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height -
+                                              300,
                                           alignment: Alignment.center,
                                           child: Text("No Completed Orders"),
                                         ),
                                     ],
                                   )
                                 : Container(
-                              height: MediaQuery.of(context).size.height - 300,
+                                    height: MediaQuery.of(context).size.height -
+                                        300,
                                     alignment: Alignment.center,
                                     child: Text("No order"),
                                   ),
@@ -542,20 +614,20 @@ class StatusBar extends StatelessWidget {
                         ? Theme.of(context).primaryColor
                         : null,
                   ),
-                  child:
-                  InkWell(
+                  child: InkWell(
                     onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.all);
+                      context
+                          .read<FilterProvider>()
+                          .setSelectedStatus(Status.all);
                     },
-                    child:
-                  Text(
-                    'All (${nbOrders[0]})',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColor.lightBlackTextColor,
-                      fontWeight: FontWeight.normal,
+                    child: Text(
+                      'All (${nbOrders[0]})',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColor.lightBlackTextColor,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                  ),
                   ),
                 ),
                 SizedBox(
@@ -573,20 +645,20 @@ class StatusBar extends StatelessWidget {
                         ? Theme.of(context).primaryColor
                         : null,
                   ),
-                  child:
-                  InkWell(
+                  child: InkWell(
                     onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.pending);
+                      context
+                          .read<FilterProvider>()
+                          .setSelectedStatus(Status.pending);
                     },
-                    child:
-                  Text(
-                    'Pending (${nbOrders[1]})',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColor.lightBlackTextColor,
-                      fontWeight: FontWeight.normal,
+                    child: Text(
+                      'Pending (${nbOrders[1]})',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColor.lightBlackTextColor,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                  ),
                   ),
                 ),
                 SizedBox(
@@ -604,20 +676,20 @@ class StatusBar extends StatelessWidget {
                         ? Theme.of(context).primaryColor
                         : null,
                   ),
-                  child:
-                  InkWell(
+                  child: InkWell(
                     onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.cooking);
+                      context
+                          .read<FilterProvider>()
+                          .setSelectedStatus(Status.cooking);
                     },
-                    child:
-                  Text(
-                    'Cooking (${nbOrders[2]})',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColor.lightBlackTextColor,
-                      fontWeight: FontWeight.normal,
+                    child: Text(
+                      'Cooking (${nbOrders[2]})',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColor.lightBlackTextColor,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                  ),
                   ),
                 ),
                 SizedBox(
@@ -635,20 +707,20 @@ class StatusBar extends StatelessWidget {
                         ? Theme.of(context).primaryColor
                         : null,
                   ),
-                  child:
-                  InkWell(
+                  child: InkWell(
                     onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.completed);
+                      context
+                          .read<FilterProvider>()
+                          .setSelectedStatus(Status.completed);
                     },
-                    child:
-                  Text(
-                    'Completed (${nbOrders[3]})',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColor.lightBlackTextColor,
-                      fontWeight: FontWeight.normal,
+                    child: Text(
+                      'Completed (${nbOrders[3]})',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColor.lightBlackTextColor,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                  ),
                   ),
                 )
               ],
@@ -680,20 +752,20 @@ class StatusBar extends StatelessWidget {
                         ? Theme.of(context).primaryColor
                         : null,
                   ),
-                  child:
-                  InkWell(
+                  child: InkWell(
                     onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.all);
+                      context
+                          .read<FilterProvider>()
+                          .setSelectedStatus(Status.all);
                     },
-                    child:
-                  Text(
-                    'All (${nbOrders[0]})',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColor.lightBlackTextColor,
-                      fontWeight: FontWeight.normal,
+                    child: Text(
+                      'All (${nbOrders[0]})',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColor.lightBlackTextColor,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                  ),
                   ),
                 ),
                 Container(
@@ -708,20 +780,20 @@ class StatusBar extends StatelessWidget {
                         ? Theme.of(context).primaryColor
                         : null,
                   ),
-                  child:
-                  InkWell(
+                  child: InkWell(
                     onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.pending);
+                      context
+                          .read<FilterProvider>()
+                          .setSelectedStatus(Status.pending);
                     },
-                    child:
-                  Text(
-                    'Pending (${nbOrders[1]})',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColor.lightBlackTextColor,
-                      fontWeight: FontWeight.normal,
+                    child: Text(
+                      'Pending (${nbOrders[1]})',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColor.lightBlackTextColor,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                  ),
                   ),
                 ),
                 Container(
@@ -736,20 +808,20 @@ class StatusBar extends StatelessWidget {
                         ? Theme.of(context).primaryColor
                         : null,
                   ),
-                  child:
-                  InkWell(
+                  child: InkWell(
                     onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.cooking);
+                      context
+                          .read<FilterProvider>()
+                          .setSelectedStatus(Status.cooking);
                     },
-                    child:
-                  Text(
-                    'Cooking (${nbOrders[2]})',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColor.lightBlackTextColor,
-                      fontWeight: FontWeight.normal,
+                    child: Text(
+                      'Cooking (${nbOrders[2]})',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColor.lightBlackTextColor,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                  ),
                   ),
                 ),
                 Container(
@@ -764,20 +836,20 @@ class StatusBar extends StatelessWidget {
                         ? Theme.of(context).primaryColor
                         : null,
                   ),
-                  child:
-                  InkWell(
+                  child: InkWell(
                     onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.completed);
+                      context
+                          .read<FilterProvider>()
+                          .setSelectedStatus(Status.completed);
                     },
-                    child:
-                  Text(
-                    'Completed (${nbOrders[3]})',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColor.lightBlackTextColor,
-                      fontWeight: FontWeight.normal,
+                    child: Text(
+                      'Completed (${nbOrders[3]})',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColor.lightBlackTextColor,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                  ),
                   ),
                 )
               ],
@@ -1018,10 +1090,8 @@ class OrdersItemViewByStatus extends StatelessWidget {
           ),
           Container(
             child: Column(
-              children: List.generate(
-                orders.length,
-                (index) => OrderItemWidget(order: orders[index])
-              ),
+              children: List.generate(orders.length,
+                  (index) => OrderItemWidget(order: orders[index])),
             ),
           ),
         ],
@@ -1040,103 +1110,102 @@ class OrderItemWidget extends StatelessWidget {
       height: 70,
       width: double.infinity,
       margin: const EdgeInsets.symmetric(vertical: 5),
-      padding:
-      EdgeInsets.symmetric(vertical: 5, horizontal:  ResponsiveHelper.isDesktop(context) ? 20 :5),
+      padding: EdgeInsets.symmetric(
+          vertical: 5,
+          horizontal: ResponsiveHelper.isDesktop(context) ? 20 : 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         color: Theme.of(context).primaryColor,
       ),
-      child:
-      InkWell(
-        onTap: (){
+      child: InkWell(
+        onTap: () {
           int orderId = order.id;
-          context.goNamed('order-details', pathParameters: {'id' : orderId.toString()});
-
+          context.goNamed('order-details',
+              pathParameters: {'id': orderId.toString()});
         },
-        child:
-      Row(
-        children: [
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 60,
-                  alignment: Alignment.center,
-                  child: Text(
-                    '#${order.id}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-
-                Expanded(
-                  flex: 2,
-                  child: Container(
+        child: Row(
+          children: [
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: 60,
                     alignment: Alignment.center,
                     child: Text(
-                      '${order.customer.lName} ${order.customer.fName}',
-                      textAlign: TextAlign.center,),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: StatusWidget(status: order.status.name),
-                  ),
-                ),
-                if(!ResponsiveHelper.isMobile(context)) Expanded(
-                  flex: 1,
-                  child: Container(
-                    alignment: Alignment.center,
-                    child:
-                    Text('${order.nbTotalItemsCart}'),
-                  ),
-                ),
-                if(!ResponsiveHelper.isMobile(context)) Expanded(
-                  flex: 1,
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Text('${PriceHelper.getFormattedPrice(
-                      order.totalAmount,
-                      showBefore: false,
-                    )}'),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      '${order.time.hour} : ${order.time.minute}',
+                      '#${order.id}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width:  ResponsiveHelper.isMobile(context) ? 30 : 40,
-            child: Container(
-              alignment: Alignment.center,
-              child: IconButton(
-                icon: Icon(Icons.arrow_forward_ios, size: 20),
-                onPressed: () {},
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${order.customer.lName} ${order.customer.fName}',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: StatusWidget(status: order.status.name),
+                    ),
+                  ),
+                  if (!ResponsiveHelper.isMobile(context))
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Text('${order.nbTotalItemsCart}'),
+                      ),
+                    ),
+                  if (!ResponsiveHelper.isMobile(context))
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Text('${PriceHelper.getFormattedPrice(
+                          order.totalAmount,
+                          showBefore: false,
+                        )}'),
+                      ),
+                    ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${order.time.hour} : ${order.time.minute}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
-      ),
+            SizedBox(
+              width: ResponsiveHelper.isMobile(context) ? 30 : 40,
+              child: Container(
+                alignment: Alignment.center,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_forward_ios, size: 20),
+                  onPressed: () {},
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
 
 // sliver delegate app bar
 class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {

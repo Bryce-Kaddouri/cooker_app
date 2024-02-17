@@ -19,8 +19,7 @@
     ),
   ];
 }*/
-
-import 'package:dartz/dartz.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -31,10 +30,6 @@ import '../../features/details/presentation/screen/order_details_screen.dart';
 import '../../features/order/presentation/screen/order_screen.dart';
 
 class RouterHelper {
-  static back() {
-    Get.key?.currentState?.pop();
-  }
-
   GoRouter getRouter() {
     return GoRouter(
       navigatorKey: Get.key,
@@ -63,10 +58,28 @@ class RouterHelper {
             GoRoute(
               name: 'order-details',
               path: ':id',
-              builder: (context, state) {
+              /*builder: (context, state) {
                 String idStr = state.pathParameters['id']!;
                 int orderId = int.parse(idStr);
                 return OrderDetailScreen(orderId: orderId);
+              },*/
+              pageBuilder: (context, state) {
+                String idStr = state.pathParameters['id']!;
+                int orderId = int.parse(idStr);
+                return CustomTransitionPage(
+                  child: OrderDetailScreen(orderId: orderId),
+                  // slide left to right transition
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(1, 0),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    );
+                  },
+                );
               },
             ),
           ],

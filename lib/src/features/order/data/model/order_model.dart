@@ -62,6 +62,9 @@ class OrderModel {
   final int id;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final DateTime? cookingStartedAt;
+  final DateTime? readyAt;
+  final DateTime? collectedAt;
   final DateTime date;
   final TimeOfDay time;
 
@@ -78,6 +81,9 @@ class OrderModel {
     required this.id,
     required this.createdAt,
     required this.updatedAt,
+    required this.cookingStartedAt,
+    required this.readyAt,
+    required this.collectedAt,
     required this.date,
     required this.time,
     required this.customer,
@@ -96,6 +102,15 @@ class OrderModel {
       id: json['order_id'],
       createdAt: DateTime.parse(json['order_created_at']),
       updatedAt: DateTime.parse(json['order_updated_at']),
+      cookingStartedAt: json['order_cooking_date'] != null
+          ? DateTime.parse(json['order_cooking_date'])
+          : null,
+      readyAt: json['order_ready_date'] != null
+          ? DateTime.parse(json['order_ready_date'])
+          : null,
+      collectedAt: json['order_collected_date'] != null
+          ? DateTime.parse(json['order_collected_date'])
+          : null,
       date: DateTime.parse(json['order_date']),
       time: TimeOfDay(
         hour: int.parse(json['order_time'].split(':')[0]),
@@ -103,9 +118,7 @@ class OrderModel {
       ),
       /*json['order_is_paid'],*/
       customer: CustomerModel.fromJson(json['customer']),
-      status: StatusModel.fromJson(json['status']
-
-      ),
+      status: StatusModel.fromJson(json['status']),
       user: UserModel.fromJson(json['user']),
       cart: cart,
       totalAmount: json['total_amount'],
@@ -124,7 +137,7 @@ class OrderModel {
         'date': date.toIso8601String(),
         'time': '${time.hour}:${time.minute}',
         'customer': customer.toJson(),
-         'status': status.toJson(),
+        'status': status.toJson(),
         'user': user.toJson(),
         'cart': cart.map((e) => e.toJson()).toList(),
       };

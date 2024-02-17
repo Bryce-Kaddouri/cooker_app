@@ -16,6 +16,10 @@ class DateHelper {
     return DateFormat('yyyy-MM-dd').format(date);
   }
 
+  static String getFormattedDateAndTime(DateTime date) {
+    return DateFormat('yyyy-MM-dd HH:mm').format(date);
+  }
+
   // get month name and year
   static String getMonthNameAndYear(DateTime date) {
     return DateFormat('MMMM yyyy').format(date);

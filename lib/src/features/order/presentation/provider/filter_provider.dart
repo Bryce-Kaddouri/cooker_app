@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../status/model/status_model.dart';
 import '../../data/model/order_model.dart';
 
 class FilterProvider with ChangeNotifier {
@@ -111,7 +112,4 @@ class FilterProvider with ChangeNotifier {
     _selectedStatus = value;
     notifyListeners();
   }
-
 }
-
-enum Status { all, pending, cooking, completed, cancelled }

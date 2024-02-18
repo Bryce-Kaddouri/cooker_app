@@ -1,4 +1,4 @@
-import 'package:cooker_app/src/core/constant/light_theme.dart';
+import 'package:cooker_app/src/core/constant/app_color.dart';
 import 'package:cooker_app/src/core/helper/route_helper.dart';
 import 'package:cooker_app/src/features/auth/business/repository/auth_repository.dart';
 import 'package:cooker_app/src/features/auth/business/usecase/auth_get_user_usecase.dart';
@@ -22,7 +22,6 @@ import 'package:cooker_app/src/features/order/presentation/provider/sort_provide
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -134,17 +133,44 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   GoRouter router = RouterHelper().getRouter();
+  final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp.router(
+      scaffoldMessengerKey: scaffoldMessengerKey,
       title: 'Cooker App',
       debugShowCheckedModeBanner: false,
-      theme: LightTheme.themeData,
+      theme: ThemeData.light().copyWith(
+        canvasColor: AppColor.lightCardColor,
+        primaryColor: AppColor.lightBackgroundColor,
+        primaryColorLight: AppColor.lightBackgroundColor,
+        cardColor: AppColor.lightCardColor,
+      ),
+      themeMode: ThemeMode.light,
+      darkTheme: ThemeData.dark().copyWith(
+        canvasColor: AppColor.darkCardColor,
+        primaryColor: AppColor.darkBackgroundColor,
+      ),
+
+      /*FluentThemeData(
+          brightness: Brightness.light,
+          scaffoldBackgroundColor: AppColor.lightBackgroundColor,
+          cardColor: AppColor.lightCardColor,
+          inactiveBackgroundColor: Colors.yellow,
+          activeColor: AppColor.lightBackgroundColor,
+          inactiveColor: AppColor.lightCardColor,
+          accentColor: Colors.white.toAccentColor()),
+      darkTheme: FluentThemeData.dark().copyWith(
+        scaffoldBackgroundColor: AppColor.darkBackgroundColor,
+        cardColor: AppColor.darkCardColor,
+      ),*/
       routerDelegate: router.routerDelegate,
       routeInformationProvider: router.routeInformationProvider,
       routeInformationParser: router.routeInformationParser,
+/*
       defaultTransition: Transition.rightToLeftWithFade,
+*/
 
       /* routingCallback: (routing) {
         print('route: ${routing?.current}');

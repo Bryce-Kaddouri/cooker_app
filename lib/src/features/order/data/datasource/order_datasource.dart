@@ -4,7 +4,6 @@ import 'package:cooker_app/src/features/category/model/category_model.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/sort_provider.dart';
 import 'package:cooker_app/src/features/product/data/model/product_model.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/data/exception/failure.dart';
@@ -151,30 +150,119 @@ class OrderDataSource {
     }
   }
 
+  Future<Either<DatabaseFailure, OrderModel>> getOrderById(
+      DateTime date, int id) async {
+    print('getOrderById method called');
+    try {
+      var response = await _client
+          .from('all_orders_view')
+          .select()
+          .eq('order_id', id)
+          .eq('order_date', date.toIso8601String())
+          .single();
+
+      print('response from getOrderById data source');
+      print(response);
+
+      OrderModel order = OrderModel.fromJson(response);
+
+      return Right(order);
+    } on PostgrestException catch (error) {
+      print('postgrest error');
+      print(error);
+      return Left(DatabaseFailure(errorMessage: error.message));
+    } catch (e) {
+      print(e);
+      return Left(DatabaseFailure(errorMessage: 'Error getting orders'));
+    }
+  }
+
+  Future<Either<DatabaseFailure, bool>> changeOrderStatus(
+      DateTime date, int orderId, int step) async {
+    try {
+      var responseForStatus =
+          await _client.from('status').select().eq('step', step).single();
+
+      int statusId = responseForStatus['id'];
+      print('statusId');
+      print(statusId);
+
+      var response = await _client
+          .from('orders')
+          .update({
+            'status_id': statusId,
+            'updated_at': DateTime.now().toIso8601String(),
+            step == 2 ? 'cooking_date' : 'ready_date':
+                DateTime.now().toIso8601String()
+          })
+          .eq('id', orderId)
+          .eq('date', date.toIso8601String())
+          .select()
+          .single();
+
+      print('response from changeOrderStatus');
+      print(response);
+      return Right(true);
+    } on PostgrestException catch (error) {
+      print('postgrest error');
+      print(error);
+      return Left(DatabaseFailure(errorMessage: error.message));
+    } catch (e) {
+      print(e);
+      return Left(DatabaseFailure(errorMessage: 'Error changing order status'));
+    }
+  }
+
+  Future<Either<DatabaseFailure, bool>> changeIsDoneCart(DateTime date,
+      int cartId, int orderId, int productId, bool isDone) async {
+    try {
+      var responseForCart = await _client
+          .from('cart')
+          .update({
+            'is_done': isDone,
+          })
+          .eq('id', cartId)
+          .eq('date', date.toIso8601String())
+          .eq('product_id', productId)
+          .select()
+          .single();
+
+      print('response from changeIsDoneCart');
+      print(responseForCart);
+
+      return Right(true);
+    } on PostgrestException catch (error) {
+      print('postgrest error');
+      print(error);
+      return Left(DatabaseFailure(errorMessage: error.message));
+    } catch (e) {
+      print(e);
+      return Left(DatabaseFailure(errorMessage: 'Error changing order status'));
+    }
+  }
+
   Future<ProductModel?> getProductById(int id) async {
     try {
-      Map<String, dynamic> response = await _client
-          .from('products')
-          .select('''
+      Map<String, dynamic> response = await _client.from('products').select('''
     *,
     categories:category_id ( * )
-    ''')
-          .eq('id', id)
-
-          .single()
-
-        ;
+    ''').eq('id', id).single();
       print('response from getProductById');
       print(response);
       int productId = response['id'];
       String productName = response['name'];
       String productImageUrl = response['photo_url'];
       double productPrice = response['price'];
-      CategoryModel productCategory = CategoryModel.fromJsonTable(response['categories']);
-      ProductModel productModel = ProductModel(id: productId, name: productName, imageUrl: productImageUrl, price: productPrice, category: productCategory);
+      CategoryModel productCategory =
+          CategoryModel.fromJsonTable(response['categories']);
+      ProductModel productModel = ProductModel(
+          id: productId,
+          name: productName,
+          imageUrl: productImageUrl,
+          price: productPrice,
+          category: productCategory);
 
       return productModel;
-
     } on PostgrestException catch (error) {
       print('postgrest error');
       print(error);
@@ -182,6 +270,13 @@ class OrderDataSource {
     } catch (e) {
       return null;
     }
+  }
+
+  Stream<List<Map<String, dynamic>>> getCartStream(
+      int orderId, DateTime orderDate) {
+    return _client.from('cart').stream(
+      primaryKey: ['id', 'date', 'product_id'],
+    ).eq('date', orderDate.toIso8601String());
   }
 
   Future<UserModel> getUserById(String uid) async {
@@ -261,14 +356,14 @@ class OrderDataSource {
         StatusModel statusModel = StatusModel.fromJson(response[0]);
         return statusModel;
       } else {
-        return StatusModel(id: 0, name: '', step: 1, color: Colors.red);
+        return StatusModel(id: 0, name: '', step: 1);
       }
     } on PostgrestException catch (error) {
       print('postgrest error');
       print(error);
-      return StatusModel(id: 0, name: '', step: 1, color: Colors.red);
+      return StatusModel(id: 0, name: '', step: 1);
     } catch (e) {
-      return StatusModel(id: 0, name: '', step: 1, color: Colors.red);
+      return StatusModel(id: 0, name: '', step: 1);
     }
   }
 

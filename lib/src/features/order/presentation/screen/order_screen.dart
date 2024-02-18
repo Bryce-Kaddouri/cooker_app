@@ -19,7 +19,8 @@ import '../widget/filter_widget.dart';
 import '../widget/sort_by_widget.dart';
 
 class OrderScreen extends StatefulWidget {
-  const OrderScreen({super.key});
+  DateTime selectedDate;
+  OrderScreen({super.key, required this.selectedDate});
 
   @override
   State<OrderScreen> createState() => _OrderScreenState();
@@ -111,8 +112,8 @@ class _OrderScreenState extends State<OrderScreen> {
     // global key for the form
     return showDatePicker(
         context: context,
-        currentDate: context.read<OrderProvider>().selectedDate,
-        initialDate: context.read<OrderProvider>().selectedDate,
+        currentDate: widget.selectedDate,
+        initialDate: widget.selectedDate,
         // first date of the year
         firstDate: DateTime.now().subtract(Duration(days: 365)),
         lastDate: DateTime.now().add(Duration(days: 365)));
@@ -197,7 +198,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             List<OrderModel> orders = await context
                                 .read<OrderProvider>()
                                 .getOrdersByDate(
-                                    context.read<OrderProvider>().selectedDate,
+                                    widget.selectedDate,
                                     context.read<SortProvider>().sortType,
                                     context.read<SortProvider>().isAscending);
                             List<OrderModel> filteredOrders =
@@ -219,7 +220,9 @@ class _OrderScreenState extends State<OrderScreen> {
                           }),
                     if (ResponsiveHelper.isDesktop(context))
                       StatusBar(nbOrders: nbOrders),
-                    DateBar(),
+                    DateBar(
+                      selectedDate: widget.selectedDate,
+                    ),
                   ],
                 ),
               ),
@@ -307,7 +310,9 @@ class _OrderScreenState extends State<OrderScreen> {
                           SizedBox(
                               width:
                                   ResponsiveHelper.isDesktop(context) ? 10 : 5),
-                          FilterWidget()
+                          FilterWidget(
+                            selectedDate: widget.selectedDate,
+                          )
                         ],
                       ),
                     ),
@@ -399,7 +404,7 @@ class _OrderScreenState extends State<OrderScreen> {
               ),
               FutureBuilder(
                   future: context.read<OrderProvider>().getOrdersByDate(
-                      context.watch<OrderProvider>().selectedDate,
+                      widget.selectedDate,
                       context.watch<SortProvider>().sortType,
                       context.watch<SortProvider>().isAscending),
                   builder: (BuildContext context, snapshot) {
@@ -956,7 +961,8 @@ class StatusBar extends StatelessWidget {
 }
 
 class DateBar extends StatelessWidget {
-  const DateBar({super.key});
+  final DateTime selectedDate;
+  const DateBar({super.key, required this.selectedDate});
 
   @override
   Widget build(BuildContext context) {
@@ -979,10 +985,8 @@ class DateBar extends StatelessWidget {
             ),
             child: Text(
               ResponsiveHelper.isMobile(context)
-                  ? DateHelper.getFullFormattedDateReduce(
-                      context.watch<OrderProvider>().selectedDate!)
-                  : DateHelper.getFullFormattedDate(
-                      context.watch<OrderProvider>().selectedDate!),
+                  ? DateHelper.getFullFormattedDateReduce(selectedDate)
+                  : DateHelper.getFullFormattedDate(selectedDate),
               style: TextStyle(
                 fontSize: 16,
                 color: AppColor.lightBlackTextColor,
@@ -1004,7 +1008,9 @@ class DateBar extends StatelessWidget {
                 DateTime? date =
                     await context.read<OrderProvider>().chooseDate();
                 if (date != null) {
-                  context.read<OrderProvider>().setSelectedDate(date);
+                  context.goNamed('orders', pathParameters: {
+                    'date': date.toString(),
+                  });
                 }
               },
               child: Icon(
@@ -1120,8 +1126,10 @@ class OrderItemWidget extends StatelessWidget {
       child: InkWell(
         onTap: () {
           int orderId = order.id;
-          context.goNamed('order-details',
-              pathParameters: {'id': orderId.toString()});
+          context.goNamed('order-details', pathParameters: {
+            'id': orderId.toString(),
+            'date': DateHelper.getFormattedDate(order.date)
+          });
         },
         child: Row(
           children: [

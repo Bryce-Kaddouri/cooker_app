@@ -13,13 +13,14 @@ import '../provider/filter_provider.dart';
 import '../provider/order_provider.dart';
 
 class FilterWidget extends StatelessWidget {
-  const FilterWidget({super.key});
+  final DateTime selectedDate;
+  const FilterWidget({super.key, required this.selectedDate});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: context.read<OrderProvider>().getOrdersByDate(
-          context.read<OrderProvider>().selectedDate,
+          selectedDate,
           context.read<SortProvider>().sortType,
           context.read<SortProvider>().isAscending),
       builder: (context, snapProduct) {

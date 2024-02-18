@@ -1,8 +1,7 @@
 import 'dart:collection';
 
-import 'package:cooker_app/src/features/cart/model/cart_model.dart';
 import 'package:cooker_app/src/features/category/model/category_model.dart';
-import 'package:cooker_app/src/features/order/business/getOrdersParam.dart';
+import 'package:cooker_app/src/features/order/business/param/getOrdersParam.dart';
 import 'package:cooker_app/src/features/order/business/usecase/order_get_orders_by_date_usecase.dart';
 import 'package:cooker_app/src/features/order/data/model/order_model.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/sort_provider.dart';
@@ -10,25 +9,30 @@ import 'package:cooker_app/src/features/product/data/model/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../business/param/changeIsDoneCartByIdParam.dart';
+import '../../business/param/changeStatusOrderByIdParam.dart';
+import '../../business/param/getOrderByIdParam.dart';
+import '../../business/usecase/change_is_done_cart_by_id_usecase.dart';
+import '../../business/usecase/change_status_order_by_id_usecase.dart';
+import '../../business/usecase/order_get_order_by_id_usecase.dart';
+
 class OrderProvider with ChangeNotifier {
   OrderGetOrdersByDateUseCase orderGetOrdersByDateUseCase;
+  OrderGetOrderByIdUseCase orderGetOrdersByIdUseCase;
+  OrderChangeStatusOrderByIdUseCase changeStatusOrderByIdUseCase;
+  OrderChangeIsDoneCartByIdUseCase changeIsDoneCartByIdUseCase;
 
   OrderProvider({
     required this.orderGetOrdersByDateUseCase,
+    required this.orderGetOrdersByIdUseCase,
+    required this.changeStatusOrderByIdUseCase,
+    required this.changeIsDoneCartByIdUseCase,
   });
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   void setLoading(bool value) {
     _isLoading = value;
-    notifyListeners();
-  }
-
-  DateTime _selectedDate = DateTime.now();
-  DateTime get selectedDate => _selectedDate;
-
-  void setSelectedDate(DateTime value) {
-    _selectedDate = value;
     notifyListeners();
   }
 
@@ -103,8 +107,7 @@ class OrderProvider with ChangeNotifier {
       firstDate: DateTime(2015, 8),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != _selectedDate) _selectedDate = picked;
-    notifyListeners();
+    return picked;
   }
 
   Future<List<OrderModel>> getOrdersByDate(
@@ -121,10 +124,58 @@ class OrderProvider with ChangeNotifier {
       orderList = r;
     });
 
-
-
     return orderList;
   }
 
+  Future<OrderModel?> getOrderById(int id, DateTime date) async {
+    print('------------ call getOrderById ----------------');
+    OrderModel? order;
+    final result = await orderGetOrdersByIdUseCase
+        .call(GetOrderByIdParam(id: id, date: date));
+    await result.fold((l) async {
+      print(l.errorMessage);
+    }, (r) async {
+      order = r;
+    });
+    print('order: $order');
+    return order;
+  }
 
+  Future<bool> changeOrderStatus(int id, DateTime date, int step) async {
+    print('------------ call changeOrderStatus ----------------');
+    bool result = false;
+    final changeStatusOrderByIdParam = ChangeStatusOrderByIdParam(
+      id: id,
+      date: date,
+      step: step,
+    );
+    final response =
+        await changeStatusOrderByIdUseCase.call(changeStatusOrderByIdParam);
+    await response.fold((l) async {
+      print(l.errorMessage);
+    }, (r) async {
+      result = r;
+    });
+    return result;
+  }
+
+  Future<bool> changeIsDoneCart(int cartId, int orderId, int productId,
+      DateTime date, bool isDone) async {
+    print('------------ call changeIsDoneCart ----------------');
+    bool result = false;
+    final param = ChangeIsDoneCartByIdParam(
+      date: date,
+      orderId: orderId,
+      cartId: cartId,
+      productId: productId,
+      isDone: isDone,
+    );
+    final response = await changeIsDoneCartByIdUseCase.call(param);
+    await response.fold((l) async {
+      print(l.errorMessage);
+    }, (r) async {
+      result = r;
+    });
+    return result;
+  }
 }

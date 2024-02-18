@@ -1,7 +1,6 @@
-import 'package:cooker_app/src/features/order/business/getOrdersParam.dart';
-import 'package:cooker_app/src/features/order/presentation/provider/sort_provider.dart';
-import 'package:dartz/dartz.dart';
+import 'package:cooker_app/src/features/order/business/param/getOrdersParam.dart';
 import 'package:cooker_app/src/features/order/business/repository/order_repository.dart';
+import 'package:dartz/dartz.dart';
 
 import '../../../../core/data/exception/failure.dart';
 import '../../../../core/data/usecase/usecase.dart';

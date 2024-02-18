@@ -1,10 +1,9 @@
-
 import '../../product/data/model/product_model.dart';
 
 class CartModel {
   final int? id;
   int quantity;
-  final bool isDone;
+  bool isDone;
   final ProductModel product;
 
   CartModel({

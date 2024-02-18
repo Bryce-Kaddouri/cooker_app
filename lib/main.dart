@@ -10,6 +10,9 @@ import 'package:cooker_app/src/features/auth/data/datasource/auth_datasource.dar
 import 'package:cooker_app/src/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:cooker_app/src/features/auth/presentation/provider/auth_provider.dart';
 import 'package:cooker_app/src/features/order/business/repository/order_repository.dart';
+import 'package:cooker_app/src/features/order/business/usecase/change_is_done_cart_by_id_usecase.dart';
+import 'package:cooker_app/src/features/order/business/usecase/change_status_order_by_id_usecase.dart';
+import 'package:cooker_app/src/features/order/business/usecase/order_get_order_by_id_usecase.dart';
 import 'package:cooker_app/src/features/order/business/usecase/order_get_orders_by_date_usecase.dart';
 import 'package:cooker_app/src/features/order/data/datasource/order_datasource.dart';
 import 'package:cooker_app/src/features/order/data/repository/order_repository_impl.dart';
@@ -65,8 +68,15 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider<OrderProvider>(
           create: (context) => OrderProvider(
-              orderGetOrdersByDateUseCase: OrderGetOrdersByDateUseCase(
-                  orderRepository: orderRepository)),
+            orderGetOrdersByDateUseCase:
+                OrderGetOrdersByDateUseCase(orderRepository: orderRepository),
+            orderGetOrdersByIdUseCase:
+                OrderGetOrderByIdUseCase(orderRepository: orderRepository),
+            changeStatusOrderByIdUseCase: OrderChangeStatusOrderByIdUseCase(
+                orderRepository: orderRepository),
+            changeIsDoneCartByIdUseCase: OrderChangeIsDoneCartByIdUseCase(
+                orderRepository: orderRepository),
+          ),
         ),
         ChangeNotifierProvider<FilterProvider>(
           create: (context) => FilterProvider(),

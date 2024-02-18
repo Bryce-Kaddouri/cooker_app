@@ -59,7 +59,9 @@ class SignInScreen extends StatelessWidget {
                         )
                         .then((value) {
                       if (value) {
-                        context.go('/orders');
+                        context.goNamed('orders', pathParameters: {
+                          'date': DateTime.now().toString(),
+                        });
                       } else {
                         Get.snackbar(
                           'Error',

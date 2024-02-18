@@ -1,4 +1,3 @@
-
 import '../../../category/model/category_model.dart';
 
 class ProductModel {
@@ -10,6 +9,7 @@ class ProductModel {
   final double price;
   final CategoryModel? category;
   final int? categoryId;
+  final String? photoUrl;
 
   ProductModel({
     required this.id,
@@ -20,6 +20,7 @@ class ProductModel {
     required this.price,
     this.category,
     this.categoryId,
+    this.photoUrl,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -31,6 +32,7 @@ class ProductModel {
       updatedAt: DateTime.parse(json['updated_at']),*/
       price: json['product_price'],
       category: CategoryModel.fromJson(json['category_info']),
+      photoUrl: json['photo_url'],
     );
   }
 

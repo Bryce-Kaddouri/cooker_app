@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/helper/date_helper.dart';
 import '../provider/auth_provider.dart';
 
 class SignInScreen extends StatelessWidget {
@@ -60,7 +61,7 @@ class SignInScreen extends StatelessWidget {
                         .then((value) {
                       if (value) {
                         context.goNamed('orders', pathParameters: {
-                          'date': DateTime.now().toString(),
+                          'date': DateHelper.getFormattedDate(DateTime.now()),
                         });
                       } else {
                         Get.snackbar(

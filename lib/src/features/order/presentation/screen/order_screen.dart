@@ -434,6 +434,12 @@ class _OrderScreenState extends State<OrderScreen> {
                               .toList();
                         }
 
+                        print('orders');
+                        for (var order in orders) {
+                          print('-' * 50);
+                          print(order.toJson());
+                        }
+
                         List<OrderModel> pendingOrders = orders
                             .where(
                                 (element) => element.status.name == 'Pending')
@@ -446,6 +452,8 @@ class _OrderScreenState extends State<OrderScreen> {
                             .where(
                                 (element) => element.status.name == 'Completed')
                             .toList();
+                        print('completedOrders');
+                        print(completedOrders.length);
                         List<OrderModel> cancelledOrders = orders
                             .where(
                                 (element) => element.status.name == 'Cancelled')
@@ -858,105 +866,8 @@ class StatusBar extends StatelessWidget {
                   ),
                 )
               ],
-            )
-
-            /*SingleChildScrollView(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    height: 40,
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: selectedIndex == 0
-                          ? Theme.of(context).primaryColor
-                          : null,
-                    ),
-                    child: Text(
-                      'All (23)',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.lightBlackTextColor,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    height: 40,
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: selectedIndex == 1
-                          ? Theme.of(context).primaryColor
-                          : null,
-                    ),
-                    child: Text(
-                      'Pending (13)',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.lightBlackTextColor,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    height: 40,
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: selectedIndex == 1
-                          ? Theme.of(context).primaryColor
-                          : null,
-                    ),
-                    child: Text(
-                      'Cooking (3)',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.lightBlackTextColor,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    height: 40,
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: selectedIndex == 1
-                          ? Theme.of(context).primaryColor
-                          : null,
-                    ),
-                    child: Text(
-                      'Completed (7)',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.lightBlackTextColor,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),*/
-            );
+            ),
+          );
   }
 }
 
@@ -1009,7 +920,7 @@ class DateBar extends StatelessWidget {
                     await context.read<OrderProvider>().chooseDate();
                 if (date != null) {
                   context.goNamed('orders', pathParameters: {
-                    'date': date.toString(),
+                    'date': DateHelper.getFormattedDate(date),
                   });
                 }
               },

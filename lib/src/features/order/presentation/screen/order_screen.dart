@@ -39,37 +39,35 @@ class _OrderScreenState extends State<OrderScreen> {
   /* ScrollController _mainScrollController = ScrollController();
   ScrollController _testController = ScrollController();*/
 
-  List<int> nbOrders = [0, 0, 0, 0];
-  List<OrderModel> lstOrders = [];
   GlobalKey key = GlobalKey();
+
+  @override
+  void didUpdateWidget(covariant OrderScreen oldWidget) {
+    // TODO: implement didUpdateWidget
+
+    super.didUpdateWidget(oldWidget);
+    print(oldWidget.selectedDate);
+    print('didUpdateWidget OrderScreen');
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    print('didChangeDependencies OrderScreen');
+    super.didChangeDependencies();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('didChangeAppLifecycleState OrderScreen');
+  }
+
 
   @override
   void initState() {
     super.initState();
-    context
-        .read<OrderProvider>()
-        .getOrdersByDate(
-            widget.selectedDate,
-            context.read<SortProvider>().sortType,
-            context.read<SortProvider>().isAscending)
-        .then((value) => setState(() {
-              lstOrders = value;
-              List<OrderModel> pendingOrders = lstOrders
-                  .where((element) => element.status.name == 'Pending')
-                  .toList();
-              List<OrderModel> cookingOrders = lstOrders
-                  .where((element) => element.status.name == 'Cooking')
-                  .toList();
-              List<OrderModel> completedOrders = lstOrders
-                  .where((element) => element.status.name == 'Completed')
-                  .toList();
-              nbOrders = [
-                lstOrders.length,
-                pendingOrders.length,
-                cookingOrders.length,
-                completedOrders.length
-              ];
-            }));
+    print('initState OrderScreen');
+
     Supabase.instance.client
         .channel('all_orders_view')
         .onPostgresChanges(
@@ -148,7 +146,60 @@ class _OrderScreenState extends State<OrderScreen> {
             ),
           ),
         ),
-        body: CustomScrollView(slivers: [
+        body:
+        FutureBuilder(
+        future: context.read<OrderProvider>().getOrdersByDate(
+        widget.selectedDate,
+        context.watch<SortProvider>().sortType,
+        context.watch<SortProvider>().isAscending),
+    builder: (BuildContext context, snapshot) {
+    switch (snapshot.connectionState) {
+    case ConnectionState.waiting:
+    return Container(
+    height: MediaQuery.of(context).size.height - 300,
+    width: double.infinity,
+    alignment: Alignment.center,
+    child: CircularProgressIndicator(),
+    );
+    default:
+    if (!snapshot.hasData) {
+    return Container(
+    alignment: Alignment.center,
+    child: Text("No order"),
+    );
+    }else{
+    List<OrderModel> orders = snapshot.data!;
+    if (!ResponsiveHelper.isMobile(context)) {
+    orders = orders
+        .where((element) => element
+        .toStringForSearch()
+        .contains(
+    searchController.text.toLowerCase()))
+        .toList();
+    }
+
+
+    List<OrderModel> pendingOrders = orders
+        .where((element) =>
+    element.status.name == 'Pending')
+        .toList();
+    List<OrderModel> cookingOrders = orders
+        .where((element) =>
+    element.status.name == 'Cooking')
+        .toList();
+    List<OrderModel> completedOrders = orders
+        .where((element) =>
+    element.status.name == 'Completed')
+        .toList();
+    print('completedOrders');
+    print(completedOrders.length);
+    List<OrderModel> cancelledOrders = orders
+        .where((element) =>
+    element.status.name == 'Cancelled')
+        .toList();
+    List<int> nbOrders = [orders.length, pendingOrders.length, pendingOrders.length, completedOrders.length];
+    return
+        CustomScrollView(slivers: [
           SliverPersistentHeader(
             floating: true,
             pinned: true,
@@ -433,93 +484,17 @@ class _OrderScreenState extends State<OrderScreen> {
                       ],
                     ),
                   ),
-/*                  FutureBuilder(
-                      future: context.read<OrderProvider>().getOrdersByDate(
-                          widget.selectedDate,
-                          context.watch<SortProvider>().sortType,
-                          context.watch<SortProvider>().isAscending),
-                      builder: (BuildContext context, snapshot) {
-                        switch (snapshot.connectionState) {
-                          case ConnectionState.waiting:
-                            return Container(
-                              height: MediaQuery.of(context).size.height - 300,
-                              width: double.infinity,
-                              alignment: Alignment.center,
-                              child: CircularProgressIndicator(),
-                            );
-                          default:
-                            if (!snapshot.hasData) {
-                              return Container(
-                                alignment: Alignment.center,
-                                child: Text("No order"),
-                              );
-                            }
-                            List<OrderModel> orders = snapshot.data!;
-                            if (!ResponsiveHelper.isMobile(context)) {
-                              orders = orders
-                                  .where((element) => element
-                                      .toStringForSearch()
-                                      .contains(
-                                          searchController.text.toLowerCase()))
-                                  .toList();
-                            }
 
-                            print('orders');
-                            for (var order in orders) {
-                              print('-' * 50);
-                              print(order.toJson());
-                            }
-
-                            List<OrderModel> pendingOrders = orders
-                                .where((element) =>
-                                    element.status.name == 'Pending')
-                                .toList();
-                            List<OrderModel> cookingOrders = orders
-                                .where((element) =>
-                                    element.status.name == 'Cooking')
-                                .toList();
-                            List<OrderModel> completedOrders = orders
-                                .where((element) =>
-                                    element.status.name == 'Completed')
-                                .toList();
-                            print('completedOrders');
-                            print(completedOrders.length);
-                            List<OrderModel> cancelledOrders = orders
-                                .where((element) =>
-                                    element.status.name == 'Cancelled')
-                                .toList();
-                            // add post frame callback to update the nbOrders
-                            WidgetsBinding.instance!
-                                .addPostFrameCallback((timeStamp) {
-                              // check if the nbOrders has changed to avoid infinite loop
-                              if (nbOrders[0] != orders.length ||
-                                  nbOrders[1] != pendingOrders.length ||
-                                  nbOrders[2] != cookingOrders.length ||
-                                  nbOrders[3] != completedOrders.length) {
-                                setState(() {
-                                  nbOrders = [
-                                    orders.length,
-                                    pendingOrders.length,
-                                    cookingOrders.length,
-                                    completedOrders.length
-                                  ];
-                                });
-                              }
-                            });
-                            return*/
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 0),
                       width: double.infinity,
-                      child: lstOrders.isNotEmpty
+                      child: orders.isNotEmpty
                           ? ListView(
                               children: [
                                 // pending orders
-                                if (lstOrders
-                                        .where((element) =>
-                                            element.status.name == 'Pending')
-                                        .toList()
+                                if (pendingOrders
                                         .isNotEmpty &&
                                     (context
                                                 .watch<FilterProvider>()
@@ -531,15 +506,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                             Status.pending))
                                   OrdersItemViewByStatus(
                                     status: 'Pending',
-                                    orders: lstOrders
-                                        .where((element) =>
-                                            element.status.name == 'Pending')
-                                        .toList(),
+                                    orders: pendingOrders,
                                   ),
-                                if (lstOrders
-                                        .where((element) =>
-                                            element.status.name == 'Cooking')
-                                        .toList()
+                                if (cookingOrders
                                         .isNotEmpty &&
                                     (context
                                                 .watch<FilterProvider>()
@@ -551,15 +520,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                             Status.cooking))
                                   OrdersItemViewByStatus(
                                     status: 'Cooking',
-                                    orders: lstOrders
-                                        .where((element) =>
-                                            element.status.name == 'Cooking')
-                                        .toList(),
+                                    orders: cookingOrders,
                                   ),
-                                if (lstOrders
-                                        .where((element) =>
-                                            element.status.name == 'Completed')
-                                        .toList()
+                                if (completedOrders
                                         .isNotEmpty &&
                                     (context
                                                 .watch<FilterProvider>()
@@ -571,15 +534,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                             Status.completed))
                                   OrdersItemViewByStatus(
                                     status: 'Completed',
-                                    orders: lstOrders
-                                        .where((element) =>
-                                            element.status.name == 'Completed')
-                                        .toList(),
+                                    orders: completedOrders,
                                   ),
-                                if (lstOrders
-                                        .where((element) =>
-                                            element.status.name == 'Cancelled')
-                                        .toList()
+                                if (cancelledOrders
                                         .isNotEmpty &&
                                     (context
                                                 .watch<FilterProvider>()
@@ -591,10 +548,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                             Status.cancelled))
                                   OrdersItemViewByStatus(
                                     status: 'Cancelled',
-                                    orders: lstOrders
-                                        .where((element) =>
-                                            element.status.name == 'Cancelled')
-                                        .toList(),
+                                    orders: cancelledOrders,
                                   ),
 
                                 // if status != all and no order
@@ -602,10 +556,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                             .watch<FilterProvider>()
                                             .selectedStatus ==
                                         Status.pending &&
-                                    lstOrders
-                                        .where((element) =>
-                                            element.status.name == 'Pending')
-                                        .toList()
+                                    pendingOrders
                                         .isEmpty)
                                   Container(
                                     height: MediaQuery.of(context).size.height -
@@ -617,10 +568,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                             .watch<FilterProvider>()
                                             .selectedStatus ==
                                         Status.cooking &&
-                                    lstOrders
-                                        .where((element) =>
-                                            element.status.name == 'Cooking')
-                                        .toList()
+                                    cookingOrders
                                         .isEmpty)
                                   Container(
                                     height: MediaQuery.of(context).size.height -
@@ -632,10 +580,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                             .watch<FilterProvider>()
                                             .selectedStatus ==
                                         Status.completed &&
-                                    lstOrders
-                                        .where((element) =>
-                                            element.status.name == 'Completed')
-                                        .toList()
+                                    completedOrders
                                         .isEmpty)
                                   Container(
                                     height: MediaQuery.of(context).size.height -
@@ -648,17 +593,15 @@ class _OrderScreenState extends State<OrderScreen> {
                           : Container(
                               height: MediaQuery.of(context).size.height - 300,
                               alignment: Alignment.center,
-                              child: Text("No order"),
+                              child: Text("No orders"),
                             ),
                     ),
-                  ) /*;
-                        }
-                      }),*/
+                  )
                 ],
               ),
             ),
           )
-        ]));
+        ]);}}}));
   }
 }
 

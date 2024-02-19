@@ -7,7 +7,6 @@ import 'package:cooker_app/src/features/order/data/model/order_model.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/sort_provider.dart';
 import 'package:cooker_app/src/features/product/data/model/product_model.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import '../../business/param/changeIsDoneCartByIdParam.dart';
 import '../../business/param/changeStatusOrderByIdParam.dart';
@@ -100,9 +99,9 @@ class OrderProvider with ChangeNotifier {
     return lstCategory;
   }
 
-  Future<DateTime?> chooseDate() async {
+  Future<DateTime?> chooseDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
-      context: Get.context!,
+      context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2015, 8),
       lastDate: DateTime(2101),

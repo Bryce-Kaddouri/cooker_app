@@ -20,8 +20,8 @@
   ];
 }*/
 import 'package:cooker_app/src/core/helper/date_helper.dart';
+import 'package:cooker_app/src/features/setting/presentation/screen/setting_screen.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -31,6 +31,8 @@ import '../../features/details/presentation/screen/order_details_screen.dart';
 import '../../features/order/presentation/screen/order_screen.dart';
 
 class RouterHelper {
+  GlobalKey<NavigatorState> navKey = GlobalKey();
+
   GoRouter getRouter() {
     return GoRouter(
       errorBuilder: (context, state) {
@@ -41,7 +43,6 @@ class RouterHelper {
           ),
         );
       },
-      navigatorKey: Get.key,
       redirect: (context, state) {
         // check if user is logged in
         // if not, redirect to login page
@@ -143,6 +144,26 @@ class RouterHelper {
         GoRoute(
           path: '/login',
           builder: (context, state) => SignInScreen(),
+        ),
+        GoRoute(
+          name: 'setting',
+          path: '/setting',
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              child: SettingScreen(),
+              // slide left to right transition
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(1, 0),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                );
+              },
+            );
+          },
         ),
       ],
     );

@@ -19,6 +19,7 @@ import 'package:cooker_app/src/features/order/data/repository/order_repository_i
 import 'package:cooker_app/src/features/order/presentation/provider/filter_provider.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/order_provider.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/sort_provider.dart';
+import 'package:cooker_app/src/features/setting/presentation/setting_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -83,6 +84,9 @@ Future<void> main() async {
         ChangeNotifierProvider<SortProvider>(
           create: (context) => SortProvider(),
         ),
+        ChangeNotifierProvider<SettingProvider>(
+          create: (context) => SettingProvider(),
+        ),
         /*ChangeNotifierProvider<CategoryProvider>(
           create: (context) => CategoryProvider(
             categoryAddUseCase: CategoryAddUseCase(categoryRepository: categoryRepository),
@@ -133,12 +137,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   GoRouter router = RouterHelper().getRouter();
-  final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp.router(
-      scaffoldMessengerKey: scaffoldMessengerKey,
       title: 'Cooker App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light().copyWith(
@@ -147,7 +149,9 @@ class _MyAppState extends State<MyApp> {
         primaryColorLight: AppColor.lightBackgroundColor,
         cardColor: AppColor.lightCardColor,
       ),
-      themeMode: ThemeMode.light,
+      themeMode: context.watch<SettingProvider>().isDarkMode
+          ? ThemeMode.dark
+          : ThemeMode.light,
       darkTheme: ThemeData.dark().copyWith(
         canvasColor: AppColor.darkCardColor,
         primaryColor: AppColor.darkBackgroundColor,

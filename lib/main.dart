@@ -156,19 +156,26 @@ class _MyAppState extends State<MyApp> {
         iconTheme: IconThemeData(color: AppColor.lightBlackTextColor),
         iconButtonTheme: IconButtonThemeData(
           style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.all(AppColor.lightBlackTextColor),
+            foregroundColor:
+                MaterialStateProperty.all(AppColor.lightBlackTextColor),
           ),
         ),
         textTheme: TextTheme(
-         bodySmall: AppTextStyle.lightTextStyle(),
-          bodyMedium: AppTextStyle.regularTextStyle(),
-          bodyLarge: AppTextStyle.boldTextStyle(),
+          bodySmall: AppTextStyle.lightTextStyle(
+            color: AppColor.lightBlackTextColor,
+          ),
+          bodyMedium: AppTextStyle.regularTextStyle(
+            color: AppColor.lightBlackTextColor,
+          ),
+          bodyLarge: AppTextStyle.boldTextStyle(
+            color: AppColor.lightBlackTextColor,
+          ),
         ),
         primaryColor: AppColor.lightBackgroundColor,
         cardColor: AppColor.lightCardColor,
         colorScheme: ColorScheme.light(
           primary: AppColor.lightBackgroundColor,
-          secondary: AppColor.lightCardColor,
+          secondary: AppColor.lightBlackTextColor,
         ),
       ),
       themeMode: context.watch<SettingProvider>().isDarkMode
@@ -186,19 +193,26 @@ class _MyAppState extends State<MyApp> {
         iconTheme: IconThemeData(color: AppColor.darkWhiteTextColor),
         iconButtonTheme: IconButtonThemeData(
           style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.all(AppColor.darkWhiteTextColor),
+            foregroundColor:
+                MaterialStateProperty.all(AppColor.darkWhiteTextColor),
           ),
         ),
         textTheme: TextTheme(
-          bodySmall: AppTextStyle.lightTextStyle(),
-          bodyMedium: AppTextStyle.regularTextStyle(),
-          bodyLarge: AppTextStyle.boldTextStyle(),
+          bodySmall: AppTextStyle.lightTextStyle(
+            color: AppColor.darkWhiteTextColor,
+          ),
+          bodyMedium: AppTextStyle.regularTextStyle(
+            color: AppColor.darkWhiteTextColor,
+          ),
+          bodyLarge: AppTextStyle.boldTextStyle(
+            color: AppColor.darkWhiteTextColor,
+          ),
         ),
         primaryColor: AppColor.darkBackgroundColor,
         cardColor: AppColor.darkCardColor,
         colorScheme: ColorScheme.light(
           primary: AppColor.darkBackgroundColor,
-          secondary: AppColor.darkCardColor,
+          secondary: AppColor.darkWhiteTextColor,
         ),
       ),
 

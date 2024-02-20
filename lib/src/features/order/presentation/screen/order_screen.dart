@@ -12,6 +12,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../auth/presentation/provider/auth_provider.dart';
 import '../../../product/data/model/product_model.dart';
 import '../provider/order_provider.dart';
 import '../provider/sort_provider.dart';
@@ -135,44 +136,165 @@ class _OrderScreenState extends State<OrderScreen> {
                 return Scaffold(
                     drawer: Builder(
                       builder: (context) => Drawer(
-                        child: ListView(
+                        child: Column(
                           children: [
-                            DrawerHeader(
-                              child: Column(
+                            Expanded(
+                              child: ListView(
                                 children: [
-                                  CircleAvatar(
-                                    radius: 50,
-                                    child: Icon(Icons.person),
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      child: Text('Bryce Kaddouri'),
+                                  DrawerHeader(
+                                    child: Column(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 50,
+                                          child: Icon(Icons.person),
+                                        ),
+                                        Expanded(
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            child: Text('Bryce Kaddouri'),
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                  ),
+                                  ListTile(
+                                    leading: Icon(Icons.shopping_cart),
+                                    title: Text('Order List'),
+                                    onTap: () {
+                                      GoRouter.of(context).push('setting');
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: Icon(Icons.menu_book_sharp),
+                                    title: Text('Recettes'),
+                                    onTap: () {
+                                      context.goNamed('products');
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: Icon(Icons.settings),
+                                    title: Text('Settings'),
+                                    onTap: () {
+                                      context.goNamed('setting');
+                                    },
                                   ),
                                 ],
                               ),
                             ),
-                            ListTile(
-                              leading: Icon(Icons.shopping_cart),
-                              title: Text('Order List'),
-                              onTap: () {
-                                GoRouter.of(context).push('setting');
-                              },
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.menu_book_sharp),
-                              title: Text('Recettes'),
-                              onTap: () {
-                                context.goNamed('products');
-                              },
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.settings),
-                              title: Text('Settings'),
-                              onTap: () {
-                                context.goNamed('setting');
-                              },
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              child: MaterialButton(
+                                onPressed: () {
+                                  showAdaptiveDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          icon: Icon(
+                                            Icons.warning_amber_rounded,
+                                            size: 70,
+                                          ),
+                                          iconColor:
+                                              AppColor.canceledForegroundColor,
+                                          title: Text(
+                                            'Logout',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge!
+                                                .copyWith(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                          ),
+                                          content: Text(
+                                            'Are you sure you want to logout?',
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium!
+                                                .copyWith(
+                                                  fontSize: 16,
+                                                ),
+                                          ),
+                                          actionsAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          actions: [
+                                            MaterialButton(
+                                              minWidth: 100,
+                                              height: 40,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              color: AppColor
+                                                  .completedForegroundColor,
+                                              textColor: Theme.of(context)
+                                                  .primaryColor,
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                                context
+                                                    .read<AuthProvider>()
+                                                    .logout();
+                                                context.goNamed('login');
+                                              },
+                                              child: Text(
+                                                'Yes',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium!
+                                                    .copyWith(
+                                                      fontSize: 16,
+                                                    ),
+                                              ),
+                                            ),
+                                            MaterialButton(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              color: AppColor
+                                                  .canceledForegroundColor,
+                                              textColor: Theme.of(context)
+                                                  .primaryColor,
+                                              minWidth: 100,
+                                              height: 40,
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text(
+                                                'No',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium!
+                                                    .copyWith(
+                                                      fontSize: 16,
+                                                    ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      });
+                                },
+                                height: 50,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                color: AppColor.canceledForegroundColor,
+                                textColor:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                                minWidth: double.infinity,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.logout,
+                                    ),
+                                    SizedBox(
+                                      width: 30,
+                                    ),
+                                    Text('Logout'),
+                                  ],
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -303,14 +425,20 @@ class _OrderScreenState extends State<OrderScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      'Order List',
-                                      style: TextStyle(
+                                    Text('Order List',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge!
+                                            .copyWith(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            )
+                                        /* TextStyle(
                                         fontSize: 20,
                                         color: AppColor.lightBlackTextColor,
                                         fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                                      ),*/
+                                        ),
                                     if (ResponsiveHelper.isDesktop(context))
                                       Container(
                                         alignment: Alignment.center,
@@ -332,11 +460,13 @@ class _OrderScreenState extends State<OrderScreen> {
                                               width: 40,
                                               child: Icon(
                                                 Icons.search,
-                                                color: AppColor
-                                                    .lightBlackTextColor,
                                               ),
                                             ),
                                             TextField(
+                                              showCursor: true,
+                                              cursorColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
                                               controller: searchController,
                                               scrollPadding:
                                                   const EdgeInsets.all(0),
@@ -358,10 +488,12 @@ class _OrderScreenState extends State<OrderScreen> {
                                                 fillColor: Theme.of(context)
                                                     .primaryColor,
                                                 filled: true,
-                                                hintStyle: TextStyle(
-                                                  color: AppColor
-                                                      .lightBlackTextColor,
-                                                ),
+                                                hintStyle: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium!
+                                                    .copyWith(
+                                                      fontSize: 16,
+                                                    ),
                                                 border: OutlineInputBorder(
                                                   borderSide: BorderSide.none,
                                                 ),
@@ -640,7 +772,7 @@ class StatusBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     color: context.watch<FilterProvider>().selectedStatus ==
                             Status.all
-                        ? Theme.of(context).scaffoldBackgroundColor
+                        ? Theme.of(context).primaryColor
                         : null,
                   ),
                   child: InkWell(
@@ -651,11 +783,10 @@ class StatusBar extends StatelessWidget {
                     },
                     child: Text(
                       'All (${nbOrders[0]})',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.lightBlackTextColor,
-                        fontWeight: FontWeight.normal,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                          ),
                     ),
                   ),
                 ),
@@ -671,7 +802,7 @@ class StatusBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     color: context.watch<FilterProvider>().selectedStatus ==
                             Status.pending
-                        ? Theme.of(context).scaffoldBackgroundColor
+                        ? Theme.of(context).primaryColor
                         : null,
                   ),
                   child: InkWell(
@@ -682,11 +813,10 @@ class StatusBar extends StatelessWidget {
                     },
                     child: Text(
                       'Pending (${nbOrders[1]})',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.lightBlackTextColor,
-                        fontWeight: FontWeight.normal,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                          ),
                     ),
                   ),
                 ),
@@ -702,7 +832,7 @@ class StatusBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     color: context.watch<FilterProvider>().selectedStatus ==
                             Status.cooking
-                        ? Theme.of(context).scaffoldBackgroundColor
+                        ? Theme.of(context).primaryColor
                         : null,
                   ),
                   child: InkWell(
@@ -713,11 +843,10 @@ class StatusBar extends StatelessWidget {
                     },
                     child: Text(
                       'Cooking (${nbOrders[2]})',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.lightBlackTextColor,
-                        fontWeight: FontWeight.normal,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                          ),
                     ),
                   ),
                 ),
@@ -733,7 +862,7 @@ class StatusBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     color: context.watch<FilterProvider>().selectedStatus ==
                             Status.completed
-                        ? Theme.of(context).scaffoldBackgroundColor
+                        ? Theme.of(context).primaryColor
                         : null,
                   ),
                   child: InkWell(
@@ -744,11 +873,10 @@ class StatusBar extends StatelessWidget {
                     },
                     child: Text(
                       'Completed (${nbOrders[3]})',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.lightBlackTextColor,
-                        fontWeight: FontWeight.normal,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                          ),
                     ),
                   ),
                 )
@@ -789,11 +917,10 @@ class StatusBar extends StatelessWidget {
                     },
                     child: Text(
                       'All (${nbOrders[0]})',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.lightBlackTextColor,
-                        fontWeight: FontWeight.normal,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                          ),
                     ),
                   ),
                 ),
@@ -817,11 +944,10 @@ class StatusBar extends StatelessWidget {
                     },
                     child: Text(
                       'Pending (${nbOrders[1]})',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.lightBlackTextColor,
-                        fontWeight: FontWeight.normal,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                          ),
                     ),
                   ),
                 ),
@@ -845,11 +971,10 @@ class StatusBar extends StatelessWidget {
                     },
                     child: Text(
                       'Cooking (${nbOrders[2]})',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.lightBlackTextColor,
-                        fontWeight: FontWeight.normal,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                          ),
                     ),
                   ),
                 ),
@@ -873,11 +998,10 @@ class StatusBar extends StatelessWidget {
                     },
                     child: Text(
                       'Completed (${nbOrders[3]})',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor.lightBlackTextColor,
-                        fontWeight: FontWeight.normal,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                          ),
                     ),
                   ),
                 )
@@ -914,11 +1038,10 @@ class DateBar extends StatelessWidget {
               ResponsiveHelper.isMobile(context)
                   ? DateHelper.getFullFormattedDateReduce(selectedDate)
                   : DateHelper.getFullFormattedDate(selectedDate),
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColor.lightBlackTextColor,
-                fontWeight: FontWeight.normal,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                  ),
             ),
           ),
           Container(
@@ -942,7 +1065,6 @@ class DateBar extends StatelessWidget {
               },
               child: Icon(
                 Icons.calendar_month_outlined,
-                color: AppColor.lightBlackTextColor,
               ),
             ),
           ),

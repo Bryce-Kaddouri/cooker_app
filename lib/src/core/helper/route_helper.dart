@@ -142,6 +142,7 @@ class RouterHelper {
           ],
         ),
         GoRoute(
+          name: 'login',
           path: '/login',
           builder: (context, state) => SignInScreen(),
         ),

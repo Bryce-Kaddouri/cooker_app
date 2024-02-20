@@ -1,4 +1,3 @@
-import 'package:cooker_app/src/core/constant/app_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -167,7 +166,6 @@ class _SignInScreenState extends State<SignInScreen>
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Container(
         child: Stack(
           children: [
@@ -227,10 +225,12 @@ class _SignInScreenState extends State<SignInScreen>
                             children: [
                               Text(
                                 'Sign In',
-                                style: TextStyle(
-                                  fontSize: 50,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                      fontSize: 30,
+                                    ),
                               ),
                               const SizedBox(height: 10),
                               Text(
@@ -239,9 +239,12 @@ class _SignInScreenState extends State<SignInScreen>
                                   fontSize: 20,
                                   color: AppColor.lightBlackTextColor,
                                 ),*/
-                                Theme.of(context).textTheme.bodySmall!.copyWith(
-                                  fontSize: 20,
-                                ),
+                                    Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .copyWith(
+                                          fontSize: 20,
+                                        ),
                               ),
                             ],
                           ),
@@ -249,10 +252,44 @@ class _SignInScreenState extends State<SignInScreen>
                         Container(
                           child: Column(children: [
                             FormBuilderTextField(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .copyWith(
+                                    color: AppColor.lightBlackTextColor,
+                                  ),
+                              showCursor: true,
+                              cursorColor: AppColor.lightBlackTextColor,
                               name: 'email',
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Email',
+                                labelStyle: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                      color: AppColor.lightBlackTextColor,
+                                    ),
                                 border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    width: 1,
+                                    color: AppColor.lightBlackTextColor,
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    width: 1,
+                                    color: AppColor.lightBlackTextColor,
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    width: 1,
+                                    color: AppColor.lightBlackTextColor,
+                                  ),
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10)),
                                 ),
@@ -267,10 +304,44 @@ class _SignInScreenState extends State<SignInScreen>
                             ),
                             const SizedBox(height: 10),
                             FormBuilderTextField(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .copyWith(
+                                    color: AppColor.lightBlackTextColor,
+                                  ),
+                              showCursor: true,
+                              cursorColor: AppColor.lightBlackTextColor,
                               name: 'password',
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Password',
+                                labelStyle: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                      color: AppColor.lightBlackTextColor,
+                                    ),
                                 border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    width: 1,
+                                    color: AppColor.lightBlackTextColor,
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    width: 1,
+                                    color: AppColor.lightBlackTextColor,
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    width: 1,
+                                    color: AppColor.lightBlackTextColor,
+                                  ),
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10)),
                                 ),
@@ -286,7 +357,7 @@ class _SignInScreenState extends State<SignInScreen>
                           ]),
                         ),
                         MaterialButton(
-                          color: Theme.of(context).colorScheme.secondary,
+                          color: colors[step],
                           onPressed: () {
                             // Validate and save the form values
                             if (_formKey.currentState!.saveAndValidate()) {

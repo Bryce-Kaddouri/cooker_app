@@ -50,8 +50,8 @@ class StatusBar extends StatelessWidget {
             child: Text(
               'Pending (13)',
               style: !ResponsiveHelper.isDesktop(context)
-                  ? AppTextStyle.lightTextStyle(fontSize: 10)
-                  : AppTextStyle.regularTextStyle(),
+                  ? /*AppTextStyle.lightTextStyle(fontSize: 10)*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 10)
+                  : /*AppTextStyle.regularTextStyle(),*/ Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20),
             ),
           ),
           SizedBox(
@@ -68,8 +68,8 @@ class StatusBar extends StatelessWidget {
             child: Text(
               'Cooking (3)',
               style: !ResponsiveHelper.isDesktop(context)
-                  ? AppTextStyle.lightTextStyle(fontSize: 10)
-                  : AppTextStyle.regularTextStyle(),
+                  ? /*AppTextStyle.lightTextStyle(fontSize: 10)*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 10)
+                  : /*AppTextStyle.regularTextStyle(),*/ Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20),
             ),
           ),
           SizedBox(
@@ -86,8 +86,8 @@ class StatusBar extends StatelessWidget {
             child: Text(
               'Completed (7)',
               style: !ResponsiveHelper.isDesktop(context)
-                  ? AppTextStyle.lightTextStyle(fontSize: 10)
-                  : AppTextStyle.regularTextStyle(fontSize: 20),
+                  ? /*AppTextStyle.lightTextStyle(fontSize: 10)*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 10)
+                  : /*AppTextStyle.regularTextStyle(fontSize: 20),*/ Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20),
             ),
           )
         ],

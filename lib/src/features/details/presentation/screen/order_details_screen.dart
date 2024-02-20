@@ -60,6 +60,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         title: Text('Order #${widget.orderId}',
             style: AppTextStyle.boldTextStyle(fontSize: 32)),
       ),
@@ -204,7 +206,8 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                         SizedBox(width: 10),
                         Text(
                             '${DateHelper.getFormattedDateAndTime(widget.order.createdAt)}',
-                            style: AppTextStyle.lightTextStyle(fontSize: 16)),
+                            style: /*AppTextStyle.lightTextStyle(fontSize: 16),*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 16)
+                        ),
                       ],
                     ),
                   ),
@@ -270,7 +273,8 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                           SizedBox(width: 10),
                           Text(
                               '${widget.order.cookingStartedAt != null ? DateHelper.getFormattedDateAndTime(widget.order.cookingStartedAt!) : ''}',
-                              style: AppTextStyle.lightTextStyle(fontSize: 16)),
+                              style: /*AppTextStyle.lightTextStyle(fontSize: 16)*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 16)
+                          ),
                         ],
                       ),
                     ),
@@ -328,7 +332,8 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                             Text(
                                 '${DateHelper.getFormattedDateAndTime(widget.order.readyAt!)}',
                                 style:
-                                    AppTextStyle.lightTextStyle(fontSize: 16)),
+                                    /*AppTextStyle.lightTextStyle(fontSize: 16)*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 16)
+                            ),
                           ],
                         ),
                       ),
@@ -506,8 +511,9 @@ class ProductsItemListView extends StatelessWidget {
                                     ),
                                   ),
                                   Text('x',
-                                      style: AppTextStyle.lightTextStyle(
-                                          fontSize: 14)),
+                                      style: /*AppTextStyle.lightTextStyle(
+                                          fontSize: 14)*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 14),
+                                  ),
                                 ],
                               ),
                             ),
@@ -572,7 +578,8 @@ class CustomerHourWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Customer',
-                              style: AppTextStyle.lightTextStyle(fontSize: 12)),
+                              style: /*AppTextStyle.lightTextStyle(fontSize: 12)*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 12),
+                          ),
                           Container(
                             child: Text(
                               '${order!.customer.lName} ${order!.customer.fName}',
@@ -599,7 +606,7 @@ class CustomerHourWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Hour',
-                            style: AppTextStyle.lightTextStyle(fontSize: 12)),
+                            style: /*AppTextStyle.lightTextStyle(fontSize: 12)),*/ Theme.of(context).textTheme.bodySmall),
                         Text(
                             '${order!.time.hour < 10 ? '0${order!.time.hour}' : order!.time.hour} : ${order!.time.minute < 10 ? '0${order!.time.minute}' : order!.time.minute}',
                             style: AppTextStyle.boldTextStyle(fontSize: 20)),

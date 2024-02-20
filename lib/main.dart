@@ -1,4 +1,5 @@
 import 'package:cooker_app/src/core/constant/app_color.dart';
+import 'package:cooker_app/src/core/constant/app_text_style.dart';
 import 'package:cooker_app/src/core/helper/route_helper.dart';
 import 'package:cooker_app/src/features/auth/business/repository/auth_repository.dart';
 import 'package:cooker_app/src/features/auth/business/usecase/auth_get_user_usecase.dart';
@@ -144,17 +145,61 @@ class _MyAppState extends State<MyApp> {
       title: 'Cooker App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light().copyWith(
-        canvasColor: AppColor.lightCardColor,
+        scaffoldBackgroundColor: AppColor.lightBackgroundColor,
+        appBarTheme: AppBarTheme(
+          backgroundColor: AppColor.lightBackgroundColor,
+          elevation: 0,
+          iconTheme: IconThemeData(color: AppColor.lightBlackTextColor),
+          surfaceTintColor: AppColor.lightBackgroundColor,
+          shadowColor: AppColor.lightBackgroundColor,
+        ),
+        iconTheme: IconThemeData(color: AppColor.lightBlackTextColor),
+        iconButtonTheme: IconButtonThemeData(
+          style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all(AppColor.lightBlackTextColor),
+          ),
+        ),
+        textTheme: TextTheme(
+         bodySmall: AppTextStyle.lightTextStyle(),
+          bodyMedium: AppTextStyle.regularTextStyle(),
+          bodyLarge: AppTextStyle.boldTextStyle(),
+        ),
         primaryColor: AppColor.lightBackgroundColor,
-        primaryColorLight: AppColor.lightBackgroundColor,
         cardColor: AppColor.lightCardColor,
+        colorScheme: ColorScheme.light(
+          primary: AppColor.lightBackgroundColor,
+          secondary: AppColor.lightCardColor,
+        ),
       ),
       themeMode: context.watch<SettingProvider>().isDarkMode
           ? ThemeMode.dark
           : ThemeMode.light,
       darkTheme: ThemeData.dark().copyWith(
-        canvasColor: AppColor.darkCardColor,
+        scaffoldBackgroundColor: AppColor.darkBackgroundColor,
+        appBarTheme: AppBarTheme(
+          backgroundColor: AppColor.darkBackgroundColor,
+          elevation: 0,
+          iconTheme: IconThemeData(color: AppColor.darkWhiteTextColor),
+          surfaceTintColor: AppColor.darkBackgroundColor,
+          shadowColor: AppColor.darkBackgroundColor,
+        ),
+        iconTheme: IconThemeData(color: AppColor.darkWhiteTextColor),
+        iconButtonTheme: IconButtonThemeData(
+          style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all(AppColor.darkWhiteTextColor),
+          ),
+        ),
+        textTheme: TextTheme(
+          bodySmall: AppTextStyle.lightTextStyle(),
+          bodyMedium: AppTextStyle.regularTextStyle(),
+          bodyLarge: AppTextStyle.boldTextStyle(),
+        ),
         primaryColor: AppColor.darkBackgroundColor,
+        cardColor: AppColor.darkCardColor,
+        colorScheme: ColorScheme.light(
+          primary: AppColor.darkBackgroundColor,
+          secondary: AppColor.darkCardColor,
+        ),
       ),
 
       /*FluentThemeData(

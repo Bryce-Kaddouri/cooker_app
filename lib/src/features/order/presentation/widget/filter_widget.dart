@@ -231,10 +231,7 @@ class _FilterWidgetState extends State<FilterWidget> {
                                     ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           elevation: 1,
-                                          onPrimary:
-                                              Theme.of(context).primaryColor,
-                                          onSurface:
-                                              Theme.of(context).primaryColor,
+
                                           surfaceTintColor:
                                               Theme.of(context).primaryColor,
                                           shadowColor: Colors.black,
@@ -325,10 +322,6 @@ class _FilterWidgetState extends State<FilterWidget> {
                                     ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           elevation: 1,
-                                          onPrimary:
-                                              Theme.of(context).primaryColor,
-                                          onSurface:
-                                              Theme.of(context).primaryColor,
                                           surfaceTintColor:
                                               Theme.of(context).primaryColor,
                                           shadowColor: Colors.black,

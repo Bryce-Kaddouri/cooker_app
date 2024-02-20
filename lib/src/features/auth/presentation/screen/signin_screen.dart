@@ -235,9 +235,12 @@ class _SignInScreenState extends State<SignInScreen>
                               const SizedBox(height: 10),
                               Text(
                                 'Sign in to your account',
-                                style: AppTextStyle.lightTextStyle(
+                                style: /*AppTextStyle.lightTextStyle(
                                   fontSize: 20,
                                   color: AppColor.lightBlackTextColor,
+                                ),*/
+                                Theme.of(context).textTheme.bodySmall!.copyWith(
+                                  fontSize: 20,
                                 ),
                               ),
                             ],

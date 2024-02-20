@@ -129,7 +129,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 List<int> nbOrders = [
                   orders.length,
                   pendingOrders.length,
-                  pendingOrders.length,
+                  cookingOrders.length,
                   completedOrders.length
                 ];
                 return Scaffold(
@@ -209,7 +209,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                       padding: const EdgeInsets.all(5),
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: Theme.of(context).canvasColor,
+                                        color: Theme.of(context).cardColor,
                                       ),
                                       child: Container(
                                         height: 40,
@@ -294,7 +294,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(30),
-                                  color: Theme.of(context).canvasColor,
+                                  color: Theme.of(context).cardColor,
                                 ),
                                 padding: const EdgeInsets.all(10),
                                 height: 60,
@@ -402,7 +402,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           width: double.infinity,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25),
-                            color: Theme.of(context).canvasColor,
+                            color: Theme.of(context).cardColor,
                           ),
                           child: Column(
                             children: [
@@ -626,7 +626,7 @@ class StatusBar extends StatelessWidget {
             height: 50,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(25),
-              color: Theme.of(context).canvasColor,
+              color: Theme.of(context).cardColor,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -898,7 +898,7 @@ class DateBar extends StatelessWidget {
       height: 50,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25),
-        color: Theme.of(context).canvasColor,
+        color: Theme.of(context).cardColor,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

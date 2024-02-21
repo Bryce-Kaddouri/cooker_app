@@ -53,16 +53,32 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 if(payload.table == 'orders' && payload.eventType == PostgresChangeEvent.update) {
                   if(payload.oldRecord != null && payload.newRecord != null) {
                     if(payload.oldRecord!['status_id'] != payload.newRecord!['status_id'] && payload.newRecord!['id'] == widget.orderId) {
-                      Future.delayed(Duration(seconds: 2), () {
+                      /*ElegantNotification.success(
+                        width: 360,
+                        position: Alignment.topRight,
+                        animation: AnimationType.fromRight,
+                        title: Text('Update', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20, color: AppColor.darkGreyTextColor)),
+                        description: Container(
+                          child: Expanded(
+                            child: Text('Order #${widget.orderId} has been updated successfully', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16, color: AppColor.darkGreyTextColor)),
+                          ),
+                        ),
+                        onDismiss: () {},
+                      ).show(Get.context!);*/
+                     /* Future.delayed(Duration(seconds: 1), () {
                         ElegantNotification.success(
                           width: 360,
                           position: Alignment.topRight,
                           animation: AnimationType.fromRight,
                           title: Text('Update', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20, color: AppColor.darkGreyTextColor)),
-                          description: Text('Order #${widget.orderId} has been updated successfully', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16, color: AppColor.darkGreyTextColor)),
+                          description: Container(
+                            child: Expanded(
+                              child: Text('Order #${widget.orderId} has been updated successfully', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16, color: AppColor.darkGreyTextColor)),
+                            ),
+                          ),
                           onDismiss: () {},
-                        ).show(_scaffoldKey.currentContext!);
-                      });
+                        ).show(Get.key.currentContext!);
+                      });*/
                     }
                   }
                 }
@@ -197,11 +213,9 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                           child: CircleAvatar(
                             backgroundColor: AppColor.pendingForegroundColor,
                             child: Text('1',
-                                style: AppTextStyle.boldTextStyle(
-                                    fontSize: 20,
-                                    color: widget.order.status.step >= 1
-                                        ? Theme.of(context).primaryColor
-                                        : AppColor.lightGreyTextColor)),
+                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 20, color: widget.order.status.step >= 1
+                                ? Theme.of(context).colorScheme.secondary
+                                : AppColor.lightGreyTextColor)),
                           ),
                         ),
                       SizedBox(width: 10),
@@ -376,16 +390,62 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
   }
 }
 
-class StatusButton extends StatelessWidget {
+class StatusButton extends StatefulWidget {
   OrderModel order;
   StatusButton({super.key, required this.order});
 
   @override
+  State<StatusButton> createState() => _StatusButtonState();
+}
+
+class _StatusButtonState extends State<StatusButton> {
+  @override
   Widget build(BuildContext context) {
     return MaterialButton(
       onPressed: () {
-        if (order.status.step == 1) {
-          showAdaptiveDialog(
+        if (widget.order.status.step == 1) {
+          Get.defaultDialog(
+            titleStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 24),
+            middleTextStyle:  Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+            title: 'Start cooking',
+            middleText: 'Are you sure you want to start cooking?',
+            confirm: MaterialButton(
+              onPressed: (){
+                print('order id: ${widget.order.id}');
+                Get.back();
+                context
+                    .read<OrderProvider>()
+                    .changeOrderStatus(widget.order.id, widget.order.date, 2).whenComplete(() {
+                      print('order id: ${widget.order.id}');
+
+                  ElegantNotification.success(
+                    width: 360,
+                    position: Alignment.topRight,
+                    animation: AnimationType.fromRight,
+                    title: Text('Update', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20, color: AppColor.darkGreyTextColor)),
+                    description: Container(
+                      child: Expanded(
+                        child: Text('Order #${widget.order.id} has been updated successfully', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16, color: AppColor.darkGreyTextColor)),
+                      ),
+                    ),
+                    onDismiss: () {},
+                  ).show(context);
+                });
+
+              },
+              child: Text('Yes'),
+            ),
+            cancel: MaterialButton(
+              onPressed: () {
+
+                Get.back();
+
+              },
+              child: Text('No'),
+            ),
+
+          );
+         /* showAdaptiveDialog(
               context: context,
               builder: (context) {
                 return AlertDialog(
@@ -450,7 +510,7 @@ class StatusButton extends StatelessWidget {
                         ),
                       ),
                     ),
-                   /* TextButton(
+                   *//* TextButton(
                       onPressed: () {
                         context
                             .read<OrderProvider>()
@@ -458,10 +518,10 @@ class StatusButton extends StatelessWidget {
                         Navigator.of(context).pop();
                       },
                       child: Text('Start cooking'),
-                    ),*/
+                    ),*//*
                   ],
                 );
-              });
+              });*/
         } else {
           /* context
                   .read<OrderProvider>()
@@ -502,7 +562,7 @@ class StatusButton extends StatelessWidget {
                       onPressed: () {
                         context
                             .read<OrderProvider>()
-                            .changeOrderStatus(order.id, order.date, 3);
+                            .changeOrderStatus(widget.order.id, widget.order.date, 3);
                         Navigator.of(context).pop();
                       },
                       child: Text(
@@ -545,10 +605,10 @@ class StatusButton extends StatelessWidget {
         }
       },
       child: Text(
-          order.status.step == 1 ? 'Start cooking' : 'Mark as completed',
+          widget.order.status.step == 1 ? 'Start cooking' : 'Mark as completed',
           style: AppTextStyle.boldTextStyle(
               fontSize: 20, color: Theme.of(context).colorScheme.secondary)),
-      color: order.status.step == 1
+      color: widget.order.status.step == 1
           ? AppColor.cookingForegroundColor
           : AppColor.completedForegroundColor,
       height: 60,

@@ -37,7 +37,7 @@ class _SettingScreenState extends State<SettingScreen> {
               trailing: Switch.adaptive(
                   value: context.watch<SettingProvider>().isDarkMode,
                   onChanged: (value) {
-                    context.read<SettingProvider>().updateTheme(value);
+                    context.read<SettingProvider>().saveTheme(value);
                     // change theme
                   })),
           ListTile(

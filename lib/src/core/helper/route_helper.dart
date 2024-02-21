@@ -22,6 +22,7 @@
 import 'package:cooker_app/src/core/helper/date_helper.dart';
 import 'package:cooker_app/src/features/setting/presentation/screen/setting_screen.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -35,6 +36,7 @@ class RouterHelper {
 
   GoRouter getRouter() {
     return GoRouter(
+      navigatorKey: Get.key,
       errorBuilder: (context, state) {
         print('error: ${state.error}');
         return Container(

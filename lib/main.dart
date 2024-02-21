@@ -138,12 +138,21 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   GoRouter router = RouterHelper().getRouter();
+  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<SettingProvider>().initTheme();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp.router(
+      scaffoldMessengerKey: _scaffoldMessengerKey,
       title: 'Cooker App',
       debugShowCheckedModeBanner: false,
+
       theme: ThemeData.light().copyWith(
         scaffoldBackgroundColor: AppColor.lightBackgroundColor,
         appBarTheme: AppBarTheme(
@@ -153,7 +162,6 @@ class _MyAppState extends State<MyApp> {
           surfaceTintColor: AppColor.lightBackgroundColor,
           shadowColor: AppColor.lightBackgroundColor,
         ),
-
         datePickerTheme: DatePickerThemeData(
           elevation: 2,
           shape: RoundedRectangleBorder(
@@ -179,23 +187,18 @@ class _MyAppState extends State<MyApp> {
             dayForegroundColor: MaterialStateProperty.all(
               AppColor.lightBlackTextColor,
             ),
-
             todayBorder: BorderSide(
               color: AppColor.lightBlackTextColor,
             ),
           todayForegroundColor: MaterialStateProperty.all(
             AppColor.lightBlackTextColor,
           ),
-
             confirmButtonStyle: ButtonStyle(
               foregroundColor: MaterialStateProperty.all(
                 AppColor.lightBlackTextColor,
               ),
             ),
-
-
           inputDecorationTheme: InputDecorationTheme(
-
             labelStyle: AppTextStyle.lightTextStyle(
               color: AppColor.lightBlackTextColor,
             ),
@@ -204,8 +207,6 @@ class _MyAppState extends State<MyApp> {
             ),
             focusColor: AppColor.lightBlackTextColor,
             hoverColor: AppColor.lightBlackTextColor,
-
-
             border: OutlineInputBorder(
               borderSide: BorderSide(
                 color: AppColor.lightBlackTextColor,
@@ -233,8 +234,6 @@ class _MyAppState extends State<MyApp> {
             ),
 
           ),
-
-
         ),
         iconTheme: IconThemeData(color: AppColor.lightBlackTextColor),
         iconButtonTheme: IconButtonThemeData(

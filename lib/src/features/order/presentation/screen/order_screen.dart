@@ -14,6 +14,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../auth/presentation/provider/auth_provider.dart';
 import '../../../product/data/model/product_model.dart';
+import '../../../setting/presentation/setting_provider.dart';
 import '../provider/order_provider.dart';
 import '../provider/sort_provider.dart';
 import '../widget/filter_widget.dart';
@@ -1114,12 +1115,12 @@ class StatusWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: getBgColor(),
+        color: context.watch<SettingProvider>().isDarkMode ? getFgColor() : getBgColor(),
       ),
       child: Text(
         status,
         style: TextStyle(
-          color: getFgColor(),
+          color: context.watch<SettingProvider>().isDarkMode ? getBgColor() : getFgColor(),
           fontWeight: FontWeight.bold,
         ),
       ),

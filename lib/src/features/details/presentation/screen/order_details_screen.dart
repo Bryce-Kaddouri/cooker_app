@@ -1,5 +1,9 @@
 import 'package:cooker_app/src/core/constant/app_color.dart';
+import 'package:elegant_notification/elegant_notification.dart';
+import 'package:elegant_notification/resources/arrays.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -22,6 +26,7 @@ class OrderDetailScreen extends StatefulWidget {
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
   OrderModel? order;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -44,12 +49,28 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               print(payload);
               print(' ------------------- payload -------------------');
               if (payload.table == 'cart' || payload.table == 'orders') {
-                OrderModel? order = await context
+               OrderModel? order = await context
                     .read<OrderProvider>()
                     .getOrderById(widget.orderId, widget.orderDate);
                 setState(() {
                   this.order = order;
                 });
+                if(payload.table == 'orders' && payload.eventType == PostgresChangeEvent.update) {
+                  if(payload.oldRecord != null && payload.newRecord != null) {
+                    if(payload.oldRecord!['status_id'] != payload.newRecord!['status_id'] && payload.newRecord!['id'] == widget.orderId) {
+                      Future.delayed(Duration(seconds: 1), () {
+                        ElegantNotification.success(
+                          width: 360,
+                          position: Alignment.topRight,
+                          animation: AnimationType.fromRight,
+                          title: Text('Update', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20, color: AppColor.darkGreyTextColor)),
+                          description: Text('Order #${widget.orderId} has been updated successfully', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16, color: AppColor.darkGreyTextColor)),
+                          onDismiss: () {},
+                        ).show(context);
+                      });
+                    }
+                  }
+                }
               }
               /*initData();*/
             })
@@ -426,7 +447,7 @@ class StatusButton extends StatelessWidget {
       child: Text(
           order.status.step == 1 ? 'Start cooking' : 'Mark as completed',
           style: AppTextStyle.boldTextStyle(
-              fontSize: 20, color: Theme.of(context).colorScheme.se)),
+              fontSize: 20, color: Theme.of(context).colorScheme.secondary)),
       color: order.status.step == 1
           ? AppColor.cookingForegroundColor
           : AppColor.completedForegroundColor,

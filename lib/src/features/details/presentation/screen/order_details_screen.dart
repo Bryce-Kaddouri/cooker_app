@@ -49,10 +49,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               print(payload);
               print(' ------------------- payload -------------------');
               if (payload.table == 'cart' || payload.table == 'orders') {
-
-                if(payload.table == 'orders' && payload.eventType == PostgresChangeEvent.update) {
-                  if(payload.oldRecord != null && payload.newRecord != null) {
-                    if(payload.oldRecord!['status_id'] != payload.newRecord!['status_id'] && payload.newRecord!['id'] == widget.orderId) {
+                if (payload.table == 'orders' &&
+                    payload.eventType == PostgresChangeEvent.update) {
+                  if (payload.oldRecord != null && payload.newRecord != null) {
+                    if (payload.oldRecord!['status_id'] !=
+                            payload.newRecord!['status_id'] &&
+                        payload.newRecord!['id'] == widget.orderId) {
                       /*ElegantNotification.success(
                         width: 360,
                         position: Alignment.topRight,
@@ -65,7 +67,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ),
                         onDismiss: () {},
                       ).show(Get.context!);*/
-                     /* Future.delayed(Duration(seconds: 1), () {
+                      /* Future.delayed(Duration(seconds: 1), () {
                         ElegantNotification.success(
                           width: 360,
                           position: Alignment.topRight,
@@ -83,7 +85,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   }
                 }
 
-               OrderModel? order = await context
+                OrderModel? order = await context
                     .read<OrderProvider>()
                     .getOrderById(widget.orderId, widget.orderDate);
                 setState(() {
@@ -103,7 +105,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
         title: Text('Order #${widget.orderId}',
-            style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 32)),
+            style:
+                Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 32)),
       ),
       body: order == null
           ? Container(
@@ -213,9 +216,16 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                           child: CircleAvatar(
                             backgroundColor: AppColor.pendingForegroundColor,
                             child: Text('1',
-                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 20, color: widget.order.status.step >= 1
-                                ? Theme.of(context).colorScheme.secondary
-                                : AppColor.lightGreyTextColor)),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                        fontSize: 20,
+                                        color: widget.order.status.step >= 1
+                                            ? Theme.of(context)
+                                                .colorScheme
+                                                .secondary
+                                            : AppColor.lightGreyTextColor)),
                           ),
                         ),
                       SizedBox(width: 10),
@@ -244,8 +254,11 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                         SizedBox(width: 10),
                         Text(
                             '${DateHelper.getFormattedDateAndTime(widget.order.createdAt)}',
-                            style: /*AppTextStyle.lightTextStyle(fontSize: 16),*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 16)
-                        ),
+                            style: /*AppTextStyle.lightTextStyle(fontSize: 16),*/
+                                Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(fontSize: 16)),
                       ],
                     ),
                   ),
@@ -311,8 +324,11 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                           SizedBox(width: 10),
                           Text(
                               '${widget.order.cookingStartedAt != null ? DateHelper.getFormattedDateAndTime(widget.order.cookingStartedAt!) : ''}',
-                              style: /*AppTextStyle.lightTextStyle(fontSize: 16)*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 16)
-                          ),
+                              style: /*AppTextStyle.lightTextStyle(fontSize: 16)*/
+                                  Theme.of(context)
+                                      .textTheme
+                                      .bodySmall!
+                                      .copyWith(fontSize: 16)),
                         ],
                       ),
                     ),
@@ -370,8 +386,11 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                             Text(
                                 '${DateHelper.getFormattedDateAndTime(widget.order.readyAt!)}',
                                 style:
-                                    /*AppTextStyle.lightTextStyle(fontSize: 16)*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 16)
-                            ),
+                                    /*AppTextStyle.lightTextStyle(fontSize: 16)*/ Theme
+                                            .of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .copyWith(fontSize: 16)),
                           ],
                         ),
                       ),
@@ -404,204 +423,168 @@ class _StatusButtonState extends State<StatusButton> {
     return MaterialButton(
       onPressed: () {
         if (widget.order.status.step == 1) {
-          Get.defaultDialog(
-            titleStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 24),
-            middleTextStyle:  Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
-            title: 'Start cooking',
-            middleText: 'Are you sure you want to start cooking?',
-            confirm: MaterialButton(
-              onPressed: (){
-                print('order id: ${widget.order.id}');
-                Get.back();
-                context
-                    .read<OrderProvider>()
-                    .changeOrderStatus(widget.order.id, widget.order.date, 2).whenComplete(() {
-                      print('order id: ${widget.order.id}');
+          Get.dialog(AlertDialog(
+            icon: Icon(Icons.warning, color: Colors.red, size: 100),
+            iconColor: Colors.red,
+            titleTextStyle:
+                Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 24),
+            contentTextStyle:
+                Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+            title: Text('Start cooking'),
+            content: Text('Are you sure you want to start cooking?'),
+            actionsAlignment: MainAxisAlignment.spaceAround,
+            actions: [
+              MaterialButton(
+                minWidth: 100,
+                height: 40,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                color: AppColor.completedForegroundColor,
+                textColor: Theme.of(context).primaryColor,
+                onPressed: () {
+                  print('order id: ${widget.order.id}');
+                  Get.back();
+                  context
+                      .read<OrderProvider>()
+                      .changeOrderStatus(widget.order.id, widget.order.date, 2)
+                      .whenComplete(() {
+                    print('order id: ${widget.order.id}');
 
+                    ElegantNotification.success(
+                      width: 360,
+                      position: Alignment.topRight,
+                      animation: AnimationType.fromRight,
+                      title: Text('Update',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                  fontSize: 20,
+                                  color: AppColor.darkGreyTextColor)),
+                      description: Container(
+                        child: Expanded(
+                          child: Column(
+                            children: [
+                              Text(
+                                  'Order #${widget.order.id} has been updated successfully',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                          fontSize: 16,
+                                          color: AppColor.darkGreyTextColor)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      onDismiss: () {},
+                    ).show(context);
+                  });
+                },
+                child: Text('Yes'),
+              ),
+              MaterialButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                color: AppColor.canceledForegroundColor,
+                textColor: Theme.of(context).primaryColor,
+                minWidth: 100,
+                height: 40,
+                onPressed: () {
+                  Get.back();
+                },
+                child: Text('No'),
+              ),
+            ],
+          ));
+        } else {
+          Get.dialog(AlertDialog(
+            icon: Icon(Icons.warning, color: Colors.red, size: 100),
+            iconColor: Colors.red,
+            titleTextStyle:
+                Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 24),
+            contentTextStyle:
+                Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+            title: Text('Mark as completed'),
+            content: Container(
+              constraints: BoxConstraints(
+                maxWidth: 400,
+              ),
+              child: Text(
+                'Are you sure you want to mark as completed? If you do, all items in the cart will be marked as completed.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+            actionsAlignment: MainAxisAlignment.spaceAround,
+            actions: [
+              MaterialButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                color: AppColor.completedForegroundColor,
+                textColor: Theme.of(context).primaryColor,
+                minWidth: 100,
+                height: 40,
+                onPressed: () {
+                  Get.back();
+                  context
+                      .read<OrderProvider>()
+                      .changeOrderStatus(widget.order.id, widget.order.date, 3);
                   ElegantNotification.success(
                     width: 360,
                     position: Alignment.topRight,
                     animation: AnimationType.fromRight,
-                    title: Text('Update', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20, color: AppColor.darkGreyTextColor)),
+                    title: Text('Update',
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontSize: 20, color: AppColor.darkGreyTextColor)),
                     description: Container(
                       child: Expanded(
-                        child: Text('Order #${widget.order.id} has been updated successfully', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16, color: AppColor.darkGreyTextColor)),
+                        child: Column(
+                          children: [
+                            Text(
+                                'Order #${widget.order.id} has been updated successfully',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                        fontSize: 16,
+                                        color: AppColor.darkGreyTextColor)),
+                          ],
+                        ),
                       ),
                     ),
                     onDismiss: () {},
                   ).show(context);
-                });
-
-              },
-              child: Text('Yes'),
-            ),
-            cancel: MaterialButton(
-              onPressed: () {
-
-                Get.back();
-
-              },
-              child: Text('No'),
-            ),
-
-          );
-         /* showAdaptiveDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  titleTextStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 24),
-                  contentTextStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
-
-                  icon: Icon(Icons.warning, color: Colors.red, size: 100),
-                  iconColor: Colors.red,
-                  title: Text('Start cooking'),
-                  content: Text('Are you sure you want to start cooking?'),
-                  actionsAlignment: MainAxisAlignment.spaceAround,
-                  actions: [
-
-                    MaterialButton(
-                      minWidth: 100,
-                      height: 40,
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.circular(8),
+                },
+                child: Text(
+                  'Yes',
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 16,
                       ),
-                      color: AppColor
-                          .completedForegroundColor,
-                      textColor: Theme.of(context)
-                          .primaryColor,
-                      onPressed: () {
-                            context
-                            .read<OrderProvider>()
-                            .changeOrderStatus(order.id, order.date, 2);
-                        Navigator.of(context).pop();
-                      },
-                      child: Text(
-                        'Yes',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(
-                          fontSize: 16,
-                        ),
+                ),
+              ),
+              MaterialButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                color: AppColor.canceledForegroundColor,
+                textColor: Theme.of(context).primaryColor,
+                minWidth: 100,
+                height: 40,
+                onPressed: () {
+                  Get.back();
+                },
+                child: Text(
+                  'No',
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        fontSize: 16,
                       ),
-                    ),
-                    MaterialButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.circular(8),
-                      ),
-                      color: AppColor
-                          .canceledForegroundColor,
-                      textColor: Theme.of(context)
-                          .primaryColor,
-                      minWidth: 100,
-                      height: 40,
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text(
-                        'No',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                   *//* TextButton(
-                      onPressed: () {
-                        context
-                            .read<OrderProvider>()
-                            .changeOrderStatus(order.id, order.date, 2);
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Start cooking'),
-                    ),*//*
-                  ],
-                );
-              });*/
-        } else {
-          /* context
-                  .read<OrderProvider>()
-                  .changeOrderStatus(widget.order.id, widget.order.date, 3);*/
-
-          showAdaptiveDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  icon: Icon(Icons.warning, color: Colors.red, size: 100),
-                  iconColor: Colors.red,
-                  titleTextStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 24),
-                  contentTextStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
-                  title: Text('Mark as completed'),
-                  content: Container(
-                    constraints: BoxConstraints(
-                      maxWidth: 400,
-                    ),
-                    child: Text(
-                        'Are you sure you want to mark as completed? If you do, all items in the cart will be marked as completed.',
-                    textAlign: TextAlign.center,
-                    ),
-                  ),
-                  actionsAlignment: MainAxisAlignment.spaceAround,
-                  actions: [
-
-                    MaterialButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.circular(8),
-                      ),
-                      color: AppColor
-                          .completedForegroundColor,
-                      textColor: Theme.of(context)
-                          .primaryColor,
-                      minWidth: 100,
-                      height: 40,
-                      onPressed: () {
-                        context
-                            .read<OrderProvider>()
-                            .changeOrderStatus(widget.order.id, widget.order.date, 3);
-                        Navigator.of(context).pop();
-                      },
-                      child: Text(
-                        'Yes',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    MaterialButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.circular(8),
-                      ),
-                      color: AppColor
-                          .canceledForegroundColor,
-                      textColor: Theme.of(context)
-                          .primaryColor,
-                      minWidth: 100,
-                      height: 40,
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text(
-                        'No',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              });
+                ),
+              ),
+            ],
+          ));
         }
       },
       child: Text(
@@ -646,7 +629,9 @@ class ProductsItemListView extends StatelessWidget {
                 ),
               ),
               child: Text('${order!.nbTotalItemsCart} items',
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 20)/*AppTextStyle.boldTextStyle(fontSize: 20)*/),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontSize:
+                          20) /*AppTextStyle.boldTextStyle(fontSize: 20)*/),
             ),
             Expanded(
               child: ListView.builder(
@@ -688,26 +673,35 @@ class ProductsItemListView extends StatelessWidget {
                                         '${order!.cart[index].quantity}',
                                         style: /*AppTextStyle.boldTextStyle(
                                             fontSize: 24),*/
-                                        Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 24),
+                                            Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge!
+                                                .copyWith(fontSize: 24),
                                       ),
                                     ),
                                   ),
-                                  Text('x',
-                                      style: /*AppTextStyle.lightTextStyle(
-                                          fontSize: 14)*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 14),
+                                  Text(
+                                    'x',
+                                    style: /*AppTextStyle.lightTextStyle(
+                                          fontSize: 14)*/
+                                        Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .copyWith(fontSize: 14),
                                   ),
                                 ],
                               ),
                             ),
                             SizedBox(width: 10),
-                            Expanded(child: Text('${order!.cart[index].product.name}',
-                                style:
-                                Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)
-                            ),),
-                                  /*  AppTextStyle.boldTextStyle(fontSize: 16)),*/
+                            Expanded(
+                              child: Text('${order!.cart[index].product.name}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(fontSize: 20)),
+                            ),
+                            /*  AppTextStyle.boldTextStyle(fontSize: 16)),*/
                           ]),
-
-
                           value: order!.cart[index].isDone,
                           onChanged: (value) {
                             print('value: $value');
@@ -759,15 +753,23 @@ class CustomerHourWidget extends StatelessWidget {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Customer',
-                              style: /*AppTextStyle.lightTextStyle(fontSize: 12)*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 12),
+                          Text(
+                            'Customer',
+                            style: /*AppTextStyle.lightTextStyle(fontSize: 12)*/
+                                Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(fontSize: 12),
                           ),
                           Container(
                             child: Text(
                               '${order!.customer.lName} ${order!.customer.fName}',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(fontSize: 20),
                             ),
                           ),
                         ]),
@@ -788,10 +790,15 @@ class CustomerHourWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Hour',
-                            style: /*AppTextStyle.lightTextStyle(fontSize: 12)),*/ Theme.of(context).textTheme.bodySmall),
+                            style: /*AppTextStyle.lightTextStyle(fontSize: 12)),*/
+                                Theme.of(context).textTheme.bodySmall),
                         Text(
-                            '${order!.time.hour < 10 ? '0${order!.time.hour}' : order!.time.hour} : ${order!.time.minute < 10 ? '0${order!.time.minute}' : order!.time.minute}',
-                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20),),
+                          '${order!.time.hour < 10 ? '0${order!.time.hour}' : order!.time.hour} : ${order!.time.minute < 10 ? '0${order!.time.minute}' : order!.time.minute}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(fontSize: 20),
+                        ),
                       ]),
                 ),
               ],

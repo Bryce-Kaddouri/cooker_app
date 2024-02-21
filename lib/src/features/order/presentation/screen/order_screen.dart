@@ -1056,7 +1056,7 @@ class DateBar extends StatelessWidget {
             child: InkWell(
               onTap: () async {
                 DateTime? date =
-                    await context.read<OrderProvider>().chooseDate(context);
+                    await context.read<OrderProvider>().chooseDate(context, selectedDate);
                 if (date != null) {
                   context.goNamed('orders', pathParameters: {
                     'date': DateHelper.getFormattedDate(date),

@@ -60,21 +60,21 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
         title: Text('Order #${widget.orderId}',
-            style: AppTextStyle.boldTextStyle(fontSize: 32)),
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 32)),
       ),
       body: order == null
           ? Container(
-              color: AppColor.lightCardColor,
+              color: Theme.of(context).scaffoldBackgroundColor,
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
               child: Center(child: CircularProgressIndicator()),
             )
           : !ResponsiveHelper.isMobile(context)
               ? Container(
-                  color: AppColor.lightCardColor,
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   child: Row(
@@ -426,7 +426,7 @@ class StatusButton extends StatelessWidget {
       child: Text(
           order.status.step == 1 ? 'Start cooking' : 'Mark as completed',
           style: AppTextStyle.boldTextStyle(
-              fontSize: 20, color: Theme.of(context).primaryColor)),
+              fontSize: 20, color: Theme.of(context).colorScheme.se)),
       color: order.status.step == 1
           ? AppColor.cookingForegroundColor
           : AppColor.completedForegroundColor,
@@ -446,7 +446,7 @@ class ProductsItemListView extends StatelessWidget {
         margin: const EdgeInsets.only(left: 20, right: 10, top: 20, bottom: 20),
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
-          color: AppColor.lightBackgroundColor,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -465,7 +465,7 @@ class ProductsItemListView extends StatelessWidget {
                 ),
               ),
               child: Text('${order!.nbTotalItemsCart} items',
-                  style: AppTextStyle.boldTextStyle(fontSize: 20)),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 20)/*AppTextStyle.boldTextStyle(fontSize: 20)*/),
             ),
             Expanded(
               child: ListView.builder(
@@ -562,7 +562,7 @@ class CustomerHourWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 10, right: 20, top: 20, bottom: 20),
       decoration: BoxDecoration(
-        color: AppColor.lightBackgroundColor,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(children: [
@@ -585,7 +585,7 @@ class CustomerHourWidget extends StatelessWidget {
                               '${order!.customer.lName} ${order!.customer.fName}',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: AppTextStyle.boldTextStyle(fontSize: 20),
+                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20),
                             ),
                           ),
                         ]),
@@ -609,7 +609,7 @@ class CustomerHourWidget extends StatelessWidget {
                             style: /*AppTextStyle.lightTextStyle(fontSize: 12)),*/ Theme.of(context).textTheme.bodySmall),
                         Text(
                             '${order!.time.hour < 10 ? '0${order!.time.hour}' : order!.time.hour} : ${order!.time.minute < 10 ? '0${order!.time.minute}' : order!.time.minute}',
-                            style: AppTextStyle.boldTextStyle(fontSize: 20)),
+                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20),),
                       ]),
                 ),
               ],
@@ -632,7 +632,7 @@ class StatusWithButtonWidget extends StatelessWidget {
       margin: const EdgeInsets.only(left: 10, right: 20, top: 20, bottom: 20),
       height: MediaQuery.of(context).size.height * 0.5,
       decoration: BoxDecoration(
-        color: AppColor.lightBackgroundColor,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: StatusStepWidget(

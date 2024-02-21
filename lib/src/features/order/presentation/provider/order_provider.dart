@@ -99,12 +99,16 @@ class OrderProvider with ChangeNotifier {
     return lstCategory;
   }
 
-  Future<DateTime?> chooseDate(BuildContext context) async {
+  Future<DateTime?> chooseDate(BuildContext context, DateTime currentDate) async {
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: currentDate,
+      currentDate: DateTime.now(),
       firstDate: DateTime(2015, 8),
       lastDate: DateTime(2101),
+      keyboardType: TextInputType.datetime,
+
+
     );
     return picked;
   }

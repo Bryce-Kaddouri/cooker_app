@@ -153,6 +153,89 @@ class _MyAppState extends State<MyApp> {
           surfaceTintColor: AppColor.lightBackgroundColor,
           shadowColor: AppColor.lightBackgroundColor,
         ),
+
+        datePickerTheme: DatePickerThemeData(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+              color: AppColor.lightBlackTextColor,
+            ),
+            borderRadius: BorderRadius.circular(24),
+          ),
+            backgroundColor: AppColor.lightCardColor,
+            headerBackgroundColor: AppColor.lightBackgroundColor,
+            cancelButtonStyle: ButtonStyle(
+              foregroundColor: MaterialStateProperty.all(
+                AppColor.lightBlackTextColor,
+              ),
+            ),
+
+            dayStyle: AppTextStyle.lightTextStyle(
+              color: AppColor.lightBlackTextColor,
+            ),
+            weekdayStyle: AppTextStyle.lightTextStyle(
+              color: AppColor.lightBlackTextColor,
+            ),
+            dayForegroundColor: MaterialStateProperty.all(
+              AppColor.lightBlackTextColor,
+            ),
+
+            todayBorder: BorderSide(
+              color: AppColor.lightBlackTextColor,
+            ),
+          todayForegroundColor: MaterialStateProperty.all(
+            AppColor.lightBlackTextColor,
+          ),
+
+            confirmButtonStyle: ButtonStyle(
+              foregroundColor: MaterialStateProperty.all(
+                AppColor.lightBlackTextColor,
+              ),
+            ),
+
+
+          inputDecorationTheme: InputDecorationTheme(
+
+            labelStyle: AppTextStyle.lightTextStyle(
+              color: AppColor.lightBlackTextColor,
+            ),
+            hintStyle: AppTextStyle.lightTextStyle(
+              color: AppColor.lightBlackTextColor,
+            ),
+            focusColor: AppColor.lightBlackTextColor,
+            hoverColor: AppColor.lightBlackTextColor,
+
+
+            border: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.lightBlackTextColor,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.lightBlackTextColor,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.lightBlackTextColor,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.canceledForegroundColor,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.canceledForegroundColor,
+              ),
+            ),
+
+          ),
+
+
+        ),
         iconTheme: IconThemeData(color: AppColor.lightBlackTextColor),
         iconButtonTheme: IconButtonThemeData(
           style: ButtonStyle(
@@ -180,7 +263,7 @@ class _MyAppState extends State<MyApp> {
       ),
       themeMode: context.watch<SettingProvider>().isDarkMode
           ? ThemeMode.dark
-          : ThemeMode.light,
+          : ThemeMode.dark,
       darkTheme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: AppColor.darkBackgroundColor,
         appBarTheme: AppBarTheme(
@@ -189,6 +272,113 @@ class _MyAppState extends State<MyApp> {
           iconTheme: IconThemeData(color: AppColor.darkWhiteTextColor),
           surfaceTintColor: AppColor.darkBackgroundColor,
           shadowColor: AppColor.darkBackgroundColor,
+        ),
+
+        menuBarTheme: MenuBarThemeData(
+          style: MenuStyle(
+            backgroundColor: MaterialStateProperty.all(
+              AppColor.darkCardColor,
+            ),
+
+          )
+        ),
+        datePickerTheme: DatePickerThemeData(
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+              color: AppColor.darkWhiteTextColor,
+            ),
+            borderRadius: BorderRadius.circular(24),
+          ),
+          elevation: 2,
+          backgroundColor: AppColor.darkCardColor,
+          surfaceTintColor: AppColor.darkBackgroundColor,
+          headerBackgroundColor: AppColor.darkBackgroundColor,
+          cancelButtonStyle: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all(
+              AppColor.darkWhiteTextColor,
+            ),
+          ),
+
+
+          headerForegroundColor: AppColor.darkWhiteTextColor,
+
+
+          yearBackgroundColor: MaterialStateProperty.all(
+            AppColor.darkCardColor,
+          ),
+          yearForegroundColor: MaterialStateProperty.all(
+            AppColor.darkWhiteTextColor,
+          ),
+          yearStyle: AppTextStyle.lightTextStyle(
+            color: AppColor.darkWhiteTextColor,
+          ),
+          rangePickerSurfaceTintColor: AppColor.darkBackgroundColor,
+
+          dayStyle: AppTextStyle.lightTextStyle(
+            color: AppColor.darkWhiteTextColor,
+          ),
+          weekdayStyle: AppTextStyle.lightTextStyle(
+            color: AppColor.darkWhiteTextColor,
+          ),
+          dayForegroundColor: MaterialStateProperty.all(
+            AppColor.darkWhiteTextColor,
+          ),
+
+          todayBorder: BorderSide(
+            color: AppColor.darkWhiteTextColor,
+          ),
+          todayForegroundColor: MaterialStateProperty.all(
+            AppColor.darkWhiteTextColor,
+          ),
+
+          confirmButtonStyle: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all(
+              AppColor.darkWhiteTextColor,
+            ),
+          ),
+
+
+          inputDecorationTheme: InputDecorationTheme(
+
+            labelStyle: AppTextStyle.lightTextStyle(
+              color: AppColor.darkWhiteTextColor,
+            ),
+            hintStyle: AppTextStyle.lightTextStyle(
+              color: AppColor.darkWhiteTextColor,
+            ),
+            focusColor: AppColor.darkWhiteTextColor,
+            hoverColor: AppColor.darkWhiteTextColor,
+
+
+            border: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.darkWhiteTextColor,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.darkWhiteTextColor,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.darkWhiteTextColor,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.canceledForegroundColor,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.canceledForegroundColor,
+              ),
+            ),
+
+          ),
+
+
         ),
         iconTheme: IconThemeData(color: AppColor.darkWhiteTextColor),
         iconButtonTheme: IconButtonThemeData(
@@ -216,59 +406,11 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
 
-      /*FluentThemeData(
-          brightness: Brightness.light,
-          scaffoldBackgroundColor: AppColor.lightBackgroundColor,
-          cardColor: AppColor.lightCardColor,
-          inactiveBackgroundColor: Colors.yellow,
-          activeColor: AppColor.lightBackgroundColor,
-          inactiveColor: AppColor.lightCardColor,
-          accentColor: Colors.white.toAccentColor()),
-      darkTheme: FluentThemeData.dark().copyWith(
-        scaffoldBackgroundColor: AppColor.darkBackgroundColor,
-        cardColor: AppColor.darkCardColor,
-      ),*/
+
       routerDelegate: router.routerDelegate,
       routeInformationProvider: router.routeInformationProvider,
       routeInformationParser: router.routeInformationParser,
-/*
-      defaultTransition: Transition.rightToLeftWithFade,
-*/
 
-      /* routingCallback: (routing) {
-        print('route: ${routing?.current}');
-
-        if (routing?.current == '/login') {
-          if (context.read<AuthProvider>().checkIsLoggedIn()) {
-            routing?.current = '/home';
-          }
-        } else {
-          if (!context.read<AuthProvider>().checkIsLoggedIn()) {
-            routing?.current = '/login';
-          }
-        }
-      },*/
-      /*getPages: Routes().getPages,
-      initialRoute: '/login',
-      home: StreamBuilder<AuthState>(
-        stream: context.read<AuthProvider>().onAuthStateChange(),
-        builder: (context, snapshot) {
-          print('snapshot: ${snapshot.connectionState}');
-          if (snapshot.connectionState == ConnectionState.active) {
-            final user = snapshot.data;
-            if (user == null) {
-              return SignInScreen();
-            } else {
-              return const HomeScreen();
-            }
-          }
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        },
-      ),*/
     );
   }
 }

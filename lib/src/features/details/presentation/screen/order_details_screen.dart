@@ -49,16 +49,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               print(payload);
               print(' ------------------- payload -------------------');
               if (payload.table == 'cart' || payload.table == 'orders') {
-               OrderModel? order = await context
-                    .read<OrderProvider>()
-                    .getOrderById(widget.orderId, widget.orderDate);
-                setState(() {
-                  this.order = order;
-                });
+
                 if(payload.table == 'orders' && payload.eventType == PostgresChangeEvent.update) {
                   if(payload.oldRecord != null && payload.newRecord != null) {
                     if(payload.oldRecord!['status_id'] != payload.newRecord!['status_id'] && payload.newRecord!['id'] == widget.orderId) {
-                      Future.delayed(Duration(seconds: 1), () {
+                      Future.delayed(Duration(seconds: 2), () {
                         ElegantNotification.success(
                           width: 360,
                           position: Alignment.topRight,
@@ -66,11 +61,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           title: Text('Update', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20, color: AppColor.darkGreyTextColor)),
                           description: Text('Order #${widget.orderId} has been updated successfully', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16, color: AppColor.darkGreyTextColor)),
                           onDismiss: () {},
-                        ).show(context);
+                        ).show(_scaffoldKey.currentContext!);
                       });
                     }
                   }
                 }
+
+               OrderModel? order = await context
+                    .read<OrderProvider>()
+                    .getOrderById(widget.orderId, widget.orderDate);
+                setState(() {
+                  this.order = order;
+                });
               }
               /*initData();*/
             })
@@ -80,6 +82,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
@@ -386,18 +389,68 @@ class StatusButton extends StatelessWidget {
               context: context,
               builder: (context) {
                 return AlertDialog(
+                  titleTextStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 24),
+                  contentTextStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+
                   icon: Icon(Icons.warning, color: Colors.red, size: 100),
                   iconColor: Colors.red,
                   title: Text('Start cooking'),
                   content: Text('Are you sure you want to start cooking?'),
+                  actionsAlignment: MainAxisAlignment.spaceAround,
                   actions: [
-                    TextButton(
+
+                    MaterialButton(
+                      minWidth: 100,
+                      height: 40,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(8),
+                      ),
+                      color: AppColor
+                          .completedForegroundColor,
+                      textColor: Theme.of(context)
+                          .primaryColor,
+                      onPressed: () {
+                            context
+                            .read<OrderProvider>()
+                            .changeOrderStatus(order.id, order.date, 2);
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Yes',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    MaterialButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(8),
+                      ),
+                      color: AppColor
+                          .canceledForegroundColor,
+                      textColor: Theme.of(context)
+                          .primaryColor,
+                      minWidth: 100,
+                      height: 40,
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text('Cancel'),
+                      child: Text(
+                        'No',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
-                    TextButton(
+                   /* TextButton(
                       onPressed: () {
                         context
                             .read<OrderProvider>()
@@ -405,7 +458,7 @@ class StatusButton extends StatelessWidget {
                         Navigator.of(context).pop();
                       },
                       child: Text('Start cooking'),
-                    ),
+                    ),*/
                   ],
                 );
               });
@@ -420,24 +473,71 @@ class StatusButton extends StatelessWidget {
                 return AlertDialog(
                   icon: Icon(Icons.warning, color: Colors.red, size: 100),
                   iconColor: Colors.red,
+                  titleTextStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 24),
+                  contentTextStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
                   title: Text('Mark as completed'),
-                  content: Text(
-                      'Are you sure you want to mark as completed? If you do, all items in the cart will be marked as completed.'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Cancel'),
+                  content: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: 400,
                     ),
-                    TextButton(
+                    child: Text(
+                        'Are you sure you want to mark as completed? If you do, all items in the cart will be marked as completed.',
+                    textAlign: TextAlign.center,
+                    ),
+                  ),
+                  actionsAlignment: MainAxisAlignment.spaceAround,
+                  actions: [
+
+                    MaterialButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(8),
+                      ),
+                      color: AppColor
+                          .completedForegroundColor,
+                      textColor: Theme.of(context)
+                          .primaryColor,
+                      minWidth: 100,
+                      height: 40,
                       onPressed: () {
                         context
                             .read<OrderProvider>()
                             .changeOrderStatus(order.id, order.date, 3);
                         Navigator.of(context).pop();
                       },
-                      child: Text('Mark as completed'),
+                      child: Text(
+                        'Yes',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    MaterialButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(8),
+                      ),
+                      color: AppColor
+                          .canceledForegroundColor,
+                      textColor: Theme.of(context)
+                          .primaryColor,
+                      minWidth: 100,
+                      height: 40,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'No',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
                   ],
                 );
@@ -526,8 +626,9 @@ class ProductsItemListView extends StatelessWidget {
                                       alignment: Alignment.center,
                                       child: Text(
                                         '${order!.cart[index].quantity}',
-                                        style: AppTextStyle.boldTextStyle(
-                                            fontSize: 24),
+                                        style: /*AppTextStyle.boldTextStyle(
+                                            fontSize: 24),*/
+                                        Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 24),
                                       ),
                                     ),
                                   ),
@@ -539,14 +640,14 @@ class ProductsItemListView extends StatelessWidget {
                               ),
                             ),
                             SizedBox(width: 10),
-                            Text('${order!.cart[index].product.name}',
+                            Expanded(child: Text('${order!.cart[index].product.name}',
                                 style:
-                                    AppTextStyle.boldTextStyle(fontSize: 16)),
+                                Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)
+                            ),),
+                                  /*  AppTextStyle.boldTextStyle(fontSize: 16)),*/
                           ]),
-                          checkColor: AppColor.lightBackgroundColor,
-                          checkboxShape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
+
+
                           value: order!.cart[index].isDone,
                           onChanged: (value) {
                             print('value: $value');
@@ -561,7 +662,7 @@ class ProductsItemListView extends StatelessWidget {
                           },
                         ),
                         Divider(
-                          color: AppColor.lightCardColor,
+                          color: Theme.of(context).dividerColor,
                         )
                       ],
                     ),

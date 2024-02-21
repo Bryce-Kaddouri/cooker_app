@@ -263,8 +263,19 @@ class _MyAppState extends State<MyApp> {
       ),
       themeMode: context.watch<SettingProvider>().isDarkMode
           ? ThemeMode.dark
-          : ThemeMode.dark,
+          : ThemeMode.light,
       darkTheme: ThemeData.dark().copyWith(
+        checkboxTheme: CheckboxThemeData(
+          fillColor: MaterialStateProperty.all(AppColor.darkBackgroundColor),
+          checkColor: MaterialStateProperty.all(AppColor.darkWhiteTextColor),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+            side: BorderSide(
+              width: 2,
+              color: AppColor.darkWhiteTextColor,
+            ),
+          ),
+        ),
         scaffoldBackgroundColor: AppColor.darkBackgroundColor,
         appBarTheme: AppBarTheme(
           backgroundColor: AppColor.darkBackgroundColor,

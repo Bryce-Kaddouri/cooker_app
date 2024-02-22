@@ -146,7 +146,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               : Container(
                   height: MediaQuery.of(context).size.height,
                   decoration: BoxDecoration(
-                    color: AppColor.lightCardColor,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                   ),
                   child: SingleChildScrollView(
                     child: Column(
@@ -453,6 +453,7 @@ class _StatusButtonState extends State<StatusButton> {
 
                     ElegantNotification.success(
                       width: 360,
+                      height: 100,
                       position: Alignment.topRight,
                       animation: AnimationType.fromRight,
                       title: Text('Update',
@@ -534,6 +535,7 @@ class _StatusButtonState extends State<StatusButton> {
                       .changeOrderStatus(widget.order.id, widget.order.date, 3);
                   ElegantNotification.success(
                     width: 360,
+                    height: 100,
                     position: Alignment.topRight,
                     animation: AnimationType.fromRight,
                     title: Text('Update',
@@ -607,8 +609,8 @@ class ProductsItemListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.only(left: 20, right: 10, top: 20, bottom: 20),
-        height: MediaQuery.of(context).size.height,
+        margin: !ResponsiveHelper.isMobile(context)? const EdgeInsets.only(left: 20, right: 10, top: 20, bottom: 20) : EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+        height: !ResponsiveHelper.isMobile(context)? MediaQuery.of(context).size.height : null,
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
@@ -623,7 +625,7 @@ class ProductsItemListView extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: AppColor.lightCardColor,
+                    color: Theme.of(context).colorScheme.secondary,
                     width: 1,
                   ),
                 ),
@@ -633,6 +635,7 @@ class ProductsItemListView extends StatelessWidget {
                       fontSize:
                           20) /*AppTextStyle.boldTextStyle(fontSize: 20)*/),
             ),
+            if(!ResponsiveHelper.isMobile(context))
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
@@ -723,7 +726,94 @@ class ProductsItemListView extends StatelessWidget {
                   );
                 },
               ),
-            )
+            )else
+              Column(
+                children: List.generate(order.cart.length, (index) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        CheckboxListTile(
+                          enabled: order!.status.step == 2,
+                          activeColor: AppColor.completedForegroundColor,
+                          title: Row(children: [
+                            Container(
+                              width: 100,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    height: 60,
+                                    width: 60,
+                                    decoration: BoxDecoration(
+                                      color: AppColor.lightCardColor,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Image.network(
+                                      order!.cart[index].product.photoUrl ?? '',
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) => Icon(
+                                          Icons.fastfood_rounded,
+                                          size: 40),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        '${order!.cart[index].quantity}',
+                                        style: /*AppTextStyle.boldTextStyle(
+                                            fontSize: 24),*/
+                                        Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge!
+                                            .copyWith(fontSize: 24),
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    'x',
+                                    style: /*AppTextStyle.lightTextStyle(
+                                          fontSize: 14)*/
+                                    Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .copyWith(fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Text('${order!.cart[index].product.name}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(fontSize: 20)),
+                            ),
+                            /*  AppTextStyle.boldTextStyle(fontSize: 16)),*/
+                          ]),
+                          value: order!.cart[index].isDone,
+                          onChanged: (value) {
+                            print('value: $value');
+                            int cartId = order!.cart[index].id!;
+                            print('cartId: $cartId');
+                            context.read<OrderProvider>().changeIsDoneCart(
+                                order!.id,
+                                cartId,
+                                order!.cart[index].product.id,
+                                order!.date,
+                                value!);
+                          },
+                        ),
+                        Divider(
+                          color: Theme.of(context).dividerColor,
+                        )
+                      ],
+                    ),
+                  );
+                }),
+              )
           ],
         ));
   }
@@ -736,7 +826,11 @@ class CustomerHourWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 10, right: 20, top: 20, bottom: 20),
+      margin: !ResponsiveHelper.isMobile(context)? const EdgeInsets.only(left: 10, right: 20, top: 20, bottom: 20) : const EdgeInsets.only(
+        top: 20,
+        left: 10,
+        right: 10,
+      ),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
@@ -747,7 +841,7 @@ class CustomerHourWidget extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Icon(Icons.person_outlined, size: 50),
+                const Icon(Icons.person_outlined, size: 50),
                 Expanded(
                   child: Container(
                     child: Column(
@@ -818,8 +912,10 @@ class StatusWithButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.only(left: 10, right: 20, top: 20, bottom: 20),
-      height: MediaQuery.of(context).size.height * 0.5,
+      margin: !ResponsiveHelper.isMobile(context)? const EdgeInsets.only(left: 10, right: 20, top: 20, bottom: 20) : EdgeInsets.only(left: 10, right: 10, bottom: 20),
+      constraints: BoxConstraints(
+        maxHeight: order.status.step * 90 + 90,
+      ),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),

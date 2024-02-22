@@ -154,6 +154,10 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
 
       theme: ThemeData.light().copyWith(
+        drawerTheme: DrawerThemeData(
+          elevation: 0,
+          backgroundColor: AppColor.lightBackgroundColor,
+        ),
         scaffoldBackgroundColor: AppColor.lightBackgroundColor,
         appBarTheme: AppBarTheme(
           backgroundColor: AppColor.lightBackgroundColor,
@@ -264,6 +268,24 @@ class _MyAppState extends State<MyApp> {
           ? ThemeMode.dark
           : ThemeMode.light,
       darkTheme: ThemeData.dark().copyWith(
+
+        searchViewTheme: SearchViewThemeData(
+          backgroundColor: AppColor.darkCardColor,
+          dividerColor: AppColor.darkWhiteTextColor,
+          elevation: 2,
+          headerHintStyle: AppTextStyle.lightTextStyle(
+            color: AppColor.darkWhiteTextColor,
+          ),
+          headerTextStyle: AppTextStyle.lightTextStyle(
+            color: AppColor.darkWhiteTextColor,
+          ),
+        ),
+        drawerTheme: DrawerThemeData(
+          elevation: 12,
+          shadowColor: AppColor.darkWhiteTextColor,
+          backgroundColor: AppColor.darkCardColor,
+          scrimColor: AppColor.darkBackgroundColor.withOpacity(0.5),
+        ),
         checkboxTheme: CheckboxThemeData(
           fillColor: MaterialStateProperty.all(AppColor.darkBackgroundColor),
           checkColor: MaterialStateProperty.all(AppColor.darkWhiteTextColor),

@@ -7,6 +7,8 @@ import 'package:cooker_app/src/core/helper/responsive_helper.dart';
 import 'package:cooker_app/src/features/order/data/model/order_model.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/filter_provider.dart';
 import 'package:cooker_app/src/features/status/model/status_model.dart';
+import 'package:elegant_notification/elegant_notification.dart';
+import 'package:elegant_notification/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +57,35 @@ class _OrderScreenState extends State<OrderScreen> {
               print(payload);
               print(' ------------------- payload -------------------');
               /*initData();*/
-              setState(() {});
+
+              if(payload.eventType == PostgresChangeEvent.insert) {
+                if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
+                  setState(() {});
+                  ElegantNotification.info(title: Text('New Order'),
+                    description: Text('Order #${payload.newRecord['id']} has been added'),
+                    width: 360,
+                    position: Alignment.topRight,
+                    animation: AnimationType.fromRight,).show(context);
+                }
+              }else if(payload.eventType == PostgresChangeEvent.update) {
+                if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
+                  setState(() {});
+                  ElegantNotification.info(title: Text('Order Updated'),
+                    description: Text('Order #${payload.newRecord['id']} has been updated'),
+                    width: 360,
+                    position: Alignment.topRight,
+                    animation: AnimationType.fromRight,).show(context);
+                }
+              }else if(payload.eventType == PostgresChangeEvent.delete) {
+                if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
+                  setState(() {});
+                  ElegantNotification.info(title: Text('Order Deleted'),
+                    description: Text('Order #${payload.newRecord['id']} has been deleted'),
+                    width: 360,
+                    position: Alignment.topRight,
+                    animation: AnimationType.fromRight,).show(context);
+                }
+              }
             })
         .subscribe();
   }
@@ -93,10 +123,16 @@ class _OrderScreenState extends State<OrderScreen> {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
               return Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
                 height: MediaQuery.of(context).size.height - 300,
                 width: double.infinity,
                 alignment: Alignment.center,
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).colorScheme.secondary),
+                  backgroundColor: Theme.of(context).cardColor,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               );
             default:
               if (!snapshot.hasData) {
@@ -143,38 +179,47 @@ class _OrderScreenState extends State<OrderScreen> {
                               child: ListView(
                                 children: [
                                   DrawerHeader(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: Theme.of(context).colorScheme.secondary,
+                                        ),
+                                      ),
+                                    ),
                                     child: Column(
                                       children: [
                                         CircleAvatar(
                                           radius: 50,
-                                          child: Icon(Icons.person),
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme.secondary,
+                                          child: Icon(Icons.person, size: 50, color: Theme.of(context).scaffoldBackgroundColor,),
                                         ),
                                         Expanded(
                                           child: Container(
                                             alignment: Alignment.center,
-                                            child: Text('Bryce Kaddouri'),
+                                            child: Text('Bryce Kaddouri', style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
                                   ListTile(
-                                    leading: Icon(Icons.shopping_cart),
-                                    title: Text('Order List'),
+                                    leading: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.secondary,),
+                                    title: Text('Order List', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)),
                                     onTap: () {
-                                      GoRouter.of(context).push('setting');
+                                      Navigator.of(context).pop();
                                     },
                                   ),
                                   ListTile(
-                                    leading: Icon(Icons.menu_book_sharp),
-                                    title: Text('Recettes'),
+                                    leading: Icon(Icons.menu_book_sharp, color: Theme.of(context).colorScheme.secondary,),
+                                    title: Text('Recettes', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)),
                                     onTap: () {
                                       context.goNamed('products');
                                     },
                                   ),
                                   ListTile(
-                                    leading: Icon(Icons.settings),
-                                    title: Text('Settings'),
+                                    leading: Icon(Icons.settings, color: Theme.of(context).colorScheme.secondary,),
+                                    title: Text('Settings', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)),
                                     onTap: () {
                                       context.goNamed('setting');
                                     },
@@ -281,13 +326,15 @@ class _OrderScreenState extends State<OrderScreen> {
                                 ),
                                 color: AppColor.canceledForegroundColor,
                                 textColor:
-                                    Theme.of(context).scaffoldBackgroundColor,
+                                    Theme.of(context).colorScheme.secondary,
                                 minWidth: double.infinity,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
                                       Icons.logout,
+                                      size: 24,
+                                      color: Theme.of(context).colorScheme.secondary,
                                     ),
                                     SizedBox(
                                       width: 30,
@@ -344,7 +391,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                         ),
                                         child: Icon(
                                           Icons.search,
-                                          color: AppColor.lightBlackTextColor,
+                                          color: Theme.of(context).colorScheme.secondary,
                                         ),
                                       ),
                                     );

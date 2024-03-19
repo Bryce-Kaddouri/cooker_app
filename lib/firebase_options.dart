@@ -47,29 +47,29 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAWsNvqUENtuNMqIoo38pAYIOvkPBLZlqY',
-    appId: '1:519233427923:web:bcaddbade1c2000a1c7726',
-    messagingSenderId: '519233427923',
-    projectId: 'take-order-app',
-    authDomain: 'take-order-app.firebaseapp.com',
-    storageBucket: 'take-order-app.appspot.com',
-    measurementId: 'G-MG6L0JP370',
+    apiKey: 'AIzaSyA39IKQpSZbW-X6aW84fy_7Q4fjf4qyCuk',
+    appId: '1:863641382611:web:9ec1b3ae90f32fd0886e26',
+    messagingSenderId: '863641382611',
+    projectId: 'cooker-app-2024',
+    authDomain: 'cooker-app-2024.firebaseapp.com',
+    storageBucket: 'cooker-app-2024.appspot.com',
+    measurementId: 'G-FEK03FHSS5',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCY_9mlFqy7xPQDMUlCq4Md4r1_n-OKHa4',
-    appId: '1:519233427923:android:6c14ad652a70bc1c1c7726',
-    messagingSenderId: '519233427923',
-    projectId: 'take-order-app',
-    storageBucket: 'take-order-app.appspot.com',
+    apiKey: 'AIzaSyB0hrjBToAtIE44J7Zl6joYoy6jGbugmL0',
+    appId: '1:863641382611:android:2118232a2b476e2a886e26',
+    messagingSenderId: '863641382611',
+    projectId: 'cooker-app-2024',
+    storageBucket: 'cooker-app-2024.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDg6QvytJ1hiWTbos2MpnexRClw4TvWvPQ',
-    appId: '1:519233427923:ios:b15f3a8b360209a11c7726',
-    messagingSenderId: '519233427923',
-    projectId: 'take-order-app',
-    storageBucket: 'take-order-app.appspot.com',
+    apiKey: 'AIzaSyD1OqYFWUZLrQ2RcW5j0xyfg_nU5k1HgQw',
+    appId: '1:863641382611:ios:bc263b9a93fd7825886e26',
+    messagingSenderId: '863641382611',
+    projectId: 'cooker-app-2024',
+    storageBucket: 'cooker-app-2024.appspot.com',
     iosBundleId: 'com.example.cookerApp',
   );
 }

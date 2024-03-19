@@ -58,32 +58,38 @@ class _OrderScreenState extends State<OrderScreen> {
               print(' ------------------- payload -------------------');
               /*initData();*/
 
-              if(payload.eventType == PostgresChangeEvent.insert) {
+              if (payload.eventType == PostgresChangeEvent.insert) {
                 if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
                   setState(() {});
-                  ElegantNotification.info(title: Text('New Order'),
+                  ElegantNotification.info(
+                    title: Text('New Order'),
                     description: Text('Order #${payload.newRecord['id']} has been added'),
                     width: 360,
                     position: Alignment.topRight,
-                    animation: AnimationType.fromRight,).show(context);
+                    animation: AnimationType.fromRight,
+                  ).show(context);
                 }
-              }else if(payload.eventType == PostgresChangeEvent.update) {
+              } else if (payload.eventType == PostgresChangeEvent.update) {
                 if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
                   setState(() {});
-                  ElegantNotification.info(title: Text('Order Updated'),
+                  ElegantNotification.info(
+                    title: Text('Order Updated'),
                     description: Text('Order #${payload.newRecord['id']} has been updated'),
                     width: 360,
                     position: Alignment.topRight,
-                    animation: AnimationType.fromRight,).show(context);
+                    animation: AnimationType.fromRight,
+                  ).show(context);
                 }
-              }else if(payload.eventType == PostgresChangeEvent.delete) {
+              } else if (payload.eventType == PostgresChangeEvent.delete) {
                 if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
                   setState(() {});
-                  ElegantNotification.info(title: Text('Order Deleted'),
+                  ElegantNotification.info(
+                    title: Text('Order Deleted'),
                     description: Text('Order #${payload.newRecord['id']} has been deleted'),
                     width: 360,
                     position: Alignment.topRight,
-                    animation: AnimationType.fromRight,).show(context);
+                    animation: AnimationType.fromRight,
+                  ).show(context);
                 }
               }
             })
@@ -115,10 +121,7 @@ class _OrderScreenState extends State<OrderScreen> {
     double width = MediaQuery.of(context).size.width;
 
     return FutureBuilder(
-        future: context.read<OrderProvider>().getOrdersByDate(
-            widget.selectedDate,
-            context.watch<SortProvider>().sortType,
-            context.watch<SortProvider>().isAscending),
+        future: context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.watch<SortProvider>().sortType, context.watch<SortProvider>().isAscending),
         builder: (BuildContext context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
@@ -128,8 +131,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 width: double.infinity,
                 alignment: Alignment.center,
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                      Theme.of(context).colorScheme.secondary),
+                  valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
                   backgroundColor: Theme.of(context).cardColor,
                   color: Theme.of(context).colorScheme.secondary,
                 ),
@@ -143,33 +145,16 @@ class _OrderScreenState extends State<OrderScreen> {
               } else {
                 List<OrderModel> orders = snapshot.data!;
                 if (!ResponsiveHelper.isMobile(context)) {
-                  orders = orders
-                      .where((element) => element
-                          .toStringForSearch()
-                          .contains(searchController.text.toLowerCase()))
-                      .toList();
+                  orders = orders.where((element) => element.toStringForSearch().contains(searchController.text.toLowerCase())).toList();
                 }
 
-                List<OrderModel> pendingOrders = orders
-                    .where((element) => element.status.name == 'Pending')
-                    .toList();
-                List<OrderModel> cookingOrders = orders
-                    .where((element) => element.status.name == 'Cooking')
-                    .toList();
-                List<OrderModel> completedOrders = orders
-                    .where((element) => element.status.name == 'Completed')
-                    .toList();
+                List<OrderModel> pendingOrders = orders.where((element) => element.status.name == 'pending').toList();
+                List<OrderModel> cookingOrders = orders.where((element) => element.status.name == 'inProgress').toList();
+                List<OrderModel> completedOrders = orders.where((element) => element.status.name == 'completed').toList();
                 print('completedOrders');
                 print(completedOrders.length);
-                List<OrderModel> cancelledOrders = orders
-                    .where((element) => element.status.name == 'Cancelled')
-                    .toList();
-                List<int> nbOrders = [
-                  orders.length,
-                  pendingOrders.length,
-                  cookingOrders.length,
-                  completedOrders.length
-                ];
+                List<OrderModel> cancelledOrders = orders.where((element) => element.status.name == 'cancelled').toList();
+                List<int> nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
                 return Scaffold(
                     drawer: Builder(
                       builder: (context) => Drawer(
@@ -190,9 +175,12 @@ class _OrderScreenState extends State<OrderScreen> {
                                       children: [
                                         CircleAvatar(
                                           radius: 50,
-                                          backgroundColor: Theme.of(context)
-                                              .colorScheme.secondary,
-                                          child: Icon(Icons.person, size: 50, color: Theme.of(context).scaffoldBackgroundColor,),
+                                          backgroundColor: Theme.of(context).colorScheme.secondary,
+                                          child: Icon(
+                                            Icons.person,
+                                            size: 50,
+                                            color: Theme.of(context).scaffoldBackgroundColor,
+                                          ),
                                         ),
                                         Expanded(
                                           child: Container(
@@ -204,21 +192,30 @@ class _OrderScreenState extends State<OrderScreen> {
                                     ),
                                   ),
                                   ListTile(
-                                    leading: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.secondary,),
+                                    leading: Icon(
+                                      Icons.shopping_cart,
+                                      color: Theme.of(context).colorScheme.secondary,
+                                    ),
                                     title: Text('Order List', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)),
                                     onTap: () {
                                       Navigator.of(context).pop();
                                     },
                                   ),
                                   ListTile(
-                                    leading: Icon(Icons.menu_book_sharp, color: Theme.of(context).colorScheme.secondary,),
+                                    leading: Icon(
+                                      Icons.menu_book_sharp,
+                                      color: Theme.of(context).colorScheme.secondary,
+                                    ),
                                     title: Text('Recettes', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)),
                                     onTap: () {
                                       context.goNamed('products');
                                     },
                                   ),
                                   ListTile(
-                                    leading: Icon(Icons.settings, color: Theme.of(context).colorScheme.secondary,),
+                                    leading: Icon(
+                                      Icons.settings,
+                                      color: Theme.of(context).colorScheme.secondary,
+                                    ),
                                     title: Text('Settings', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)),
                                     onTap: () {
                                       context.goNamed('setting');
@@ -239,14 +236,10 @@ class _OrderScreenState extends State<OrderScreen> {
                                             Icons.warning_amber_rounded,
                                             size: 70,
                                           ),
-                                          iconColor:
-                                              AppColor.canceledForegroundColor,
+                                          iconColor: AppColor.canceledForegroundColor,
                                           title: Text(
                                             'Logout',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyLarge!
-                                                .copyWith(
+                                            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -254,53 +247,38 @@ class _OrderScreenState extends State<OrderScreen> {
                                           content: Text(
                                             'Are you sure you want to logout?',
                                             textAlign: TextAlign.center,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium!
-                                                .copyWith(
+                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                                   fontSize: 16,
                                                 ),
                                           ),
-                                          actionsAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                          actionsAlignment: MainAxisAlignment.spaceBetween,
                                           actions: [
                                             MaterialButton(
                                               minWidth: 100,
                                               height: 40,
                                               shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
+                                                borderRadius: BorderRadius.circular(8),
                                               ),
-                                              color: AppColor
-                                                  .completedForegroundColor,
-                                              textColor: Theme.of(context)
-                                                  .primaryColor,
+                                              color: AppColor.completedForegroundColor,
+                                              textColor: Theme.of(context).primaryColor,
                                               onPressed: () {
                                                 Navigator.of(context).pop();
-                                                context
-                                                    .read<AuthProvider>()
-                                                    .logout();
+                                                context.read<AuthProvider>().logout();
                                                 context.goNamed('login');
                                               },
                                               child: Text(
                                                 'Yes',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium!
-                                                    .copyWith(
+                                                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                                       fontSize: 16,
                                                     ),
                                               ),
                                             ),
                                             MaterialButton(
                                               shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
+                                                borderRadius: BorderRadius.circular(8),
                                               ),
-                                              color: AppColor
-                                                  .canceledForegroundColor,
-                                              textColor: Theme.of(context)
-                                                  .primaryColor,
+                                              color: AppColor.canceledForegroundColor,
+                                              textColor: Theme.of(context).primaryColor,
                                               minWidth: 100,
                                               height: 40,
                                               onPressed: () {
@@ -308,10 +286,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                               },
                                               child: Text(
                                                 'No',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium!
-                                                    .copyWith(
+                                                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                                       fontSize: 16,
                                                     ),
                                               ),
@@ -325,8 +300,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 color: AppColor.canceledForegroundColor,
-                                textColor:
-                                    Theme.of(context).colorScheme.secondary,
+                                textColor: Theme.of(context).colorScheme.secondary,
                                 minWidth: double.infinity,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -361,10 +335,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           ),
                         ),
                         child: Row(
-                          mainAxisAlignment:
-                              !ResponsiveHelper.isDesktop(context)
-                                  ? MainAxisAlignment.start
-                                  : MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: !ResponsiveHelper.isDesktop(context) ? MainAxisAlignment.start : MainAxisAlignment.spaceBetween,
                           children: [
                             if (!ResponsiveHelper.isDesktop(context)) Spacer(),
                             if (!ResponsiveHelper.isDesktop(context))
@@ -386,8 +357,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                         width: 40,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: Theme.of(context)
-                                              .scaffoldBackgroundColor,
+                                          color: Theme.of(context).scaffoldBackgroundColor,
                                         ),
                                         child: Icon(
                                           Icons.search,
@@ -396,38 +366,18 @@ class _OrderScreenState extends State<OrderScreen> {
                                       ),
                                     );
                                   },
-                                  suggestionsBuilder:
-                                      (context, searchController) async {
+                                  suggestionsBuilder: (context, searchController) async {
                                     print('searchController.text');
                                     print(searchController.text);
-                                    List<OrderModel> orders = await context
-                                        .read<OrderProvider>()
-                                        .getOrdersByDate(
-                                            widget.selectedDate,
-                                            context
-                                                .read<SortProvider>()
-                                                .sortType,
-                                            context
-                                                .read<SortProvider>()
-                                                .isAscending);
-                                    List<OrderModel> filteredOrders =
-                                        orders.where((element) {
+                                    List<OrderModel> orders = await context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending);
+                                    List<OrderModel> filteredOrders = orders.where((element) {
                                       print('element.toStringForSearch()');
                                       print(element.toStringForSearch());
-                                      return element
-                                          .toStringForSearch()
-                                          .contains(searchController.text
-                                              .toLowerCase());
+                                      return element.toStringForSearch().contains(searchController.text.toLowerCase());
                                     }).toList();
                                     print('filteredOrders');
                                     print(filteredOrders.length);
-                                    return List.generate(
-                                        filteredOrders.length,
-                                        (index) => Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10),
-                                            child: OrderItemWidget(
-                                                order: filteredOrders[index])));
+                                    return List.generate(filteredOrders.length, (index) => Container(padding: EdgeInsets.symmetric(horizontal: 10), child: OrderItemWidget(order: filteredOrders[index])));
                                   }),
                             if (ResponsiveHelper.isDesktop(context))
                               Expanded(
@@ -454,13 +404,11 @@ class _OrderScreenState extends State<OrderScreen> {
                             child: Column(children: [
                               if (!ResponsiveHelper.isDesktop(context))
                                 Container(
-                                  padding: const EdgeInsets.only(
-                                      left: 20, bottom: 10, right: 20),
+                                  padding: const EdgeInsets.only(left: 20, bottom: 10, right: 20),
                                   child: StatusBar(nbOrders: nbOrders),
                                 ),
                               Container(
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 20),
+                                margin: const EdgeInsets.symmetric(horizontal: 20),
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(30),
@@ -470,14 +418,10 @@ class _OrderScreenState extends State<OrderScreen> {
                                 height: 60,
                                 width: double.infinity,
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Order List',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge!
-                                            .copyWith(
+                                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
                                             )
@@ -493,10 +437,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                         padding: const EdgeInsets.all(5),
                                         margin: const EdgeInsets.all(0),
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          color: Theme.of(context)
-                                              .scaffoldBackgroundColor,
+                                          borderRadius: BorderRadius.circular(30),
+                                          color: Theme.of(context).scaffoldBackgroundColor,
                                         ),
                                         constraints: BoxConstraints(
                                           maxWidth: 350,
@@ -512,34 +454,23 @@ class _OrderScreenState extends State<OrderScreen> {
                                             ),
                                             TextField(
                                               showCursor: true,
-                                              cursorColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary,
+                                              cursorColor: Theme.of(context).colorScheme.secondary,
                                               controller: searchController,
-                                              scrollPadding:
-                                                  const EdgeInsets.all(0),
+                                              scrollPadding: const EdgeInsets.all(0),
                                               maxLines: 1,
                                               clipBehavior: Clip.antiAlias,
-                                              textAlignVertical:
-                                                  TextAlignVertical.top,
+                                              textAlignVertical: TextAlignVertical.top,
                                               decoration: InputDecoration(
-                                                contentPadding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 0,
-                                                        horizontal: 10),
+                                                contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                                                 constraints: BoxConstraints(
                                                   maxWidth: 300,
                                                   minHeight: 40,
                                                   maxHeight: 40,
                                                 ),
                                                 hintText: 'Search by order ID',
-                                                fillColor: Theme.of(context)
-                                                    .primaryColor,
+                                                fillColor: Theme.of(context).primaryColor,
                                                 filled: true,
-                                                hintStyle: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium!
-                                                    .copyWith(
+                                                hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                                       fontSize: 16,
                                                     ),
                                                 border: OutlineInputBorder(
@@ -554,11 +485,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                       child: Row(
                                         children: [
                                           SortByWidget(),
-                                          SizedBox(
-                                              width: ResponsiveHelper.isDesktop(
-                                                      context)
-                                                  ? 10
-                                                  : 5),
+                                          SizedBox(width: ResponsiveHelper.isDesktop(context) ? 10 : 5),
                                           FilterWidget(
                                             selectedDate: widget.selectedDate,
                                           )
@@ -575,9 +502,7 @@ class _OrderScreenState extends State<OrderScreen> {
                       SliverToBoxAdapter(
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 20),
-                          height: ResponsiveHelper.isDesktop(context)
-                              ? MediaQuery.of(context).size.height - 170
-                              : MediaQuery.of(context).size.height - 210,
+                          height: ResponsiveHelper.isDesktop(context) ? MediaQuery.of(context).size.height - 170 : MediaQuery.of(context).size.height - 210,
                           padding: const EdgeInsets.all(10),
                           width: double.infinity,
                           decoration: BoxDecoration(
@@ -589,19 +514,16 @@ class _OrderScreenState extends State<OrderScreen> {
                               Container(
                                 height: 50,
                                 width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 5, horizontal: 20),
+                                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(14),
-                                  color:
-                                      Theme.of(context).scaffoldBackgroundColor,
+                                  color: Theme.of(context).scaffoldBackgroundColor,
                                 ),
                                 child: Row(
                                   children: [
                                     Expanded(
                                       child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Container(
                                             width: 60,
@@ -622,8 +544,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                               child: Text('Status'),
                                             ),
                                           ),
-                                          if (!ResponsiveHelper.isMobile(
-                                              context))
+                                          if (!ResponsiveHelper.isMobile(context))
                                             Expanded(
                                               flex: 1,
                                               child: Container(
@@ -631,8 +552,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                 child: Text('Items'),
                                               ),
                                             ),
-                                          if (!ResponsiveHelper.isMobile(
-                                              context))
+                                          if (!ResponsiveHelper.isMobile(context))
                                             Expanded(
                                               flex: 1,
                                               child: Container(
@@ -650,134 +570,62 @@ class _OrderScreenState extends State<OrderScreen> {
                                         ],
                                       ),
                                     ),
-                                    SizedBox(
-                                        width:
-                                            ResponsiveHelper.isMobile(context)
-                                                ? 30
-                                                : 40),
+                                    SizedBox(width: ResponsiveHelper.isMobile(context) ? 30 : 40),
                                   ],
                                 ),
                               ),
                               Expanded(
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 0),
+                                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                                   width: double.infinity,
                                   child: orders.isNotEmpty
                                       ? ListView(
                                           children: [
                                             // pending orders
-                                            if (pendingOrders.isNotEmpty &&
-                                                (context
-                                                            .watch<
-                                                                FilterProvider>()
-                                                            .selectedStatus ==
-                                                        Status.all ||
-                                                    context
-                                                            .watch<
-                                                                FilterProvider>()
-                                                            .selectedStatus ==
-                                                        Status.pending))
+                                            if (pendingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.pending))
                                               OrdersItemViewByStatus(
-                                                status: 'Pending',
+                                                status: 'pending',
                                                 orders: pendingOrders,
                                               ),
-                                            if (cookingOrders.isNotEmpty &&
-                                                (context
-                                                            .watch<
-                                                                FilterProvider>()
-                                                            .selectedStatus ==
-                                                        Status.all ||
-                                                    context
-                                                            .watch<
-                                                                FilterProvider>()
-                                                            .selectedStatus ==
-                                                        Status.cooking))
+                                            if (cookingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.cooking))
                                               OrdersItemViewByStatus(
-                                                status: 'Cooking',
+                                                status: 'cooking',
                                                 orders: cookingOrders,
                                               ),
-                                            if (completedOrders.isNotEmpty &&
-                                                (context
-                                                            .watch<
-                                                                FilterProvider>()
-                                                            .selectedStatus ==
-                                                        Status.all ||
-                                                    context
-                                                            .watch<
-                                                                FilterProvider>()
-                                                            .selectedStatus ==
-                                                        Status.completed))
+                                            if (completedOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.completed))
                                               OrdersItemViewByStatus(
-                                                status: 'Completed',
+                                                status: 'completed',
                                                 orders: completedOrders,
                                               ),
-                                            if (cancelledOrders.isNotEmpty &&
-                                                (context
-                                                            .watch<
-                                                                FilterProvider>()
-                                                            .selectedStatus ==
-                                                        Status.all ||
-                                                    context
-                                                            .watch<
-                                                                FilterProvider>()
-                                                            .selectedStatus ==
-                                                        Status.cancelled))
+                                            if (cancelledOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.cancelled))
                                               OrdersItemViewByStatus(
-                                                status: 'Cancelled',
+                                                status: 'cancelled',
                                                 orders: cancelledOrders,
                                               ),
 
                                             // if status != all and no order
-                                            if (context
-                                                        .watch<FilterProvider>()
-                                                        .selectedStatus ==
-                                                    Status.pending &&
-                                                pendingOrders.isEmpty)
+                                            if (context.watch<FilterProvider>().selectedStatus == Status.pending && pendingOrders.isEmpty)
                                               Container(
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .height -
-                                                    300,
+                                                height: MediaQuery.of(context).size.height - 300,
                                                 alignment: Alignment.center,
-                                                child:
-                                                    Text("No Pending Orders"),
+                                                child: Text("No Pending Orders"),
                                               ),
-                                            if (context
-                                                        .watch<FilterProvider>()
-                                                        .selectedStatus ==
-                                                    Status.cooking &&
-                                                cookingOrders.isEmpty)
+                                            if (context.watch<FilterProvider>().selectedStatus == Status.cooking && cookingOrders.isEmpty)
                                               Container(
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .height -
-                                                    300,
+                                                height: MediaQuery.of(context).size.height - 300,
                                                 alignment: Alignment.center,
-                                                child:
-                                                    Text("No Cooking Orders"),
+                                                child: Text("No Cooking Orders"),
                                               ),
-                                            if (context
-                                                        .watch<FilterProvider>()
-                                                        .selectedStatus ==
-                                                    Status.completed &&
-                                                completedOrders.isEmpty)
+                                            if (context.watch<FilterProvider>().selectedStatus == Status.completed && completedOrders.isEmpty)
                                               Container(
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .height -
-                                                    300,
+                                                height: MediaQuery.of(context).size.height - 300,
                                                 alignment: Alignment.center,
-                                                child:
-                                                    Text("No Completed Orders"),
+                                                child: Text("No Completed Orders"),
                                               ),
                                           ],
                                         )
                                       : Container(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height -
-                                              300,
+                                          height: MediaQuery.of(context).size.height - 300,
                                           alignment: Alignment.center,
                                           child: Text("No orders"),
                                         ),
@@ -814,20 +662,14 @@ class StatusBar extends StatelessWidget {
                 Container(
                   alignment: Alignment.center,
                   height: 40,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus ==
-                            Status.all
-                        ? Theme.of(context).primaryColor
-                        : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.all ? Theme.of(context).primaryColor : null,
                   ),
                   child: InkWell(
                     onTap: () {
-                      context
-                          .read<FilterProvider>()
-                          .setSelectedStatus(Status.all);
+                      context.read<FilterProvider>().setSelectedStatus(Status.all);
                     },
                     child: Text(
                       'All (${nbOrders[0]})',
@@ -844,20 +686,14 @@ class StatusBar extends StatelessWidget {
                 Container(
                   alignment: Alignment.center,
                   height: 40,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus ==
-                            Status.pending
-                        ? Theme.of(context).primaryColor
-                        : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.pending ? Theme.of(context).primaryColor : null,
                   ),
                   child: InkWell(
                     onTap: () {
-                      context
-                          .read<FilterProvider>()
-                          .setSelectedStatus(Status.pending);
+                      context.read<FilterProvider>().setSelectedStatus(Status.pending);
                     },
                     child: Text(
                       'Pending (${nbOrders[1]})',
@@ -874,20 +710,14 @@ class StatusBar extends StatelessWidget {
                 Container(
                   alignment: Alignment.center,
                   height: 40,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus ==
-                            Status.cooking
-                        ? Theme.of(context).primaryColor
-                        : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.cooking ? Theme.of(context).primaryColor : null,
                   ),
                   child: InkWell(
                     onTap: () {
-                      context
-                          .read<FilterProvider>()
-                          .setSelectedStatus(Status.cooking);
+                      context.read<FilterProvider>().setSelectedStatus(Status.cooking);
                     },
                     child: Text(
                       'Cooking (${nbOrders[2]})',
@@ -904,20 +734,14 @@ class StatusBar extends StatelessWidget {
                 Container(
                   alignment: Alignment.center,
                   height: 40,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus ==
-                            Status.completed
-                        ? Theme.of(context).primaryColor
-                        : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.completed ? Theme.of(context).primaryColor : null,
                   ),
                   child: InkWell(
                     onTap: () {
-                      context
-                          .read<FilterProvider>()
-                          .setSelectedStatus(Status.completed);
+                      context.read<FilterProvider>().setSelectedStatus(Status.completed);
                     },
                     child: Text(
                       'Completed (${nbOrders[3]})',
@@ -948,20 +772,14 @@ class StatusBar extends StatelessWidget {
                 Container(
                   alignment: Alignment.center,
                   height: 40,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus ==
-                            Status.all
-                        ? Theme.of(context).primaryColor
-                        : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.all ? Theme.of(context).primaryColor : null,
                   ),
                   child: InkWell(
                     onTap: () {
-                      context
-                          .read<FilterProvider>()
-                          .setSelectedStatus(Status.all);
+                      context.read<FilterProvider>().setSelectedStatus(Status.all);
                     },
                     child: Text(
                       'All (${nbOrders[0]})',
@@ -975,20 +793,14 @@ class StatusBar extends StatelessWidget {
                 Container(
                   alignment: Alignment.center,
                   height: 40,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus ==
-                            Status.pending
-                        ? Theme.of(context).primaryColor
-                        : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.pending ? Theme.of(context).primaryColor : null,
                   ),
                   child: InkWell(
                     onTap: () {
-                      context
-                          .read<FilterProvider>()
-                          .setSelectedStatus(Status.pending);
+                      context.read<FilterProvider>().setSelectedStatus(Status.pending);
                     },
                     child: Text(
                       'Pending (${nbOrders[1]})',
@@ -1002,20 +814,14 @@ class StatusBar extends StatelessWidget {
                 Container(
                   alignment: Alignment.center,
                   height: 40,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus ==
-                            Status.cooking
-                        ? Theme.of(context).primaryColor
-                        : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.cooking ? Theme.of(context).primaryColor : null,
                   ),
                   child: InkWell(
                     onTap: () {
-                      context
-                          .read<FilterProvider>()
-                          .setSelectedStatus(Status.cooking);
+                      context.read<FilterProvider>().setSelectedStatus(Status.cooking);
                     },
                     child: Text(
                       'Cooking (${nbOrders[2]})',
@@ -1029,20 +835,14 @@ class StatusBar extends StatelessWidget {
                 Container(
                   alignment: Alignment.center,
                   height: 40,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus ==
-                            Status.completed
-                        ? Theme.of(context).primaryColor
-                        : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.completed ? Theme.of(context).primaryColor : null,
                   ),
                   child: InkWell(
                     onTap: () {
-                      context
-                          .read<FilterProvider>()
-                          .setSelectedStatus(Status.completed);
+                      context.read<FilterProvider>().setSelectedStatus(Status.completed);
                     },
                     child: Text(
                       'Completed (${nbOrders[3]})',
@@ -1083,9 +883,7 @@ class DateBar extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              ResponsiveHelper.isMobile(context)
-                  ? DateHelper.getFullFormattedDateReduce(selectedDate)
-                  : DateHelper.getFullFormattedDate(selectedDate),
+              ResponsiveHelper.isMobile(context) ? DateHelper.getFullFormattedDateReduce(selectedDate) : DateHelper.getFullFormattedDate(selectedDate),
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.normal,
@@ -1103,8 +901,7 @@ class DateBar extends StatelessWidget {
             ),
             child: InkWell(
               onTap: () async {
-                DateTime? date =
-                    await context.read<OrderProvider>().chooseDate(context, selectedDate);
+                DateTime? date = await context.read<OrderProvider>().chooseDate(context, selectedDate);
                 if (date != null) {
                   context.goNamed('orders', pathParameters: {
                     'date': DateHelper.getFormattedDate(date),
@@ -1128,13 +925,13 @@ class StatusWidget extends StatelessWidget {
 
   Color getBgColor() {
     switch (status) {
-      case 'Cancelled':
+      case 'cancelled':
         return AppColor.canceledBackgroundColor;
-      case 'Pending':
+      case 'pending':
         return AppColor.pendingBackgroundColor;
-      case 'Cooking':
+      case 'inProgress':
         return AppColor.cookingBackgroundColor;
-      case 'Completed':
+      case 'completed':
         return AppColor.completedBackgroundColor;
       default:
         return Colors.grey;
@@ -1143,13 +940,13 @@ class StatusWidget extends StatelessWidget {
 
   Color getFgColor() {
     switch (status) {
-      case 'Cancelled':
+      case 'cancelled':
         return AppColor.canceledForegroundColor;
-      case 'Pending':
+      case 'pending':
         return AppColor.pendingForegroundColor;
-      case 'Cooking':
+      case 'inProgress':
         return AppColor.cookingForegroundColor;
-      case 'Completed':
+      case 'completed':
         return AppColor.completedForegroundColor;
       default:
         return Colors.grey;
@@ -1178,8 +975,7 @@ class StatusWidget extends StatelessWidget {
 class OrdersItemViewByStatus extends StatelessWidget {
   final String status;
   List<OrderModel> orders;
-  OrdersItemViewByStatus(
-      {super.key, required this.status, required this.orders});
+  OrdersItemViewByStatus({super.key, required this.status, required this.orders});
 
   @override
   Widget build(BuildContext context) {
@@ -1193,8 +989,7 @@ class OrdersItemViewByStatus extends StatelessWidget {
           ),
           Container(
             child: Column(
-              children: List.generate(orders.length,
-                  (index) => OrderItemWidget(order: orders[index])),
+              children: List.generate(orders.length, (index) => OrderItemWidget(order: orders[index])),
             ),
           ),
         ],
@@ -1213,9 +1008,7 @@ class OrderItemWidget extends StatelessWidget {
       height: 70,
       width: double.infinity,
       margin: const EdgeInsets.symmetric(vertical: 5),
-      padding: EdgeInsets.symmetric(
-          vertical: 5,
-          horizontal: ResponsiveHelper.isDesktop(context) ? 20 : 5),
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: ResponsiveHelper.isDesktop(context) ? 20 : 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         color: Theme.of(context).primaryColor,
@@ -1223,10 +1016,7 @@ class OrderItemWidget extends StatelessWidget {
       child: InkWell(
         onTap: () {
           int orderId = order.id;
-          context.goNamed('order-details', pathParameters: {
-            'id': orderId.toString(),
-            'date': DateHelper.getFormattedDate(order.date)
-          });
+          context.goNamed('order-details', pathParameters: {'id': orderId.toString(), 'date': DateHelper.getFormattedDate(order.date)});
         },
         child: Row(
           children: [
@@ -1319,8 +1109,7 @@ class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   SliverAppBarDelegate({required this.child, required this.isDesktop});
 
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return child;
   }
 

@@ -107,18 +107,18 @@ class OrderProvider with ChangeNotifier {
       firstDate: DateTime(2015, 8),
       lastDate: DateTime(2101),
       keyboardType: TextInputType.datetime,
-
-
     );
     return picked;
   }
 
-  Future<List<OrderModel>> getOrdersByDate(
-      DateTime date, SortType sortType, bool isAscending) async {
+  Future<List<OrderModel>> getOrdersByDate(DateTime date, SortType sortType, bool isAscending, {bool notify = false}) async {
     print('------------ call getOrdersByDate ----------------');
     List<OrderModel> orderList = [];
-    GetOrdersParam param = GetOrdersParam(
-        date: date, sortType: sortType, isAscending: isAscending);
+    if (notify) {
+      _isLoading = true;
+      notifyListeners();
+    }
+    GetOrdersParam param = GetOrdersParam(date: date, sortType: sortType, isAscending: isAscending);
     final result = await orderGetOrdersByDateUseCase.call(param);
 
     await result.fold((l) async {
@@ -127,14 +127,18 @@ class OrderProvider with ChangeNotifier {
       orderList = r;
     });
 
+    if (notify) {
+      _isLoading = false;
+      notifyListeners();
+    }
+
     return orderList;
   }
 
   Future<OrderModel?> getOrderById(int id, DateTime date) async {
     print('------------ call getOrderById ----------------');
     OrderModel? order;
-    final result = await orderGetOrdersByIdUseCase
-        .call(GetOrderByIdParam(id: id, date: date));
+    final result = await orderGetOrdersByIdUseCase.call(GetOrderByIdParam(id: id, date: date));
     await result.fold((l) async {
       print(l.errorMessage);
     }, (r) async {
@@ -152,8 +156,7 @@ class OrderProvider with ChangeNotifier {
       date: date,
       step: step,
     );
-    final response =
-        await changeStatusOrderByIdUseCase.call(changeStatusOrderByIdParam);
+    final response = await changeStatusOrderByIdUseCase.call(changeStatusOrderByIdParam);
     await response.fold((l) async {
       print(l.errorMessage);
     }, (r) async {
@@ -162,8 +165,7 @@ class OrderProvider with ChangeNotifier {
     return result;
   }
 
-  Future<bool> changeIsDoneCart(int cartId, int orderId, int productId,
-      DateTime date, bool isDone) async {
+  Future<bool> changeIsDoneCart(int cartId, int orderId, int productId, DateTime date, bool isDone) async {
     print('------------ call changeIsDoneCart ----------------');
     bool result = false;
     final param = ChangeIsDoneCartByIdParam(

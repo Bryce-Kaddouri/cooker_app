@@ -6,6 +6,7 @@ import 'package:cooker_app/src/core/helper/price_helper.dart';
 import 'package:cooker_app/src/core/helper/responsive_helper.dart';
 import 'package:cooker_app/src/features/order/data/model/order_model.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/filter_provider.dart';
+import 'package:cooker_app/src/features/order/presentation/widget/filter_widget.dart';
 import 'package:cooker_app/src/features/status/model/status_model.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
@@ -41,6 +42,16 @@ class _OrderScreenState extends State<OrderScreen> {
   /* ScrollController _mainScrollController = ScrollController();
   ScrollController _testController = ScrollController();*/
 
+  List<OrderModel> orders = [] /*snapshot.data!*/;
+  /*if (!ResponsiveHelper.isMobile(context)) {
+  orders = orders.where((element) => element.toStringForSearch().contains(searchController.text.toLowerCase())).toList();
+  }*/
+
+  List<OrderModel> pendingOrders = [] /*orders.where((element) => element.status.name == 'pending').toList()*/;
+  List<OrderModel> cookingOrders = [] /*orders.where((element) => element.status.name == 'inProgress').toList()*/;
+  List<OrderModel> completedOrders = [] /*orders.where((element) => element.status.name == 'completed').toList()*/;
+
+  late List<int> nbOrders = [0, 0, 0, 0] /*[orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length]*/;
   @override
   void initState() {
     super.initState();
@@ -59,7 +70,16 @@ class _OrderScreenState extends State<OrderScreen> {
 
               if (payload.eventType == PostgresChangeEvent.insert) {
                 if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
-                  setState(() {});
+                  context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending).then((value) {
+                    setState(() {
+                      orders = value;
+                      pendingOrders = value.where((element) => element.status.name == 'pending').toList();
+                      cookingOrders = value.where((element) => element.status.name == 'inProgress').toList();
+                      completedOrders = value.where((element) => element.status.name == 'completed').toList();
+
+                      nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
+                    });
+                  });
                   ElegantNotification.info(
                     title: Text('New Order'),
                     description: Text('Order #${payload.newRecord['id']} has been added'),
@@ -70,7 +90,16 @@ class _OrderScreenState extends State<OrderScreen> {
                 }
               } else if (payload.eventType == PostgresChangeEvent.update) {
                 if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
-                  setState(() {});
+                  context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending).then((value) {
+                    setState(() {
+                      orders = value;
+                      pendingOrders = value.where((element) => element.status.name == 'pending').toList();
+                      cookingOrders = value.where((element) => element.status.name == 'inProgress').toList();
+                      completedOrders = value.where((element) => element.status.name == 'completed').toList();
+
+                      nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
+                    });
+                  });
                   ElegantNotification.info(
                     title: Text('Order Updated'),
                     description: Text('Order #${payload.newRecord['id']} has been updated'),
@@ -81,7 +110,16 @@ class _OrderScreenState extends State<OrderScreen> {
                 }
               } else if (payload.eventType == PostgresChangeEvent.delete) {
                 if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
-                  setState(() {});
+                  context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending).then((value) {
+                    setState(() {
+                      orders = value;
+                      pendingOrders = value.where((element) => element.status.name == 'pending').toList();
+                      cookingOrders = value.where((element) => element.status.name == 'inProgress').toList();
+                      completedOrders = value.where((element) => element.status.name == 'completed').toList();
+
+                      nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
+                    });
+                  });
                   ElegantNotification.info(
                     title: Text('Order Deleted'),
                     description: Text('Order #${payload.newRecord['id']} has been deleted'),
@@ -93,11 +131,42 @@ class _OrderScreenState extends State<OrderScreen> {
               }
             })
         .subscribe();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending, notify: true).then((value) {
+        setState(() {
+          orders = value;
+          pendingOrders = value.where((element) => element.status.name == 'pending').toList();
+          cookingOrders = value.where((element) => element.status.name == 'inProgress').toList();
+          completedOrders = value.where((element) => element.status.name == 'completed').toList();
+
+          nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
+        });
+      });
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  // change value of orders if date is changed
+  @override
+  void didUpdateWidget(covariant OrderScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedDate != widget.selectedDate) {
+      context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending, notify: true).then((value) {
+        setState(() {
+          orders = value;
+          pendingOrders = value.where((element) => element.status.name == 'pending').toList();
+          cookingOrders = value.where((element) => element.status.name == 'inProgress').toList();
+          completedOrders = value.where((element) => element.status.name == 'completed').toList();
+
+          nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
+        });
+      });
+    }
   }
 
   Future<DateTime?> selectDate() async {
@@ -117,9 +186,7 @@ class _OrderScreenState extends State<OrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-
-    return FutureBuilder(
+    return /*FutureBuilder(
         future: context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.watch<SortProvider>().sortType, context.watch<SortProvider>().isAscending),
         builder: (BuildContext context, snapshot) {
           switch (snapshot.connectionState) {
@@ -148,122 +215,122 @@ class _OrderScreenState extends State<OrderScreen> {
                 List<OrderModel> completedOrders = orders.where((element) => element.status.name == 'completed').toList();
                 print('completedOrders');
                 print(completedOrders.length);
-                List<OrderModel> cancelledOrders = orders.where((element) => element.status.name == 'cancelled').toList();
                 List<int> nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
-                return material.Scaffold(
-                    backgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
-                    drawer: Builder(
-                      builder: (context) => material.Drawer(
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: ListView(
-                                children: [
-                                  material.DrawerHeader(
-                                    decoration: BoxDecoration(
-                                      border: Border(),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 50,
-                                          child: Icon(
-                                            FluentIcons.contact,
-                                            size: 50,
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            child: Text('Bryce Kaddouri', style: FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  ListTile(
-                                    leading: Icon(
-                                      FluentIcons.product_catalog,
-                                    ),
-                                    title: Text('Order List', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  ListTile(
-                                    leading: Icon(
-                                      FluentIcons.product_catalog,
-                                    ),
-                                    title: Text('Recettes', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
-                                    onPressed: () {
-                                      context.goNamed('products');
-                                    },
-                                  ),
-                                  ListTile(
-                                    leading: Icon(
-                                      FluentIcons.settings,
-                                    ),
-                                    title: Text('Settings', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
-                                    onPressed: () {
-                                      context.goNamed('setting');
-                                    },
-                                  ),
-                                ],
-                              ),
+                return */
+        material.Scaffold(
+            backgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
+            drawer: Builder(
+              builder: (context) => material.Drawer(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        children: [
+                          material.DrawerHeader(
+                            decoration: BoxDecoration(
+                              border: Border(),
                             ),
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              child: FilledButton(
-                                onPressed: () async {
-                                  bool? res = await showDialog<bool?>(
-                                    context: context,
-                                    builder: (context) {
-                                      return ContentDialog(
-                                        title: Text('Logout'),
-                                        content: Text('Are you sure you want to logout?'),
-                                        actions: [
-                                          FilledButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop(true);
-                                            },
-                                            child: Text('Yes'),
-                                          ),
-                                          Button(child: Text('No'), onPressed: () => Navigator.of(context).pop(false)),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                  if (res != null && res) {
-                                    context.read<AuthProvider>().logout();
-                                    context.goNamed('login');
-                                  }
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      FluentIcons.sign_out,
-                                      size: 24,
-                                    ),
-                                    SizedBox(
-                                      width: 30,
-                                    ),
-                                    Text('Logout'),
-                                  ],
+                            child: Column(
+                              children: [
+                                CircleAvatar(
+                                  radius: 50,
+                                  child: Icon(
+                                    FluentIcons.contact,
+                                    size: 50,
+                                  ),
                                 ),
-                              ),
+                                Expanded(
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    child: Text('Bryce Kaddouri', style: FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
+                                  ),
+                                ),
+                              ],
                             ),
+                          ),
+                          ListTile(
+                            leading: Icon(
+                              FluentIcons.product_catalog,
+                            ),
+                            title: Text('Order List', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          ListTile(
+                            leading: Icon(
+                              FluentIcons.product_catalog,
+                            ),
+                            title: Text('Recettes', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                            onPressed: () {
+                              context.goNamed('products');
+                            },
+                          ),
+                          ListTile(
+                            leading: Icon(
+                              FluentIcons.settings,
+                            ),
+                            title: Text('Settings', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                            onPressed: () {
+                              context.goNamed('setting');
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: FilledButton(
+                        onPressed: () async {
+                          bool? res = await showDialog<bool?>(
+                            context: context,
+                            builder: (context) {
+                              return ContentDialog(
+                                title: Text('Logout'),
+                                content: Text('Are you sure you want to logout?'),
+                                actions: [
+                                  FilledButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(true);
+                                    },
+                                    child: Text('Yes'),
+                                  ),
+                                  Button(child: Text('No'), onPressed: () => Navigator.of(context).pop(false)),
+                                ],
+                              );
+                            },
+                          );
+                          if (res != null && res) {
+                            context.read<AuthProvider>().logout();
+                            context.goNamed('login');
+                          }
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              FluentIcons.sign_out,
+                              size: 24,
+                            ),
+                            SizedBox(
+                              width: 30,
+                            ),
+                            Text('Logout'),
                           ],
                         ),
                       ),
                     ),
-                    appBar: material.AppBar(
-                      elevation: 4,
-                      shadowColor: FluentTheme.of(context).shadowColor,
-                      surfaceTintColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
-                      backgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
-                      toolbarHeight: 70,
-                      title: /*Container(
+                  ],
+                ),
+              ),
+            ),
+            appBar: material.AppBar(
+              elevation: 4,
+              shadowColor: FluentTheme.of(context).shadowColor,
+              surfaceTintColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
+              backgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
+              toolbarHeight: 70,
+              title: /*Container(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         height: 70,
                         decoration: BoxDecoration(
@@ -289,73 +356,177 @@ class _OrderScreenState extends State<OrderScreen> {
                           ],
                         ),
                       ),*/
-                          DateBar(
-                        selectedDate: widget.selectedDate,
-                      ),
-                      actions: [
-                        Container(
-                          alignment: Alignment.center,
-                          height: 50,
-                          width: 50,
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            color: FluentTheme.of(context).cardColor,
-                          ),
-                          child: material.InkWell(
-                            onTap: () async {
-                              DateTime? date = await context.read<OrderProvider>().chooseDate(context, widget.selectedDate);
-                              if (date != null) {
-                                context.goNamed('orders', pathParameters: {
-                                  'date': DateHelper.getFormattedDate(date),
-                                });
-                              }
-                            },
-                            child: Icon(
-                              FluentIcons.calendar_day,
+
+                  ResponsiveHelper.isMobile(context)
+                      ? DateBar(
+                          selectedDate: widget.selectedDate,
+                        )
+                      : Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: StatusBar(nbOrders: nbOrders),
+                              ),
                             ),
-                          ),
+                            DateBar(
+                              selectedDate: widget.selectedDate,
+                            ),
+                          ],
                         ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        if (!ResponsiveHelper.isDesktop(context))
-                          material.SearchAnchor(
-                              isFullScreen: true,
+              actions: [
+                Container(
+                  alignment: Alignment.center,
+                  height: 50,
+                  width: 50,
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    color: FluentTheme.of(context).cardColor,
+                  ),
+                  child: material.InkWell(
+                    onTap: () async {
+                      DateTime? date = await context.read<OrderProvider>().chooseDate(context, widget.selectedDate);
+                      if (date != null) {
+                        context.goNamed('orders', pathParameters: {
+                          'date': DateHelper.getFormattedDate(date),
+                        });
+                      }
+                    },
+                    child: Icon(
+                      FluentIcons.calendar_day,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                // filtered
+                Tooltip(
+                  message: 'Filter',
+                  displayHorizontally: false,
+                  useMousePosition: false,
+                  style: const TooltipThemeData(preferBelow: true, verticalOffset: 30),
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    child: Button(
+                      style: ButtonStyle(
+                        backgroundColor: ButtonState.all(FluentTheme.of(context).cardColor),
+                        elevation: ButtonState.all(0),
+                        shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(25))),
+                      ),
+                      onPressed: () async {
+                        // display dialog in full screen
+                        material.showDialog(
+                          context: context,
+                          builder: (context) {
+                            return material.Dialog.fullscreen(
+                              child: Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Filter',
+                                          style: FluentTheme.of(context).typography.bodyLarge!.copyWith(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          icon: Icon(
+                                            FluentIcons.save_and_close,
+                                            size: 24,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Divider(),
+                                  Expanded(
+                                      child: FilterWidget(
+                                    selectedDate: widget.selectedDate,
+                                  )),
+                                  Container(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Button(
+                                          onPressed: () {},
+                                          child: Text('Reset all'),
+                                        ),
+                                        Button(
+                                          onPressed: () {},
+                                          child: Text('Apply now'),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: Icon(
+                        FluentIcons.filter,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
+
+                /*),*/
+                SizedBox(
+                  width: 8,
+                ),
+                material.SearchAnchor(
+                    isFullScreen: true,
 /*
                                 searchController: searchController,
 */
-                              builder: (context, searchController) {
-                                return Container(
-                                  margin: const EdgeInsets.only(right: 5),
-                                  height: 50,
-                                  width: 50,
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: FluentTheme.of(context).cardColor,
-                                  ),
-                                  child: Icon(
-                                    FluentIcons.search,
-                                  ),
-                                );
-                              },
-                              suggestionsBuilder: (context, searchController) async {
-                                print('searchController.text');
-                                print(searchController.text);
-                                List<OrderModel> orders = await context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending);
-                                List<OrderModel> filteredOrders = orders.where((element) {
-                                  print('element.toStringForSearch()');
-                                  print(element.toStringForSearch());
-                                  return element.toStringForSearch().contains(searchController.text.toLowerCase());
-                                }).toList();
-                                print('filteredOrders');
-                                print(filteredOrders.length);
-                                return List.generate(filteredOrders.length, (index) => Container(padding: EdgeInsets.symmetric(horizontal: 10), child: OrderItemWidget(order: filteredOrders[index])));
-                              }),
-                      ],
-                    ),
-                    body: CustomScrollView(slivers: [
+                    builder: (context, searchController) {
+                      return Container(
+                        margin: const EdgeInsets.only(right: 5),
+                        height: 50,
+                        width: 50,
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: FluentTheme.of(context).cardColor,
+                        ),
+                        child: Icon(
+                          FluentIcons.search,
+                        ),
+                      );
+                    },
+                    suggestionsBuilder: (context, searchController) async {
+                      print('searchController.text');
+                      print(searchController.text);
+                      List<OrderModel> orders = await context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending);
+                      List<OrderModel> filteredOrders = orders.where((element) {
+                        print('element.toStringForSearch()');
+                        print(element.toStringForSearch());
+                        return element.toStringForSearch().contains(searchController.text.toLowerCase());
+                      }).toList();
+                      print('filteredOrders');
+                      print(filteredOrders.length);
+                      return List.generate(filteredOrders.length, (index) => Container(padding: EdgeInsets.symmetric(horizontal: 10), child: OrderItemWidget(order: filteredOrders[index])));
+                    }),
+              ],
+            ),
+            body: context.watch<OrderProvider>().isLoading
+                ? Center(
+                    child: ProgressRing(),
+                  )
+                : CustomScrollView(slivers: [
+                    if (!ResponsiveHelper.isDesktop(context))
                       SliverPersistentHeader(
                         floating: true,
                         pinned: true,
@@ -461,74 +632,69 @@ class _OrderScreenState extends State<OrderScreen> {
                           ),
                         ),
                       ),
-                      SliverToBoxAdapter(
-                        child: Container(
-                          height: ResponsiveHelper.isDesktop(context) ? MediaQuery.of(context).size.height - 170 : MediaQuery.of(context).size.height - 300,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
+                    SliverToBoxAdapter(
+                      child: Container(
+                        height: ResponsiveHelper.isDesktop(context) ? MediaQuery.of(context).size.height - 170 : MediaQuery.of(context).size.height - 300,
+                        padding: const EdgeInsets.all(10),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
 /*
                             color: FluentTheme.of(context).cardColor,
 */
-                          ),
-                          child: orders.isNotEmpty
-                              ? Column(
-                                  children: [
-                                    // pending orders
-                                    if (pendingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.pending))
-                                      OrdersItemViewByStatus(
-                                        status: 'pending',
-                                        orders: pendingOrders,
-                                      ),
-                                    if (cookingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.cooking))
-                                      OrdersItemViewByStatus(
-                                        status: 'inProgress',
-                                        orders: cookingOrders,
-                                      ),
-                                    if (completedOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.completed))
-                                      OrdersItemViewByStatus(
-                                        status: 'completed',
-                                        orders: completedOrders,
-                                      ),
-                                    if (cancelledOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.cancelled))
-                                      OrdersItemViewByStatus(
-                                        status: 'cancelled',
-                                        orders: cancelledOrders,
-                                      ),
-
-                                    // if status != all and no order
-                                    if (context.watch<FilterProvider>().selectedStatus == Status.pending && pendingOrders.isEmpty)
-                                      Container(
-                                        height: MediaQuery.of(context).size.height - 300,
-                                        alignment: Alignment.center,
-                                        child: Text("No Pending Orders"),
-                                      ),
-                                    if (context.watch<FilterProvider>().selectedStatus == Status.cooking && cookingOrders.isEmpty)
-                                      Container(
-                                        height: MediaQuery.of(context).size.height - 300,
-                                        alignment: Alignment.center,
-                                        child: Text("No Cooking Orders"),
-                                      ),
-                                    if (context.watch<FilterProvider>().selectedStatus == Status.completed && completedOrders.isEmpty)
-                                      Container(
-                                        height: MediaQuery.of(context).size.height - 300,
-                                        alignment: Alignment.center,
-                                        child: Text("No Completed Orders"),
-                                      ),
-                                  ],
-                                )
-                              : Container(
-                                  height: MediaQuery.of(context).size.height - 300,
-                                  alignment: Alignment.center,
-                                  child: Text("No orders"),
-                                ),
                         ),
+                        child: orders.isNotEmpty
+                            ? Column(
+                                children: [
+                                  // pending orders
+                                  if (pendingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.pending))
+                                    OrdersItemViewByStatus(
+                                      status: 'pending',
+                                      orders: pendingOrders,
+                                    ),
+                                  if (cookingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.cooking))
+                                    OrdersItemViewByStatus(
+                                      status: 'inProgress',
+                                      orders: cookingOrders,
+                                    ),
+                                  if (completedOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.completed))
+                                    OrdersItemViewByStatus(
+                                      status: 'completed',
+                                      orders: completedOrders,
+                                    ),
+
+                                  // if status != all and no order
+                                  if (context.watch<FilterProvider>().selectedStatus == Status.pending && pendingOrders.isEmpty)
+                                    Container(
+                                      height: MediaQuery.of(context).size.height - 300,
+                                      alignment: Alignment.center,
+                                      child: Text("No Pending Orders"),
+                                    ),
+                                  if (context.watch<FilterProvider>().selectedStatus == Status.cooking && cookingOrders.isEmpty)
+                                    Container(
+                                      height: MediaQuery.of(context).size.height - 300,
+                                      alignment: Alignment.center,
+                                      child: Text("No Cooking Orders"),
+                                    ),
+                                  if (context.watch<FilterProvider>().selectedStatus == Status.completed && completedOrders.isEmpty)
+                                    Container(
+                                      height: MediaQuery.of(context).size.height - 300,
+                                      alignment: Alignment.center,
+                                      child: Text("No Completed Orders"),
+                                    ),
+                                ],
+                              )
+                            : Container(
+                                height: MediaQuery.of(context).size.height - 300,
+                                alignment: Alignment.center,
+                                child: Text("No orders"),
+                              ),
                       ),
-                    ]));
-              }
+                    ),
+                  ]));
+    /*    }
           }
-        });
+        });*/
   }
 }
 
@@ -540,202 +706,79 @@ class StatusBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveHelper.isDesktop(context)
-        ? Container(
+    return Container(
+      width: MediaQuery.of(context).size.width,
 /*
             padding: const EdgeInsets.all(5),
 */
-            height: 50,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25),
-              color: Colors.white,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                /*Container(
-                  alignment: Alignment.center,
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.all ? FluentTheme.of(context).scaffoldBackgroundColor : null,
-                  ),
-                  child: material.InkWell(
-                    onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.all);
-                    },
-                    child: Text(
-                      'All (${nbOrders[0]})',
-                      style: FluentTheme.of(context).typography.body!.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                          ),
-                    ),
-                  ),
-                ),*/
-                Button(
-                    style: ButtonStyle(
-                      elevation: ButtonState.all(4),
-                      shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: Colors.red, width: 1))),
-                      padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 10)),
-                      backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.all ? FluentTheme.of(context).scaffoldBackgroundColor : null),
-                    ),
-                    child: Text('All (${nbOrders[0]})'),
-                    onPressed: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.all);
-                    }),
-                SizedBox(
-                  width: 5,
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.pending ? FluentTheme.of(context).scaffoldBackgroundColor : null,
-                  ),
-                  child: material.InkWell(
-                    onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.pending);
-                    },
-                    child: Text(
-                      'Pending (${nbOrders[1]})',
-                      style: FluentTheme.of(context).typography.body!.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                          ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.cooking ? FluentTheme.of(context).scaffoldBackgroundColor : null,
-                  ),
-                  child: material.InkWell(
-                    onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.cooking);
-                    },
-                    child: Text(
-                      'Cooking (${nbOrders[2]})',
-                      style: FluentTheme.of(context).typography.body!.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                          ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.completed ? FluentTheme.of(context).scaffoldBackgroundColor : null,
-                  ),
-                  child: material.InkWell(
-                    onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.completed);
-                    },
-                    child: Text(
-                      'Completed (${nbOrders[3]})',
-                      style: FluentTheme.of(context).typography.body!.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                          ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          )
-        : Container(
-            width: MediaQuery.of(context).size.width,
-/*
+      height: 70,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        /* borderRadius: BorderRadius.circular(25),*/
+        color: !ResponsiveHelper.isDesktop(context) ? FluentTheme.of(context).cardColor : null,
+      ),
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          Container(
             padding: const EdgeInsets.all(5),
-*/
-            height: 70,
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              /* borderRadius: BorderRadius.circular(25),*/
-              color: FluentTheme.of(context).cardColor,
-            ),
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(5),
-                  child: Button(
-                      style: ButtonStyle(
-                        elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.all ? 2 : 0),
-                        shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: FluentTheme.of(context).navigationPaneTheme.backgroundColor!, width: 1))),
-                        padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
-                        backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.all ? FluentTheme.of(context).navigationPaneTheme.backgroundColor : null),
-                      ),
-                      child: Text('All (${nbOrders[0]})'),
-                      onPressed: () {
-                        context.read<FilterProvider>().setSelectedStatus(Status.all);
-                      }),
+            child: Button(
+                style: ButtonStyle(
+                  elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.all ? 2 : 0),
+                  shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: FluentTheme.of(context).navigationPaneTheme.backgroundColor!, width: 1))),
+                  padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
+                  backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.all ? FluentTheme.of(context).navigationPaneTheme.backgroundColor : null),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(5),
-                  child: Button(
-                      style: ButtonStyle(
-                        shadowColor: ButtonState.all(AppColor.pendingForegroundColor),
-                        elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.pending ? 2 : 0),
-                        shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColor.pendingForegroundColor, width: 1))),
-                        padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
-                        backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.pending ? AppColor.pendingBackgroundColor : null),
-                      ),
-                      child: Text('Pending (${nbOrders[1]})', style: TextStyle(color: AppColor.pendingForegroundColor, fontWeight: context.watch<FilterProvider>().selectedStatus == Status.pending ? FontWeight.bold : FontWeight.normal)),
-                      onPressed: () {
-                        context.read<FilterProvider>().setSelectedStatus(Status.pending);
-                      }),
+                child: Text('All (${nbOrders[0]})'),
+                onPressed: () {
+                  context.read<FilterProvider>().setSelectedStatus(Status.all);
+                }),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5),
+            child: Button(
+                style: ButtonStyle(
+                  elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.pending ? 2 : 0),
+                  shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColor.pendingForegroundColor, width: 1))),
+                  padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
+                  backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.pending ? AppColor.pendingBackgroundColor : null),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(5),
-                  child: Button(
-                      style: ButtonStyle(
-                        elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.cooking ? 2 : 0),
-                        shadowColor: ButtonState.all(AppColor.cookingForegroundColor),
-                        shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColor.cookingForegroundColor, width: 1))),
-                        padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
-                        backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.cooking ? AppColor.cookingBackgroundColor : null),
-                      ),
-                      child: Text('In Progress (${nbOrders[2]})', style: TextStyle(color: AppColor.cookingForegroundColor, fontWeight: context.watch<FilterProvider>().selectedStatus == Status.cooking ? FontWeight.bold : FontWeight.normal)),
-                      onPressed: () {
-                        context.read<FilterProvider>().setSelectedStatus(Status.cooking);
-                      }),
+                child: Text('Pending (${nbOrders[1]})', style: TextStyle(color: AppColor.pendingForegroundColor, fontWeight: context.watch<FilterProvider>().selectedStatus == Status.pending ? FontWeight.bold : FontWeight.normal)),
+                onPressed: () {
+                  context.read<FilterProvider>().setSelectedStatus(Status.pending);
+                }),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5),
+            child: Button(
+                style: ButtonStyle(
+                  elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.cooking ? 2 : 0),
+                  shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColor.cookingForegroundColor, width: 1))),
+                  padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
+                  backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.cooking ? AppColor.cookingBackgroundColor : null),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(5),
-                  child: Button(
-                      style: ButtonStyle(
-                        elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.completed ? 2 : 0),
-                        shadowColor: ButtonState.all(AppColor.completedForegroundColor),
-                        shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColor.completedForegroundColor, width: 1))),
-                        padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
-                        backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.completed ? AppColor.completedBackgroundColor : null),
-                      ),
-                      child: Text('Completed (${nbOrders[3]})', style: TextStyle(color: AppColor.completedForegroundColor, fontWeight: context.watch<FilterProvider>().selectedStatus == Status.completed ? FontWeight.bold : FontWeight.normal)),
-                      onPressed: () {
-                        context.read<FilterProvider>().setSelectedStatus(Status.completed);
-                      }),
+                child: Text('In Progress (${nbOrders[2]})', style: TextStyle(color: AppColor.cookingForegroundColor, fontWeight: context.watch<FilterProvider>().selectedStatus == Status.cooking ? FontWeight.bold : FontWeight.normal)),
+                onPressed: () {
+                  context.read<FilterProvider>().setSelectedStatus(Status.cooking);
+                }),
+          ),
+          Container(
+            padding: const EdgeInsets.all(5),
+            child: Button(
+                style: ButtonStyle(
+                  elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.completed ? 2 : 0),
+                  shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColor.completedForegroundColor, width: 1))),
+                  padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
+                  backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.completed ? AppColor.completedBackgroundColor : null),
                 ),
-              ],
-            ),
-          );
+                child: Text('Completed (${nbOrders[3]})', style: TextStyle(color: AppColor.completedForegroundColor, fontWeight: context.watch<FilterProvider>().selectedStatus == Status.completed ? FontWeight.bold : FontWeight.normal)),
+                onPressed: () {
+                  context.read<FilterProvider>().setSelectedStatus(Status.completed);
+                }),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -845,6 +888,60 @@ class StatusWidget extends StatelessWidget {
   }
 }
 
+class NbOrderWidget extends StatelessWidget {
+  final String status;
+  final int nbOrder;
+  const NbOrderWidget({super.key, required this.status, required this.nbOrder});
+
+  Color getBgColor() {
+    switch (status) {
+      case 'cancelled':
+        return AppColor.canceledBackgroundColor;
+      case 'pending':
+        return AppColor.pendingBackgroundColor;
+      case 'inProgress':
+        return AppColor.cookingBackgroundColor;
+      case 'completed':
+        return AppColor.completedBackgroundColor;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Color getFgColor() {
+    switch (status) {
+      case 'cancelled':
+        return AppColor.canceledForegroundColor;
+      case 'pending':
+        return AppColor.pendingForegroundColor;
+      case 'inProgress':
+        return AppColor.cookingForegroundColor;
+      case 'completed':
+        return AppColor.completedForegroundColor;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: context.watch<SettingProvider>().isDarkMode ? getFgColor() : getBgColor(),
+      ),
+      child: Text(
+        nbOrder.toString(),
+        style: TextStyle(
+          color: context.watch<SettingProvider>().isDarkMode ? getBgColor() : getFgColor(),
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}
+
 class OrdersItemViewByStatus extends StatelessWidget {
   final String status;
   List<OrderModel> orders;
@@ -861,13 +958,14 @@ class OrdersItemViewByStatus extends StatelessWidget {
             children: [
               StatusWidget(status: status),
               SizedBox(width: 10),
-              Text(
+              NbOrderWidget(status: status, nbOrder: orders.length),
+              /*Text(
                 '(${orders.length})',
                 style: FluentTheme.of(context).typography.body!.copyWith(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
-              ),
+              ),*/
             ],
           ),
         ),
@@ -892,9 +990,9 @@ class OrderItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 5),
-      padding: EdgeInsets.symmetric(vertical: 5, horizontal: ResponsiveHelper.isDesktop(context) ? 20 : 5),
+      padding: EdgeInsets.all(0),
       child: ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        contentPadding: EdgeInsets.all(10),
         onPressed: () {
           int orderId = order.id;
           context.goNamed('order-details', pathParameters: {'id': orderId.toString(), 'date': DateHelper.getFormattedDate(order.date)});
@@ -928,11 +1026,13 @@ class OrderItemWidget extends StatelessWidget {
                   ),
                   if (!ResponsiveHelper.isMobile(context))
                     Container(
+                      padding: const EdgeInsets.all(20),
                       alignment: Alignment.center,
-                      child: Text('${order.nbTotalItemsCart}'),
+                      child: Text('${order.nbTotalItemsCart} items'),
                     ),
                   if (!ResponsiveHelper.isMobile(context))
                     Container(
+                      padding: const EdgeInsets.all(20),
                       alignment: Alignment.center,
                       child: Text('${PriceHelper.getFormattedPrice(
                         order.totalAmount,
@@ -940,7 +1040,7 @@ class OrderItemWidget extends StatelessWidget {
                       )}'),
                     ),
                   Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(20),
                     alignment: Alignment.center,
                     child: Text(
                       DateHelper.get24HourTime(order.time),

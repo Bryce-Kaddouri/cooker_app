@@ -1,4 +1,5 @@
 //import intl
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class DateHelper {
@@ -78,5 +79,10 @@ class DateHelper {
   // method to get day in letter (ex: SUnday ==> Sun)
   static String getDayInLetter(DateTime date) {
     return DateFormat('E').format(date);
+  }
+
+  static String get24HourTime(TimeOfDay time) {
+    DateTime now = DateTime.now().copyWith(hour: time.hour, minute: time.minute);
+    return DateFormat('HH:mm').format(now);
   }
 }

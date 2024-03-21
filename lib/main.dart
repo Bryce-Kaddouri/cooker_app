@@ -134,6 +134,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return FluentApp.router(
+      key: _scaffoldMessengerKey,
       title: 'Cooker App',
       debugShowCheckedModeBanner: false,
       theme: FluentThemeData.light(),

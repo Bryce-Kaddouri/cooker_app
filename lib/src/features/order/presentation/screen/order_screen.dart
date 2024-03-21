@@ -20,8 +20,6 @@ import '../../../product/data/model/product_model.dart';
 import '../../../setting/presentation/setting_provider.dart';
 import '../provider/order_provider.dart';
 import '../provider/sort_provider.dart';
-import '../widget/filter_widget.dart';
-import '../widget/sort_by_widget.dart';
 
 class OrderScreen extends StatefulWidget {
   DateTime selectedDate;
@@ -153,6 +151,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 List<OrderModel> cancelledOrders = orders.where((element) => element.status.name == 'cancelled').toList();
                 List<int> nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
                 return material.Scaffold(
+                    backgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
                     drawer: Builder(
                       builder: (context) => material.Drawer(
                         child: Column(
@@ -216,72 +215,6 @@ class _OrderScreenState extends State<OrderScreen> {
                               padding: const EdgeInsets.all(10),
                               child: FilledButton(
                                 onPressed: () async {
-                                  /*material.showAdaptiveDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          icon: Icon(
-                                            Icons.warning_amber_rounded,
-                                            size: 70,
-                                          ),
-                                          iconColor: AppColor.canceledForegroundColor,
-                                          title: Text(
-                                            'Logout',
-                                            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                          ),
-                                          content: Text(
-                                            'Are you sure you want to logout?',
-                                            textAlign: TextAlign.center,
-                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                                  fontSize: 16,
-                                                ),
-                                          ),
-                                          actionsAlignment: MainAxisAlignment.spaceBetween,
-                                          actions: [
-                                            MaterialButton(
-                                              minWidth: 100,
-                                              height: 40,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(8),
-                                              ),
-                                              color: AppColor.completedForegroundColor,
-                                              textColor: Theme.of(context).primaryColor,
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                                context.read<AuthProvider>().logout();
-                                                context.goNamed('login');
-                                              },
-                                              child: Text(
-                                                'Yes',
-                                                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                                      fontSize: 16,
-                                                    ),
-                                              ),
-                                            ),
-                                            MaterialButton(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(8),
-                                              ),
-                                              color: AppColor.canceledForegroundColor,
-                                              textColor: Theme.of(context).primaryColor,
-                                              minWidth: 100,
-                                              height: 40,
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: Text(
-                                                'No',
-                                                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                                      fontSize: 16,
-                                                    ),
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      });*/
                                   bool? res = await showDialog<bool?>(
                                     context: context,
                                     builder: (context) {
@@ -325,8 +258,12 @@ class _OrderScreenState extends State<OrderScreen> {
                       ),
                     ),
                     appBar: material.AppBar(
+                      elevation: 4,
+                      shadowColor: FluentTheme.of(context).shadowColor,
+                      surfaceTintColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
+                      backgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
                       toolbarHeight: 70,
-                      title: Container(
+                      title: /*Container(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         height: 70,
                         decoration: BoxDecoration(
@@ -337,51 +274,8 @@ class _OrderScreenState extends State<OrderScreen> {
                           ),
                         ),
                         child: Row(
-                          mainAxisAlignment: !ResponsiveHelper.isDesktop(context) ? MainAxisAlignment.start : MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: !ResponsiveHelper.isDesktop(context) ? MainAxisAlignment.end : MainAxisAlignment.spaceBetween,
                           children: [
-                            if (!ResponsiveHelper.isDesktop(context)) Spacer(),
-                            if (!ResponsiveHelper.isDesktop(context))
-                              material.SearchAnchor(
-                                  isFullScreen: true,
-                                  searchController: searchController,
-                                  builder: (context, searchController) {
-                                    return Container(
-                                      margin: const EdgeInsets.only(right: 5),
-                                      height: 50,
-                                      width: 50,
-                                      padding: const EdgeInsets.all(5),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-/*
-                                        color: Theme.of(context).cardColor,
-*/
-                                      ),
-                                      child: Container(
-                                        height: 40,
-                                        width: 40,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: FluentTheme.of(context).scaffoldBackgroundColor,
-                                        ),
-                                        child: Icon(
-                                          FluentIcons.search,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  suggestionsBuilder: (context, searchController) async {
-                                    print('searchController.text');
-                                    print(searchController.text);
-                                    List<OrderModel> orders = await context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending);
-                                    List<OrderModel> filteredOrders = orders.where((element) {
-                                      print('element.toStringForSearch()');
-                                      print(element.toStringForSearch());
-                                      return element.toStringForSearch().contains(searchController.text.toLowerCase());
-                                    }).toList();
-                                    print('filteredOrders');
-                                    print(filteredOrders.length);
-                                    return List.generate(filteredOrders.length, (index) => Container(padding: EdgeInsets.symmetric(horizontal: 10), child: OrderItemWidget(order: filteredOrders[index])));
-                                  }),
                             if (ResponsiveHelper.isDesktop(context))
                               Expanded(
                                 child: Container(
@@ -394,7 +288,72 @@ class _OrderScreenState extends State<OrderScreen> {
                             ),
                           ],
                         ),
+                      ),*/
+                          DateBar(
+                        selectedDate: widget.selectedDate,
                       ),
+                      actions: [
+                        Container(
+                          alignment: Alignment.center,
+                          height: 50,
+                          width: 50,
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: FluentTheme.of(context).cardColor,
+                          ),
+                          child: material.InkWell(
+                            onTap: () async {
+                              DateTime? date = await context.read<OrderProvider>().chooseDate(context, widget.selectedDate);
+                              if (date != null) {
+                                context.goNamed('orders', pathParameters: {
+                                  'date': DateHelper.getFormattedDate(date),
+                                });
+                              }
+                            },
+                            child: Icon(
+                              FluentIcons.calendar_day,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        if (!ResponsiveHelper.isDesktop(context))
+                          material.SearchAnchor(
+                              isFullScreen: true,
+/*
+                                searchController: searchController,
+*/
+                              builder: (context, searchController) {
+                                return Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  height: 50,
+                                  width: 50,
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: FluentTheme.of(context).cardColor,
+                                  ),
+                                  child: Icon(
+                                    FluentIcons.search,
+                                  ),
+                                );
+                              },
+                              suggestionsBuilder: (context, searchController) async {
+                                print('searchController.text');
+                                print(searchController.text);
+                                List<OrderModel> orders = await context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending);
+                                List<OrderModel> filteredOrders = orders.where((element) {
+                                  print('element.toStringForSearch()');
+                                  print(element.toStringForSearch());
+                                  return element.toStringForSearch().contains(searchController.text.toLowerCase());
+                                }).toList();
+                                print('filteredOrders');
+                                print(filteredOrders.length);
+                                return List.generate(filteredOrders.length, (index) => Container(padding: EdgeInsets.symmetric(horizontal: 10), child: OrderItemWidget(order: filteredOrders[index])));
+                              }),
+                      ],
                     ),
                     body: CustomScrollView(slivers: [
                       SliverPersistentHeader(
@@ -403,242 +362,169 @@ class _OrderScreenState extends State<OrderScreen> {
                         delegate: SliverAppBarDelegate(
                           isDesktop: ResponsiveHelper.isDesktop(context),
                           child: Container(
+                            height: 80,
                             color: FluentTheme.of(context).scaffoldBackgroundColor,
                             child: Column(children: [
                               if (!ResponsiveHelper.isDesktop(context))
                                 Container(
+                                  height: 70,
                                   padding: ResponsiveHelper.isMobile(context) ? const EdgeInsets.all(0) : const EdgeInsets.only(left: 20, bottom: 10, right: 20),
-                                  child: StatusBar(nbOrders: nbOrders),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: StatusBar(nbOrders: nbOrders),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 10),
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  color: FluentTheme.of(context).cardColor,
-                                ),
-                                padding: const EdgeInsets.all(10),
-                                height: 60,
-                                width: double.infinity,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Order List',
+                              /* Container(
+                                height: 70,
+                                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                child: Card(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Order List',
                                         style: FluentTheme.of(context).typography.bodyLarge!.copyWith(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
-                                            )
-                                        /* TextStyle(
-                                        fontSize: 20,
-                                        color: AppColor.lightBlackTextColor,
-                                        fontWeight: FontWeight.bold,
-                                      ),*/
+                                            ),
+                                      ),
+                                      if (ResponsiveHelper.isDesktop(context))
+                                        Container(
+                                          alignment: Alignment.center,
+                                          padding: const EdgeInsets.all(5),
+                                          margin: const EdgeInsets.all(0),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(30),
+                                            color: FluentTheme.of(context).scaffoldBackgroundColor,
+                                          ),
+                                          constraints: BoxConstraints(
+                                            maxWidth: 350,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                height: 40,
+                                                width: 40,
+                                                child: Icon(
+                                                  FluentIcons.search,
+                                                ),
+                                              ),
+                                              material.TextField(
+                                                showCursor: true,
+                                                controller: searchController,
+                                                scrollPadding: const EdgeInsets.all(0),
+                                                maxLines: 1,
+                                                clipBehavior: Clip.antiAlias,
+                                                textAlignVertical: TextAlignVertical.top,
+                                                decoration: material.InputDecoration(
+                                                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                                                  constraints: BoxConstraints(
+                                                    maxWidth: 300,
+                                                    minHeight: 40,
+                                                    maxHeight: 40,
+                                                  ),
+                                                  hintText: 'Search by order ID',
+*/ /*
+                                                fillColor: Theme.of(context).primaryColor,
+*/ /*
+                                                  filled: true,
+                                                  */ /* hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                                      fontSize: 16,
+                                                    ),*/ /*
+                                                  border: material.OutlineInputBorder(
+                                                    borderSide: BorderSide.none,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                    if (ResponsiveHelper.isDesktop(context))
                                       Container(
-                                        alignment: Alignment.center,
-                                        padding: const EdgeInsets.all(5),
-                                        margin: const EdgeInsets.all(0),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(30),
-                                          color: FluentTheme.of(context).scaffoldBackgroundColor,
-                                        ),
-                                        constraints: BoxConstraints(
-                                          maxWidth: 350,
-                                        ),
                                         child: Row(
                                           children: [
-                                            Container(
-                                              height: 40,
-                                              width: 40,
-                                              child: Icon(
-                                                FluentIcons.search,
-                                              ),
-                                            ),
-                                            material.TextField(
-                                              showCursor: true,
-                                              controller: searchController,
-                                              scrollPadding: const EdgeInsets.all(0),
-                                              maxLines: 1,
-                                              clipBehavior: Clip.antiAlias,
-                                              textAlignVertical: TextAlignVertical.top,
-                                              decoration: material.InputDecoration(
-                                                contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                                                constraints: BoxConstraints(
-                                                  maxWidth: 300,
-                                                  minHeight: 40,
-                                                  maxHeight: 40,
-                                                ),
-                                                hintText: 'Search by order ID',
-/*
-                                                fillColor: Theme.of(context).primaryColor,
-*/
-                                                filled: true,
-                                                /* hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                                      fontSize: 16,
-                                                    ),*/
-                                                border: material.OutlineInputBorder(
-                                                  borderSide: BorderSide.none,
-                                                ),
-                                              ),
-                                            ),
+                                            SortByWidget(),
+                                            SizedBox(width: ResponsiveHelper.isDesktop(context) ? 10 : 5),
+                                            FilterWidget(
+                                              selectedDate: widget.selectedDate,
+                                            )
                                           ],
                                         ),
                                       ),
-                                    Container(
-                                      child: Row(
-                                        children: [
-                                          SortByWidget(),
-                                          SizedBox(width: ResponsiveHelper.isDesktop(context) ? 10 : 5),
-                                          FilterWidget(
-                                            selectedDate: widget.selectedDate,
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
+                              ),*/
                             ]),
                           ),
                         ),
                       ),
                       SliverToBoxAdapter(
                         child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                          height: ResponsiveHelper.isDesktop(context) ? MediaQuery.of(context).size.height - 170 : MediaQuery.of(context).size.height - 210,
-                          padding: const EdgeInsets.all(10),
+                          height: ResponsiveHelper.isDesktop(context) ? MediaQuery.of(context).size.height - 170 : MediaQuery.of(context).size.height - 300,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
                           width: double.infinity,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25),
+/*
                             color: FluentTheme.of(context).cardColor,
+*/
                           ),
-                          child: Column(
-                            children: [
-                              Container(
-                                height: 50,
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(14),
-                                  color: FluentTheme.of(context).scaffoldBackgroundColor,
-                                ),
-                                child: Row(
+                          child: orders.isNotEmpty
+                              ? Column(
                                   children: [
-                                    Expanded(
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Container(
-                                            width: 60,
-                                            alignment: Alignment.center,
-                                            child: Text('Order ID'),
-                                          ),
-                                          Expanded(
-                                            flex: 2,
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              child: Text('Customer'),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            flex: 2,
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              child: Text('Status'),
-                                            ),
-                                          ),
-                                          if (!ResponsiveHelper.isMobile(context))
-                                            Expanded(
-                                              flex: 1,
-                                              child: Container(
-                                                alignment: Alignment.center,
-                                                child: Text('Items'),
-                                              ),
-                                            ),
-                                          if (!ResponsiveHelper.isMobile(context))
-                                            Expanded(
-                                              flex: 1,
-                                              child: Container(
-                                                alignment: Alignment.center,
-                                                child: Text('Total'),
-                                              ),
-                                            ),
-                                          Expanded(
-                                            flex: 1,
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              child: Text('Time'),
-                                            ),
-                                          ),
-                                        ],
+                                    // pending orders
+                                    if (pendingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.pending))
+                                      OrdersItemViewByStatus(
+                                        status: 'pending',
+                                        orders: pendingOrders,
                                       ),
-                                    ),
-                                    SizedBox(width: ResponsiveHelper.isMobile(context) ? 30 : 40),
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                                  width: double.infinity,
-                                  child: orders.isNotEmpty
-                                      ? ListView(
-                                          children: [
-                                            // pending orders
-                                            if (pendingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.pending))
-                                              OrdersItemViewByStatus(
-                                                status: 'pending',
-                                                orders: pendingOrders,
-                                              ),
-                                            if (cookingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.cooking))
-                                              OrdersItemViewByStatus(
-                                                status: 'cooking',
-                                                orders: cookingOrders,
-                                              ),
-                                            if (completedOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.completed))
-                                              OrdersItemViewByStatus(
-                                                status: 'completed',
-                                                orders: completedOrders,
-                                              ),
-                                            if (cancelledOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.cancelled))
-                                              OrdersItemViewByStatus(
-                                                status: 'cancelled',
-                                                orders: cancelledOrders,
-                                              ),
+                                    if (cookingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.cooking))
+                                      OrdersItemViewByStatus(
+                                        status: 'inProgress',
+                                        orders: cookingOrders,
+                                      ),
+                                    if (completedOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.completed))
+                                      OrdersItemViewByStatus(
+                                        status: 'completed',
+                                        orders: completedOrders,
+                                      ),
+                                    if (cancelledOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.cancelled))
+                                      OrdersItemViewByStatus(
+                                        status: 'cancelled',
+                                        orders: cancelledOrders,
+                                      ),
 
-                                            // if status != all and no order
-                                            if (context.watch<FilterProvider>().selectedStatus == Status.pending && pendingOrders.isEmpty)
-                                              Container(
-                                                height: MediaQuery.of(context).size.height - 300,
-                                                alignment: Alignment.center,
-                                                child: Text("No Pending Orders"),
-                                              ),
-                                            if (context.watch<FilterProvider>().selectedStatus == Status.cooking && cookingOrders.isEmpty)
-                                              Container(
-                                                height: MediaQuery.of(context).size.height - 300,
-                                                alignment: Alignment.center,
-                                                child: Text("No Cooking Orders"),
-                                              ),
-                                            if (context.watch<FilterProvider>().selectedStatus == Status.completed && completedOrders.isEmpty)
-                                              Container(
-                                                height: MediaQuery.of(context).size.height - 300,
-                                                alignment: Alignment.center,
-                                                child: Text("No Completed Orders"),
-                                              ),
-                                          ],
-                                        )
-                                      : Container(
-                                          height: MediaQuery.of(context).size.height - 300,
-                                          alignment: Alignment.center,
-                                          child: Text("No orders"),
-                                        ),
+                                    // if status != all and no order
+                                    if (context.watch<FilterProvider>().selectedStatus == Status.pending && pendingOrders.isEmpty)
+                                      Container(
+                                        height: MediaQuery.of(context).size.height - 300,
+                                        alignment: Alignment.center,
+                                        child: Text("No Pending Orders"),
+                                      ),
+                                    if (context.watch<FilterProvider>().selectedStatus == Status.cooking && cookingOrders.isEmpty)
+                                      Container(
+                                        height: MediaQuery.of(context).size.height - 300,
+                                        alignment: Alignment.center,
+                                        child: Text("No Cooking Orders"),
+                                      ),
+                                    if (context.watch<FilterProvider>().selectedStatus == Status.completed && completedOrders.isEmpty)
+                                      Container(
+                                        height: MediaQuery.of(context).size.height - 300,
+                                        alignment: Alignment.center,
+                                        child: Text("No Completed Orders"),
+                                      ),
+                                  ],
+                                )
+                              : Container(
+                                  height: MediaQuery.of(context).size.height - 300,
+                                  alignment: Alignment.center,
+                                  child: Text("No orders"),
                                 ),
-                              )
-                            ],
-                          ),
                         ),
-                      )
+                      ),
                     ]));
               }
           }
@@ -650,6 +536,8 @@ class StatusBar extends StatelessWidget {
   List<int> nbOrders;
   StatusBar({super.key, required this.nbOrders});
 
+  // global key to manage the state button of pending status
+
   @override
   Widget build(BuildContext context) {
     return ResponsiveHelper.isDesktop(context)
@@ -660,12 +548,12 @@ class StatusBar extends StatelessWidget {
             height: 50,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(25),
-              color: FluentTheme.of(context).cardColor,
+              color: Colors.white,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
+                /*Container(
                   alignment: Alignment.center,
                   height: 40,
                   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
@@ -685,7 +573,18 @@ class StatusBar extends StatelessWidget {
                           ),
                     ),
                   ),
-                ),
+                ),*/
+                Button(
+                    style: ButtonStyle(
+                      elevation: ButtonState.all(4),
+                      shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: Colors.red, width: 1))),
+                      padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 10)),
+                      backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.all ? FluentTheme.of(context).scaffoldBackgroundColor : null),
+                    ),
+                    child: Text('All (${nbOrders[0]})'),
+                    onPressed: () {
+                      context.read<FilterProvider>().setSelectedStatus(Status.all);
+                    }),
                 SizedBox(
                   width: 5,
                 ),
@@ -763,8 +662,11 @@ class StatusBar extends StatelessWidget {
           )
         : Container(
             width: MediaQuery.of(context).size.width,
+/*
             padding: const EdgeInsets.all(5),
-            height: 50,
+*/
+            height: 70,
+            padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
               /* borderRadius: BorderRadius.circular(25),*/
               color: FluentTheme.of(context).cardColor,
@@ -773,89 +675,64 @@ class StatusBar extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               children: [
                 Container(
-                  alignment: Alignment.center,
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.all ? FluentTheme.of(context).scaffoldBackgroundColor : null,
-                  ),
-                  child: material.InkWell(
-                    onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.all);
-                    },
-                    child: Text(
-                      'All (${nbOrders[0]})',
-                      style: FluentTheme.of(context).typography.body!.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                          ),
-                    ),
-                  ),
+                  padding: const EdgeInsets.all(5),
+                  child: Button(
+                      style: ButtonStyle(
+                        elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.all ? 2 : 0),
+                        shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: FluentTheme.of(context).navigationPaneTheme.backgroundColor!, width: 1))),
+                        padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
+                        backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.all ? FluentTheme.of(context).navigationPaneTheme.backgroundColor : null),
+                      ),
+                      child: Text('All (${nbOrders[0]})'),
+                      onPressed: () {
+                        context.read<FilterProvider>().setSelectedStatus(Status.all);
+                      }),
                 ),
                 Container(
-                  alignment: Alignment.center,
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.pending ? FluentTheme.of(context).scaffoldBackgroundColor : null,
-                  ),
-                  child: material.InkWell(
-                    onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.pending);
-                    },
-                    child: Text(
-                      'Pending (${nbOrders[1]})',
-                      style: FluentTheme.of(context).typography.body!.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                          ),
-                    ),
-                  ),
+                  padding: const EdgeInsets.all(5),
+                  child: Button(
+                      style: ButtonStyle(
+                        shadowColor: ButtonState.all(AppColor.pendingForegroundColor),
+                        elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.pending ? 2 : 0),
+                        shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColor.pendingForegroundColor, width: 1))),
+                        padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
+                        backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.pending ? AppColor.pendingBackgroundColor : null),
+                      ),
+                      child: Text('Pending (${nbOrders[1]})', style: TextStyle(color: AppColor.pendingForegroundColor, fontWeight: context.watch<FilterProvider>().selectedStatus == Status.pending ? FontWeight.bold : FontWeight.normal)),
+                      onPressed: () {
+                        context.read<FilterProvider>().setSelectedStatus(Status.pending);
+                      }),
                 ),
                 Container(
-                  alignment: Alignment.center,
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.cooking ? FluentTheme.of(context).scaffoldBackgroundColor : null,
-                  ),
-                  child: material.InkWell(
-                    onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.cooking);
-                    },
-                    child: Text(
-                      'Cooking (${nbOrders[2]})',
-                      style: FluentTheme.of(context).typography.body!.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                          ),
-                    ),
-                  ),
+                  padding: const EdgeInsets.all(5),
+                  child: Button(
+                      style: ButtonStyle(
+                        elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.cooking ? 2 : 0),
+                        shadowColor: ButtonState.all(AppColor.cookingForegroundColor),
+                        shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColor.cookingForegroundColor, width: 1))),
+                        padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
+                        backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.cooking ? AppColor.cookingBackgroundColor : null),
+                      ),
+                      child: Text('In Progress (${nbOrders[2]})', style: TextStyle(color: AppColor.cookingForegroundColor, fontWeight: context.watch<FilterProvider>().selectedStatus == Status.cooking ? FontWeight.bold : FontWeight.normal)),
+                      onPressed: () {
+                        context.read<FilterProvider>().setSelectedStatus(Status.cooking);
+                      }),
                 ),
                 Container(
-                  alignment: Alignment.center,
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.completed ? FluentTheme.of(context).scaffoldBackgroundColor : null,
-                  ),
-                  child: material.InkWell(
-                    onTap: () {
-                      context.read<FilterProvider>().setSelectedStatus(Status.completed);
-                    },
-                    child: Text(
-                      'Completed (${nbOrders[3]})',
-                      style: FluentTheme.of(context).typography.body!.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                          ),
-                    ),
-                  ),
-                )
+                  padding: const EdgeInsets.all(5),
+                  child: Button(
+                      style: ButtonStyle(
+                        elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.completed ? 2 : 0),
+                        shadowColor: ButtonState.all(AppColor.completedForegroundColor),
+                        shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColor.completedForegroundColor, width: 1))),
+                        padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
+                        backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.completed ? AppColor.completedBackgroundColor : null),
+                      ),
+                      child: Text('Completed (${nbOrders[3]})', style: TextStyle(color: AppColor.completedForegroundColor, fontWeight: context.watch<FilterProvider>().selectedStatus == Status.completed ? FontWeight.bold : FontWeight.normal)),
+                      onPressed: () {
+                        context.read<FilterProvider>().setSelectedStatus(Status.completed);
+                      }),
+                ),
               ],
             ),
           );
@@ -868,7 +745,7 @@ class DateBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return /*Container(
       padding: const EdgeInsets.all(5),
       height: 50,
       decoration: BoxDecoration(
@@ -885,39 +762,17 @@ class DateBar extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Text(
-              ResponsiveHelper.isMobile(context) ? DateHelper.getFullFormattedDateReduce(selectedDate) : DateHelper.getFullFormattedDate(selectedDate),
-              style: FluentTheme.of(context).typography.body!.copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                  ),
-            ),
+            child:*/
+        Text(
+      ResponsiveHelper.isMobile(context) ? DateHelper.getFullFormattedDateReduce(selectedDate) : DateHelper.getFullFormattedDate(selectedDate),
+      style: FluentTheme.of(context).typography.body!.copyWith(
+            fontSize: 16,
+            fontWeight: FontWeight.normal,
           ),
-          Container(
-            alignment: Alignment.center,
-            height: 40,
-            width: 40,
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: FluentTheme.of(context).scaffoldBackgroundColor,
-            ),
-            child: material.InkWell(
-              onTap: () async {
-                DateTime? date = await context.read<OrderProvider>().chooseDate(context, selectedDate);
-                if (date != null) {
-                  context.goNamed('orders', pathParameters: {
-                    'date': DateHelper.getFormattedDate(date),
-                  });
-                }
-              },
-              child: Icon(
-                FluentIcons.calendar_day,
-              ),
-            ),
+      /*),
           ),
         ],
-      ),
+      ),*/
     );
   }
 }
@@ -956,6 +811,21 @@ class StatusWidget extends StatelessWidget {
     }
   }
 
+  String getStatusName() {
+    switch (status) {
+      case 'cancelled':
+        return 'Cancelled';
+      case 'pending':
+        return 'Pending';
+      case 'inProgress':
+        return 'In Progress';
+      case 'completed':
+        return 'Completed';
+      default:
+        return 'Unknown';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -965,7 +835,7 @@ class StatusWidget extends StatelessWidget {
         color: context.watch<SettingProvider>().isDarkMode ? getFgColor() : getBgColor(),
       ),
       child: Text(
-        status,
+        getStatusName(),
         style: TextStyle(
           color: context.watch<SettingProvider>().isDarkMode ? getBgColor() : getFgColor(),
           fontWeight: FontWeight.bold,
@@ -983,19 +853,32 @@ class OrdersItemViewByStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            alignment: Alignment.centerLeft,
-            child: Text('${status} (${orders.length})'),
+      margin: const EdgeInsets.only(bottom: 40),
+      child: Expander(
+        initiallyExpanded: true,
+        header: Container(
+          child: Row(
+            children: [
+              StatusWidget(status: status),
+              SizedBox(width: 10),
+              Text(
+                '(${orders.length})',
+                style: FluentTheme.of(context).typography.body!.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ],
           ),
-          Container(
-            child: Column(
-              children: List.generate(orders.length, (index) => OrderItemWidget(order: orders[index])),
+        ),
+        content: Container(
+          child: Column(
+            children: List.generate(
+              orders.length,
+              (index) => OrderItemWidget(order: orders[index]),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -1010,86 +893,63 @@ class OrderItemWidget extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 5),
       padding: EdgeInsets.symmetric(vertical: 5, horizontal: ResponsiveHelper.isDesktop(context) ? 20 : 5),
-      child: material.InkWell(
-        onTap: () {
+      child: ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 0),
+        onPressed: () {
           int orderId = order.id;
           context.goNamed('order-details', pathParameters: {'id': orderId.toString(), 'date': DateHelper.getFormattedDate(order.date)});
         },
-        child: Row(
+        trailing: Container(
+          alignment: Alignment.center,
+          child: Icon(FluentIcons.chevron_right_small, size: 12),
+        ),
+        leading: Text(
+          '#${order.id}',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        title: Row(
           children: [
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: 60,
-                    alignment: Alignment.center,
-                    child: Text(
-                      '#${order.id}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
                   Expanded(
-                    flex: 2,
                     child: Container(
                       alignment: Alignment.center,
                       child: Text(
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                         '${order.customer.lName} ${order.customer.fName}',
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
-                  Expanded(
-                    flex: 2,
-                    child: Container(
-                      alignment: Alignment.center,
-                      child: StatusWidget(status: order.status.name),
-                    ),
-                  ),
                   if (!ResponsiveHelper.isMobile(context))
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: Text('${order.nbTotalItemsCart}'),
-                      ),
+                    Container(
+                      alignment: Alignment.center,
+                      child: Text('${order.nbTotalItemsCart}'),
                     ),
                   if (!ResponsiveHelper.isMobile(context))
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: Text('${PriceHelper.getFormattedPrice(
-                          order.totalAmount,
-                          showBefore: false,
-                        )}'),
-                      ),
-                    ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
+                    Container(
                       alignment: Alignment.center,
-                      child: Text(
-                        '${order.time.hour} : ${order.time.minute}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Text('${PriceHelper.getFormattedPrice(
+                        order.totalAmount,
+                        showBefore: false,
+                      )}'),
+                    ),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    alignment: Alignment.center,
+                    child: Text(
+                      DateHelper.get24HourTime(order.time),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ],
-              ),
-            ),
-            SizedBox(
-              width: ResponsiveHelper.isMobile(context) ? 30 : 40,
-              child: Container(
-                alignment: Alignment.center,
-                child: IconButton(
-                  icon: Icon(FluentIcons.forward, size: 20),
-                  onPressed: () {},
-                ),
               ),
             ),
           ],
@@ -1112,7 +972,7 @@ class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 
   // 150 for desktop else 200
   @override
-  double get maxExtent => isDesktop ? 70 : 130;
+  double get maxExtent => isDesktop ? 70 : 70;
 
   @override
   double get minExtent => 70;

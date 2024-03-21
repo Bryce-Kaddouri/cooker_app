@@ -45,6 +45,7 @@ class RouterHelper {
           ),
         );
       },
+      initialLocation: '/orders/${DateHelper.getFormattedDate(DateTime.now())}',
       redirect: (context, state) {
         // check if user is logged in
         // if not, redirect to login page
@@ -72,8 +73,7 @@ class RouterHelper {
           name: 'orders',
           path: '/orders/:date',
           builder: (context, state) {
-            String dateStr = DateHelper.getFormattedDate(
-                DateTime.parse(state.pathParameters['date']!));
+            String dateStr = DateHelper.getFormattedDate(DateTime.parse(state.pathParameters['date']!));
             print('state');
             print('dateStr: $dateStr');
             // check if date af this format 2023-12-05
@@ -109,8 +109,7 @@ class RouterHelper {
                       child: Text('Invalid date'),
                     ),
                     // slide left to right transition
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
+                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
                       return SlideTransition(
                         position: Tween<Offset>(
                           begin: const Offset(1, 0),
@@ -128,8 +127,7 @@ class RouterHelper {
                 return CustomTransitionPage(
                   child: OrderDetailScreen(orderId: orderId, orderDate: date),
                   // slide left to right transition
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
                     return SlideTransition(
                       position: Tween<Offset>(
                         begin: const Offset(1, 0),
@@ -155,8 +153,7 @@ class RouterHelper {
             return CustomTransitionPage(
               child: SettingScreen(),
               // slide left to right transition
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
                 return SlideTransition(
                   position: Tween<Offset>(
                     begin: const Offset(1, 0),

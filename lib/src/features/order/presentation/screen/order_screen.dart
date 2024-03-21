@@ -9,7 +9,8 @@ import 'package:cooker_app/src/features/order/presentation/provider/filter_provi
 import 'package:cooker_app/src/features/status/model/status_model.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
-import 'package:flutter/material.dart';
+import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/material.dart' as material;
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -103,7 +104,7 @@ class _OrderScreenState extends State<OrderScreen> {
 
   Future<DateTime?> selectDate() async {
     // global key for the form
-    return showDatePicker(
+    return material.showDatePicker(
         context: context,
         currentDate: widget.selectedDate,
         initialDate: widget.selectedDate,
@@ -114,7 +115,7 @@ class _OrderScreenState extends State<OrderScreen> {
 
   List<ProductModel> allProductofTheDay = [];
 
-  SearchController searchController = SearchController();
+  material.SearchController searchController = material.SearchController();
 
   @override
   Widget build(BuildContext context) {
@@ -126,15 +127,11 @@ class _OrderScreenState extends State<OrderScreen> {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
               return Container(
-                color: Theme.of(context).scaffoldBackgroundColor,
+                color: FluentTheme.of(context).scaffoldBackgroundColor,
                 height: MediaQuery.of(context).size.height - 300,
                 width: double.infinity,
                 alignment: Alignment.center,
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
-                  backgroundColor: Theme.of(context).cardColor,
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
+                child: ProgressRing(),
               );
             default:
               if (!snapshot.hasData) {
@@ -155,37 +152,31 @@ class _OrderScreenState extends State<OrderScreen> {
                 print(completedOrders.length);
                 List<OrderModel> cancelledOrders = orders.where((element) => element.status.name == 'cancelled').toList();
                 List<int> nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
-                return Scaffold(
+                return material.Scaffold(
                     drawer: Builder(
-                      builder: (context) => Drawer(
+                      builder: (context) => material.Drawer(
                         child: Column(
                           children: [
                             Expanded(
                               child: ListView(
                                 children: [
-                                  DrawerHeader(
+                                  material.DrawerHeader(
                                     decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: Theme.of(context).colorScheme.secondary,
-                                        ),
-                                      ),
+                                      border: Border(),
                                     ),
                                     child: Column(
                                       children: [
                                         CircleAvatar(
                                           radius: 50,
-                                          backgroundColor: Theme.of(context).colorScheme.secondary,
                                           child: Icon(
-                                            Icons.person,
+                                            FluentIcons.contact,
                                             size: 50,
-                                            color: Theme.of(context).scaffoldBackgroundColor,
                                           ),
                                         ),
                                         Expanded(
                                           child: Container(
                                             alignment: Alignment.center,
-                                            child: Text('Bryce Kaddouri', style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
+                                            child: Text('Bryce Kaddouri', style: FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
                                           ),
                                         ),
                                       ],
@@ -193,31 +184,28 @@ class _OrderScreenState extends State<OrderScreen> {
                                   ),
                                   ListTile(
                                     leading: Icon(
-                                      Icons.shopping_cart,
-                                      color: Theme.of(context).colorScheme.secondary,
+                                      FluentIcons.product_catalog,
                                     ),
-                                    title: Text('Order List', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)),
-                                    onTap: () {
+                                    title: Text('Order List', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                                    onPressed: () {
                                       Navigator.of(context).pop();
                                     },
                                   ),
                                   ListTile(
                                     leading: Icon(
-                                      Icons.menu_book_sharp,
-                                      color: Theme.of(context).colorScheme.secondary,
+                                      FluentIcons.product_catalog,
                                     ),
-                                    title: Text('Recettes', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)),
-                                    onTap: () {
+                                    title: Text('Recettes', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                                    onPressed: () {
                                       context.goNamed('products');
                                     },
                                   ),
                                   ListTile(
                                     leading: Icon(
-                                      Icons.settings,
-                                      color: Theme.of(context).colorScheme.secondary,
+                                      FluentIcons.settings,
                                     ),
-                                    title: Text('Settings', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)),
-                                    onTap: () {
+                                    title: Text('Settings', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                                    onPressed: () {
                                       context.goNamed('setting');
                                     },
                                   ),
@@ -226,9 +214,9 @@ class _OrderScreenState extends State<OrderScreen> {
                             ),
                             Container(
                               padding: const EdgeInsets.all(10),
-                              child: MaterialButton(
-                                onPressed: () {
-                                  showAdaptiveDialog(
+                              child: FilledButton(
+                                onPressed: () async {
+                                  /*material.showAdaptiveDialog(
                                       context: context,
                                       builder: (context) {
                                         return AlertDialog(
@@ -293,22 +281,36 @@ class _OrderScreenState extends State<OrderScreen> {
                                             ),
                                           ],
                                         );
-                                      });
+                                      });*/
+                                  bool? res = await showDialog<bool?>(
+                                    context: context,
+                                    builder: (context) {
+                                      return ContentDialog(
+                                        title: Text('Logout'),
+                                        content: Text('Are you sure you want to logout?'),
+                                        actions: [
+                                          FilledButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop(true);
+                                            },
+                                            child: Text('Yes'),
+                                          ),
+                                          Button(child: Text('No'), onPressed: () => Navigator.of(context).pop(false)),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                  if (res != null && res) {
+                                    context.read<AuthProvider>().logout();
+                                    context.goNamed('login');
+                                  }
                                 },
-                                height: 50,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                color: AppColor.canceledForegroundColor,
-                                textColor: Theme.of(context).colorScheme.secondary,
-                                minWidth: double.infinity,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
-                                      Icons.logout,
+                                      FluentIcons.sign_out,
                                       size: 24,
-                                      color: Theme.of(context).colorScheme.secondary,
                                     ),
                                     SizedBox(
                                       width: 30,
@@ -322,13 +324,13 @@ class _OrderScreenState extends State<OrderScreen> {
                         ),
                       ),
                     ),
-                    appBar: AppBar(
+                    appBar: material.AppBar(
                       toolbarHeight: 70,
                       title: Container(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         height: 70,
                         decoration: BoxDecoration(
-                          color: Theme.of(context).scaffoldBackgroundColor,
+                          color: FluentTheme.of(context).scaffoldBackgroundColor,
                           borderRadius: BorderRadius.only(
                             bottomLeft: Radius.circular(30),
                             bottomRight: Radius.circular(30),
@@ -339,7 +341,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           children: [
                             if (!ResponsiveHelper.isDesktop(context)) Spacer(),
                             if (!ResponsiveHelper.isDesktop(context))
-                              SearchAnchor(
+                              material.SearchAnchor(
                                   isFullScreen: true,
                                   searchController: searchController,
                                   builder: (context, searchController) {
@@ -350,18 +352,19 @@ class _OrderScreenState extends State<OrderScreen> {
                                       padding: const EdgeInsets.all(5),
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
+/*
                                         color: Theme.of(context).cardColor,
+*/
                                       ),
                                       child: Container(
                                         height: 40,
                                         width: 40,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: Theme.of(context).scaffoldBackgroundColor,
+                                          color: FluentTheme.of(context).scaffoldBackgroundColor,
                                         ),
                                         child: Icon(
-                                          Icons.search,
-                                          color: Theme.of(context).colorScheme.secondary,
+                                          FluentIcons.search,
                                         ),
                                       ),
                                     );
@@ -400,19 +403,19 @@ class _OrderScreenState extends State<OrderScreen> {
                         delegate: SliverAppBarDelegate(
                           isDesktop: ResponsiveHelper.isDesktop(context),
                           child: Container(
-                            color: Theme.of(context).scaffoldBackgroundColor,
+                            color: FluentTheme.of(context).scaffoldBackgroundColor,
                             child: Column(children: [
                               if (!ResponsiveHelper.isDesktop(context))
                                 Container(
-                                  padding: const EdgeInsets.only(left: 20, bottom: 10, right: 20),
+                                  padding: ResponsiveHelper.isMobile(context) ? const EdgeInsets.all(0) : const EdgeInsets.only(left: 20, bottom: 10, right: 20),
                                   child: StatusBar(nbOrders: nbOrders),
                                 ),
                               Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 20),
+                                margin: const EdgeInsets.symmetric(horizontal: 10),
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(30),
-                                  color: Theme.of(context).cardColor,
+                                  color: FluentTheme.of(context).cardColor,
                                 ),
                                 padding: const EdgeInsets.all(10),
                                 height: 60,
@@ -421,7 +424,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text('Order List',
-                                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                        style: FluentTheme.of(context).typography.bodyLarge!.copyWith(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
                                             )
@@ -438,7 +441,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                         margin: const EdgeInsets.all(0),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(30),
-                                          color: Theme.of(context).scaffoldBackgroundColor,
+                                          color: FluentTheme.of(context).scaffoldBackgroundColor,
                                         ),
                                         constraints: BoxConstraints(
                                           maxWidth: 350,
@@ -449,18 +452,17 @@ class _OrderScreenState extends State<OrderScreen> {
                                               height: 40,
                                               width: 40,
                                               child: Icon(
-                                                Icons.search,
+                                                FluentIcons.search,
                                               ),
                                             ),
-                                            TextField(
+                                            material.TextField(
                                               showCursor: true,
-                                              cursorColor: Theme.of(context).colorScheme.secondary,
                                               controller: searchController,
                                               scrollPadding: const EdgeInsets.all(0),
                                               maxLines: 1,
                                               clipBehavior: Clip.antiAlias,
                                               textAlignVertical: TextAlignVertical.top,
-                                              decoration: InputDecoration(
+                                              decoration: material.InputDecoration(
                                                 contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                                                 constraints: BoxConstraints(
                                                   maxWidth: 300,
@@ -468,12 +470,14 @@ class _OrderScreenState extends State<OrderScreen> {
                                                   maxHeight: 40,
                                                 ),
                                                 hintText: 'Search by order ID',
+/*
                                                 fillColor: Theme.of(context).primaryColor,
+*/
                                                 filled: true,
-                                                hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                                /* hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                                       fontSize: 16,
-                                                    ),
-                                                border: OutlineInputBorder(
+                                                    ),*/
+                                                border: material.OutlineInputBorder(
                                                   borderSide: BorderSide.none,
                                                 ),
                                               ),
@@ -507,7 +511,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           width: double.infinity,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25),
-                            color: Theme.of(context).cardColor,
+                            color: FluentTheme.of(context).cardColor,
                           ),
                           child: Column(
                             children: [
@@ -517,7 +521,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                 padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(14),
-                                  color: Theme.of(context).scaffoldBackgroundColor,
+                                  color: FluentTheme.of(context).scaffoldBackgroundColor,
                                 ),
                                 child: Row(
                                   children: [
@@ -650,11 +654,13 @@ class StatusBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveHelper.isDesktop(context)
         ? Container(
+/*
             padding: const EdgeInsets.all(5),
+*/
             height: 50,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(25),
-              color: Theme.of(context).cardColor,
+              color: FluentTheme.of(context).cardColor,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -665,15 +671,15 @@ class StatusBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.all ? Theme.of(context).primaryColor : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.all ? FluentTheme.of(context).scaffoldBackgroundColor : null,
                   ),
-                  child: InkWell(
+                  child: material.InkWell(
                     onTap: () {
                       context.read<FilterProvider>().setSelectedStatus(Status.all);
                     },
                     child: Text(
                       'All (${nbOrders[0]})',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      style: FluentTheme.of(context).typography.body!.copyWith(
                             fontSize: 16,
                             fontWeight: FontWeight.normal,
                           ),
@@ -689,15 +695,15 @@ class StatusBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.pending ? Theme.of(context).primaryColor : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.pending ? FluentTheme.of(context).scaffoldBackgroundColor : null,
                   ),
-                  child: InkWell(
+                  child: material.InkWell(
                     onTap: () {
                       context.read<FilterProvider>().setSelectedStatus(Status.pending);
                     },
                     child: Text(
                       'Pending (${nbOrders[1]})',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      style: FluentTheme.of(context).typography.body!.copyWith(
                             fontSize: 16,
                             fontWeight: FontWeight.normal,
                           ),
@@ -713,15 +719,15 @@ class StatusBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.cooking ? Theme.of(context).primaryColor : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.cooking ? FluentTheme.of(context).scaffoldBackgroundColor : null,
                   ),
-                  child: InkWell(
+                  child: material.InkWell(
                     onTap: () {
                       context.read<FilterProvider>().setSelectedStatus(Status.cooking);
                     },
                     child: Text(
                       'Cooking (${nbOrders[2]})',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      style: FluentTheme.of(context).typography.body!.copyWith(
                             fontSize: 16,
                             fontWeight: FontWeight.normal,
                           ),
@@ -737,15 +743,15 @@ class StatusBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.completed ? Theme.of(context).primaryColor : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.completed ? FluentTheme.of(context).scaffoldBackgroundColor : null,
                   ),
-                  child: InkWell(
+                  child: material.InkWell(
                     onTap: () {
                       context.read<FilterProvider>().setSelectedStatus(Status.completed);
                     },
                     child: Text(
                       'Completed (${nbOrders[3]})',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      style: FluentTheme.of(context).typography.body!.copyWith(
                             fontSize: 16,
                             fontWeight: FontWeight.normal,
                           ),
@@ -756,15 +762,12 @@ class StatusBar extends StatelessWidget {
             ),
           )
         : Container(
-            width: MediaQuery.of(context).size.width - 40,
-            constraints: BoxConstraints(
-              maxWidth: 500,
-            ),
+            width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.all(5),
             height: 50,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25),
-              color: Theme.of(context).cardColor,
+              /* borderRadius: BorderRadius.circular(25),*/
+              color: FluentTheme.of(context).cardColor,
             ),
             child: ListView(
               scrollDirection: Axis.horizontal,
@@ -775,15 +778,15 @@ class StatusBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.all ? Theme.of(context).primaryColor : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.all ? FluentTheme.of(context).scaffoldBackgroundColor : null,
                   ),
-                  child: InkWell(
+                  child: material.InkWell(
                     onTap: () {
                       context.read<FilterProvider>().setSelectedStatus(Status.all);
                     },
                     child: Text(
                       'All (${nbOrders[0]})',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      style: FluentTheme.of(context).typography.body!.copyWith(
                             fontSize: 16,
                             fontWeight: FontWeight.normal,
                           ),
@@ -796,15 +799,15 @@ class StatusBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.pending ? Theme.of(context).primaryColor : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.pending ? FluentTheme.of(context).scaffoldBackgroundColor : null,
                   ),
-                  child: InkWell(
+                  child: material.InkWell(
                     onTap: () {
                       context.read<FilterProvider>().setSelectedStatus(Status.pending);
                     },
                     child: Text(
                       'Pending (${nbOrders[1]})',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      style: FluentTheme.of(context).typography.body!.copyWith(
                             fontSize: 16,
                             fontWeight: FontWeight.normal,
                           ),
@@ -817,15 +820,15 @@ class StatusBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.cooking ? Theme.of(context).primaryColor : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.cooking ? FluentTheme.of(context).scaffoldBackgroundColor : null,
                   ),
-                  child: InkWell(
+                  child: material.InkWell(
                     onTap: () {
                       context.read<FilterProvider>().setSelectedStatus(Status.cooking);
                     },
                     child: Text(
                       'Cooking (${nbOrders[2]})',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      style: FluentTheme.of(context).typography.body!.copyWith(
                             fontSize: 16,
                             fontWeight: FontWeight.normal,
                           ),
@@ -838,15 +841,15 @@ class StatusBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: context.watch<FilterProvider>().selectedStatus == Status.completed ? Theme.of(context).primaryColor : null,
+                    color: context.watch<FilterProvider>().selectedStatus == Status.completed ? FluentTheme.of(context).scaffoldBackgroundColor : null,
                   ),
-                  child: InkWell(
+                  child: material.InkWell(
                     onTap: () {
                       context.read<FilterProvider>().setSelectedStatus(Status.completed);
                     },
                     child: Text(
                       'Completed (${nbOrders[3]})',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      style: FluentTheme.of(context).typography.body!.copyWith(
                             fontSize: 16,
                             fontWeight: FontWeight.normal,
                           ),
@@ -870,7 +873,7 @@ class DateBar extends StatelessWidget {
       height: 50,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25),
-        color: Theme.of(context).cardColor,
+        color: FluentTheme.of(context).cardColor,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -884,7 +887,7 @@ class DateBar extends StatelessWidget {
             ),
             child: Text(
               ResponsiveHelper.isMobile(context) ? DateHelper.getFullFormattedDateReduce(selectedDate) : DateHelper.getFullFormattedDate(selectedDate),
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              style: FluentTheme.of(context).typography.body!.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.normal,
                   ),
@@ -897,9 +900,9 @@ class DateBar extends StatelessWidget {
             padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: Theme.of(context).primaryColor,
+              color: FluentTheme.of(context).scaffoldBackgroundColor,
             ),
-            child: InkWell(
+            child: material.InkWell(
               onTap: () async {
                 DateTime? date = await context.read<OrderProvider>().chooseDate(context, selectedDate);
                 if (date != null) {
@@ -909,7 +912,7 @@ class DateBar extends StatelessWidget {
                 }
               },
               child: Icon(
-                Icons.calendar_month_outlined,
+                FluentIcons.calendar_day,
               ),
             ),
           ),
@@ -1004,16 +1007,10 @@ class OrderItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 70,
-      width: double.infinity,
+    return Card(
       margin: const EdgeInsets.symmetric(vertical: 5),
       padding: EdgeInsets.symmetric(vertical: 5, horizontal: ResponsiveHelper.isDesktop(context) ? 20 : 5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        color: Theme.of(context).primaryColor,
-      ),
-      child: InkWell(
+      child: material.InkWell(
         onTap: () {
           int orderId = order.id;
           context.goNamed('order-details', pathParameters: {'id': orderId.toString(), 'date': DateHelper.getFormattedDate(order.date)});
@@ -1090,7 +1087,7 @@ class OrderItemWidget extends StatelessWidget {
               child: Container(
                 alignment: Alignment.center,
                 child: IconButton(
-                  icon: Icon(Icons.arrow_forward_ios, size: 20),
+                  icon: Icon(FluentIcons.forward, size: 20),
                   onPressed: () {},
                 ),
               ),

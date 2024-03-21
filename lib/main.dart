@@ -1,5 +1,3 @@
-import 'package:cooker_app/src/core/constant/app_color.dart';
-import 'package:cooker_app/src/core/constant/app_text_style.dart';
 import 'package:cooker_app/src/core/helper/route_helper.dart';
 import 'package:cooker_app/src/features/auth/business/repository/auth_repository.dart';
 import 'package:cooker_app/src/features/auth/business/usecase/auth_get_user_usecase.dart';
@@ -21,9 +19,9 @@ import 'package:cooker_app/src/features/order/presentation/provider/filter_provi
 import 'package:cooker_app/src/features/order/presentation/provider/order_provider.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/sort_provider.dart';
 import 'package:cooker_app/src/features/setting/presentation/setting_provider.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -33,18 +31,13 @@ Future<void> main() async {
 
   await Supabase.initialize(
     url: 'https://qlhzemdpzbonyqdecfxn.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsaHplbWRwemJvbnlxZGVjZnhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQ4ODY4MDYsImV4cCI6MjAyMDQ2MjgwNn0.lcUJMI3dvMDT7LaO7MiudIkdxAZOZwF_hNtkQtF3OC8',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsaHplbWRwemJvbnlxZGVjZnhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQ4ODY4MDYsImV4cCI6MjAyMDQ2MjgwNn0.lcUJMI3dvMDT7LaO7MiudIkdxAZOZwF_hNtkQtF3OC8',
   );
 
-  final supabaseAdmin = SupabaseClient(
-      'https://qlhzemdpzbonyqdecfxn.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsaHplbWRwemJvbnlxZGVjZnhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQ4ODY4MDYsImV4cCI6MjAyMDQ2MjgwNn0.lcUJMI3dvMDT7LaO7MiudIkdxAZOZwF_hNtkQtF3OC8');
+  final supabaseAdmin = SupabaseClient('https://qlhzemdpzbonyqdecfxn.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsaHplbWRwemJvbnlxZGVjZnhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQ4ODY4MDYsImV4cCI6MjAyMDQ2MjgwNn0.lcUJMI3dvMDT7LaO7MiudIkdxAZOZwF_hNtkQtF3OC8');
   final supabaseClient = Supabase.instance;
-  AuthRepository authRepository =
-      AuthRepositoryImpl(dataSource: AuthDataSource());
-  OrderRepository orderRepository =
-      OrderRepositoryImpl(orderDataSource: OrderDataSource());
+  AuthRepository authRepository = AuthRepositoryImpl(dataSource: AuthDataSource());
+  OrderRepository orderRepository = OrderRepositoryImpl(orderDataSource: OrderDataSource());
   /*CategoryRepository categoryRepository = CategoryRepositoryImpl(dataSource: CategoryDataSource());
   ProductRepository productRepository = ProductRepositoryImpl(dataSource: ProductDataSource());
   UserRepository userRepository = UserRepositoryImpl(dataSource: UserDataSource());*/
@@ -57,26 +50,18 @@ Future<void> main() async {
         ChangeNotifierProvider<AuthProvider>(
           create: (context) => AuthProvider(
             authLoginUseCase: AuthLoginUseCase(authRepository: authRepository),
-            authLogoutUseCase:
-                AuthLogoutUseCase(authRepository: authRepository),
-            authGetUserUseCase:
-                AuthGetUserUseCase(authRepository: authRepository),
-            authIsLoggedInUseCase:
-                AuthIsLoggedInUseCase(authRepository: authRepository),
-            authOnAuthChangeUseCase:
-                AuthOnAuthOnAuthChangeUseCase(authRepository: authRepository),
+            authLogoutUseCase: AuthLogoutUseCase(authRepository: authRepository),
+            authGetUserUseCase: AuthGetUserUseCase(authRepository: authRepository),
+            authIsLoggedInUseCase: AuthIsLoggedInUseCase(authRepository: authRepository),
+            authOnAuthChangeUseCase: AuthOnAuthOnAuthChangeUseCase(authRepository: authRepository),
           ),
         ),
         ChangeNotifierProvider<OrderProvider>(
           create: (context) => OrderProvider(
-            orderGetOrdersByDateUseCase:
-                OrderGetOrdersByDateUseCase(orderRepository: orderRepository),
-            orderGetOrdersByIdUseCase:
-                OrderGetOrderByIdUseCase(orderRepository: orderRepository),
-            changeStatusOrderByIdUseCase: OrderChangeStatusOrderByIdUseCase(
-                orderRepository: orderRepository),
-            changeIsDoneCartByIdUseCase: OrderChangeIsDoneCartByIdUseCase(
-                orderRepository: orderRepository),
+            orderGetOrdersByDateUseCase: OrderGetOrdersByDateUseCase(orderRepository: orderRepository),
+            orderGetOrdersByIdUseCase: OrderGetOrderByIdUseCase(orderRepository: orderRepository),
+            changeStatusOrderByIdUseCase: OrderChangeStatusOrderByIdUseCase(orderRepository: orderRepository),
+            changeIsDoneCartByIdUseCase: OrderChangeIsDoneCartByIdUseCase(orderRepository: orderRepository),
           ),
         ),
         ChangeNotifierProvider<FilterProvider>(
@@ -148,12 +133,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp.router(
-      scaffoldMessengerKey: _scaffoldMessengerKey,
+    return FluentApp.router(
       title: 'Cooker App',
       debugShowCheckedModeBanner: false,
+      theme: FluentThemeData.light(),
 
-      theme: ThemeData.light().copyWith(
+      /*ThemeData.light().copyWith(
         drawerTheme: DrawerThemeData(
           elevation: 0,
           backgroundColor: AppColor.lightBackgroundColor,
@@ -263,11 +248,11 @@ class _MyAppState extends State<MyApp> {
           primary: AppColor.lightBackgroundColor,
           secondary: AppColor.lightBlackTextColor,
         ),
-      ),
-      themeMode: context.watch<SettingProvider>().isDarkMode
-          ? ThemeMode.dark
-          : ThemeMode.light,
-      darkTheme: ThemeData.dark().copyWith(
+      ),*/
+      themeMode: context.watch<SettingProvider>().isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      darkTheme: FluentThemeData.dark(),
+
+      /*ThemeData.dark().copyWith(
 
         searchViewTheme: SearchViewThemeData(
           backgroundColor: AppColor.darkCardColor,
@@ -436,13 +421,11 @@ class _MyAppState extends State<MyApp> {
           primary: AppColor.darkBackgroundColor,
           secondary: AppColor.darkWhiteTextColor,
         ),
-      ),
-
+      ),*/
 
       routerDelegate: router.routerDelegate,
       routeInformationProvider: router.routeInformationProvider,
       routeInformationParser: router.routeInformationParser,
-
     );
   }
 }

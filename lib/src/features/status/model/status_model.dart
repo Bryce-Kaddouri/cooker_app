@@ -22,4 +22,4 @@ class StatusModel {
       };
 }
 
-enum Status { all, pending, cooking, completed, cancelled }
+enum Status { all, pending, cooking, completed, cancelled, collected }

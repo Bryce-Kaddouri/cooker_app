@@ -179,6 +179,7 @@ class _OrderScreenState extends State<OrderScreen> {
   Future<DateTime?> selectDate() async {
     // global key for the form
     return material.showDatePicker(
+        barrierColor: Colors.red,
         context: context,
         currentDate: widget.selectedDate,
         initialDate: widget.selectedDate,
@@ -228,6 +229,7 @@ class _OrderScreenState extends State<OrderScreen> {
             backgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
             drawer: Builder(
               builder: (context) => material.Drawer(
+                backgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
                 child: Column(
                   children: [
                     Expanded(
@@ -255,7 +257,8 @@ class _OrderScreenState extends State<OrderScreen> {
                               ],
                             ),
                           ),
-                          ListTile(
+                          ListTile.selectable(
+                            selected: true,
                             leading: Icon(
                               FluentIcons.product_catalog,
                             ),
@@ -264,7 +267,8 @@ class _OrderScreenState extends State<OrderScreen> {
                               Navigator.of(context).pop();
                             },
                           ),
-                          ListTile(
+                          ListTile.selectable(
+                            selected: false,
                             leading: Icon(
                               FluentIcons.product_catalog,
                             ),
@@ -273,7 +277,8 @@ class _OrderScreenState extends State<OrderScreen> {
                               context.goNamed('products');
                             },
                           ),
-                          ListTile(
+                          ListTile.selectable(
+                            selected: false,
                             leading: Icon(
                               FluentIcons.settings,
                             ),
@@ -288,13 +293,32 @@ class _OrderScreenState extends State<OrderScreen> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       child: FilledButton(
+                        style: ButtonStyle(
+                          backgroundColor: ButtonState.all(Colors.red),
+                        ),
                         onPressed: () async {
                           bool? res = await showDialog<bool?>(
                             context: context,
                             builder: (context) {
                               return ContentDialog(
-                                title: Text('Logout'),
-                                content: Text('Are you sure you want to logout?'),
+                                title: Container(alignment: Alignment.center, child: Text('Logout')),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      FluentIcons.warning,
+                                      size: 100,
+                                      color: Colors.red,
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Container(
+                                      alignment: Alignment.center,
+                                      child: Text('Are you sure you want to logout?'),
+                                    ),
+                                  ],
+                                ),
                                 actions: [
                                   FilledButton(
                                     onPressed: () {
@@ -494,6 +518,8 @@ class _OrderScreenState extends State<OrderScreen> {
                   width: 8,
                 ),
                 material.SearchAnchor(
+                    viewElevation: 0,
+                    viewBackgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
                     isFullScreen: true,
 /*
                                 searchController: searchController,
@@ -535,13 +561,12 @@ class _OrderScreenState extends State<OrderScreen> {
                 : CustomScrollView(slivers: [
                     if (!ResponsiveHelper.isDesktop(context))
                       SliverPersistentHeader(
-                        floating: true,
                         pinned: true,
                         delegate: SliverAppBarDelegate(
                           isDesktop: ResponsiveHelper.isDesktop(context),
                           child: Container(
                             height: 80,
-                            color: FluentTheme.of(context).scaffoldBackgroundColor,
+                            color: FluentTheme.of(context).scaffoldBackgroundColor.withOpacity(1),
                             child: Column(children: [
                               if (!ResponsiveHelper.isDesktop(context))
                                 Container(
@@ -555,103 +580,15 @@ class _OrderScreenState extends State<OrderScreen> {
                                     ],
                                   ),
                                 ),
-                              /* Container(
-                                height: 70,
-                                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                                child: Card(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Order List',
-                                        style: FluentTheme.of(context).typography.bodyLarge!.copyWith(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                      ),
-                                      if (ResponsiveHelper.isDesktop(context))
-                                        Container(
-                                          alignment: Alignment.center,
-                                          padding: const EdgeInsets.all(5),
-                                          margin: const EdgeInsets.all(0),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(30),
-                                            color: FluentTheme.of(context).scaffoldBackgroundColor,
-                                          ),
-                                          constraints: BoxConstraints(
-                                            maxWidth: 350,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                height: 40,
-                                                width: 40,
-                                                child: Icon(
-                                                  FluentIcons.search,
-                                                ),
-                                              ),
-                                              material.TextField(
-                                                showCursor: true,
-                                                controller: searchController,
-                                                scrollPadding: const EdgeInsets.all(0),
-                                                maxLines: 1,
-                                                clipBehavior: Clip.antiAlias,
-                                                textAlignVertical: TextAlignVertical.top,
-                                                decoration: material.InputDecoration(
-                                                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                                                  constraints: BoxConstraints(
-                                                    maxWidth: 300,
-                                                    minHeight: 40,
-                                                    maxHeight: 40,
-                                                  ),
-                                                  hintText: 'Search by order ID',
-*/ /*
-                                                fillColor: Theme.of(context).primaryColor,
-*/ /*
-                                                  filled: true,
-                                                  */ /* hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                                      fontSize: 16,
-                                                    ),*/ /*
-                                                  border: material.OutlineInputBorder(
-                                                    borderSide: BorderSide.none,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      Container(
-                                        child: Row(
-                                          children: [
-                                            SortByWidget(),
-                                            SizedBox(width: ResponsiveHelper.isDesktop(context) ? 10 : 5),
-                                            FilterWidget(
-                                              selectedDate: widget.selectedDate,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),*/
                             ]),
                           ),
                         ),
                       ),
                     SliverToBoxAdapter(
-                      child: Container(
-                        height: ResponsiveHelper.isDesktop(context) ? MediaQuery.of(context).size.height - 170 : MediaQuery.of(context).size.height - 300,
-                        padding: const EdgeInsets.all(10),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-/*
-                            color: FluentTheme.of(context).cardColor,
-*/
-                        ),
-                        child: orders.isNotEmpty
-                            ? Column(
+                      child: orders.isNotEmpty
+                          ? Container(
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
                                 children: [
                                   // pending orders
                                   if (pendingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.pending))
@@ -702,13 +639,12 @@ class _OrderScreenState extends State<OrderScreen> {
                                       child: Text("No Collected Orders"),
                                     ),
                                 ],
-                              )
-                            : Container(
-                                height: MediaQuery.of(context).size.height - 300,
-                                alignment: Alignment.center,
-                                child: Text("No orders"),
-                              ),
-                      ),
+                              ))
+                          : Container(
+                              height: MediaQuery.of(context).size.height - 300,
+                              alignment: Alignment.center,
+                              child: Text("No orders"),
+                            ),
                     ),
                   ]));
     /*    }

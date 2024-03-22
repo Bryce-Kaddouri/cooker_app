@@ -1,9 +1,8 @@
 import 'package:cooker_app/src/core/constant/app_color.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/get_navigation.dart';
+import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/material.dart' as material;
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -25,7 +24,6 @@ class OrderDetailScreen extends StatefulWidget {
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
   OrderModel? order;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -90,23 +88,34 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
+    return material.Scaffold(
+      backgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
+      appBar: /*AppBar(
         backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
         title: Text('Order #${widget.orderId}', style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 32)),
+      ),*/
+          material.AppBar(
+        elevation: 4,
+        shadowColor: FluentTheme.of(context).shadowColor,
+        surfaceTintColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
+        backgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
+        title: Text('Order #${widget.orderId}', style: FluentTheme.of(context).typography.subtitle),
       ),
       body: order == null
           ? Container(
+/*
               color: Theme.of(context).scaffoldBackgroundColor,
+*/
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(child: ProgressRing()),
             )
           : !ResponsiveHelper.isMobile(context)
               ? Container(
+/*
                   color: Theme.of(context).scaffoldBackgroundColor,
+*/
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   child: Row(
@@ -133,8 +142,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               : Container(
                   height: MediaQuery.of(context).size.height,
                   decoration: BoxDecoration(
+/*
                     color: Theme.of(context).scaffoldBackgroundColor,
-                  ),
+*/
+                      ),
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
@@ -190,7 +201,7 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                         Container(
                           height: 40,
                           width: 40,
-                          child: Icon(Icons.check_circle, color: AppColor.completedForegroundColor, size: 40),
+                          child: Icon(FluentIcons.check_mark, color: AppColor.completedForegroundColor, size: 40),
                         )
                       else
                         Container(
@@ -198,7 +209,7 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                           width: 40,
                           child: CircleAvatar(
                             backgroundColor: AppColor.pendingForegroundColor,
-                            child: Text('1', style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 20, color: widget.order.status.step >= 1 ? Theme.of(context).colorScheme.secondary : AppColor.lightGreyTextColor)),
+                            child: Text('1', style: FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 20, color: Colors.white)),
                           ),
                         ),
                       SizedBox(width: 10),
@@ -225,7 +236,7 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                         SizedBox(width: 10),
                         Text('${DateHelper.getFormattedDateAndTime(widget.order.createdAt)}',
                             style: /*AppTextStyle.lightTextStyle(fontSize: 16),*/
-                                Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 16)),
+                                FluentTheme.of(context).typography.body!.copyWith(fontSize: 16)),
                       ],
                     ),
                   ),
@@ -242,7 +253,7 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                         Container(
                           height: 40,
                           width: 40,
-                          child: Icon(Icons.check_circle, color: AppColor.completedForegroundColor, size: 40),
+                          child: Icon(FluentIcons.check_mark, color: AppColor.completedForegroundColor, size: 40),
                         )
                       else
                         Container(
@@ -252,7 +263,7 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                             backgroundColor: widget.order.status.step >= 2 ? AppColor.cookingForegroundColor : AppColor.lightCardColor,
                             child: Text(
                               '2',
-                              style: AppTextStyle.boldTextStyle(fontSize: 20, color: widget.order.status.step >= 2 ? Theme.of(context).primaryColor : AppColor.lightGreyTextColor),
+                              style: FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 20, color: Colors.white),
                             ),
                           ),
                         ),
@@ -281,7 +292,7 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                           SizedBox(width: 10),
                           Text('${widget.order.cookingStartedAt != null ? DateHelper.getFormattedDateAndTime(widget.order.cookingStartedAt!) : ''}',
                               style: /*AppTextStyle.lightTextStyle(fontSize: 16)*/
-                                  Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 16)),
+                                  FluentTheme.of(context).typography.body!.copyWith(fontSize: 16)),
                         ],
                       ),
                     ),
@@ -299,7 +310,7 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                           Container(
                             height: 40,
                             width: 40,
-                            child: Icon(Icons.check_circle, color: AppColor.completedForegroundColor, size: 40),
+                            child: Icon(FluentIcons.check_mark, color: AppColor.completedForegroundColor, size: 40),
                           )
                         else
                           Container(
@@ -309,7 +320,7 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                               backgroundColor: widget.order.status.step >= 3 ? AppColor.completedForegroundColor : AppColor.lightCardColor,
                               child: Text(
                                 '3',
-                                style: AppTextStyle.boldTextStyle(fontSize: 20, color: widget.order.status.step >= 3 ? Theme.of(context).primaryColor : AppColor.lightGreyTextColor),
+                                style: AppTextStyle.boldTextStyle(fontSize: 20, color: widget.order.status.step >= 3 ? Colors.white : AppColor.lightGreyTextColor),
                               ),
                             ),
                           ),
@@ -325,10 +336,65 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
                         child: Row(
                           children: [
                             Container(
+                              alignment: Alignment.center,
+                              width: 40,
+                              height: 40,
+                              child: // return 90 deg a divider
+                                  Container(
+                                width: 2,
+                                height: 30,
+                                color: widget.order.status.step > 3 ? AppColor.completedForegroundColor : AppColor.lightCardColor,
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Text('${DateHelper.getFormattedDateAndTime(widget.order.readyAt!)}', style: /*AppTextStyle.lightTextStyle(fontSize: 16)*/ FluentTheme.of(context).typography.body!.copyWith(fontSize: 16)),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            if (widget.order.status.step >= 3)
+              Container(
+                child: Column(
+                  children: [
+                    Container(
+                        child: Row(
+                      children: [
+                        if (widget.order.status.step >= 4)
+                          Container(
+                            height: 40,
+                            width: 40,
+                            child: Icon(FluentIcons.check_mark, color: AppColor.completedForegroundColor, size: 40),
+                          )
+                        else
+                          Container(
+                            height: 40,
+                            width: 40,
+                            child: CircleAvatar(
+                              backgroundColor: widget.order.status.step >= 4 ? AppColor.completedForegroundColor : AppColor.lightCardColor,
+                              child: Text(
+                                '4',
+                                style: AppTextStyle.boldTextStyle(fontSize: 20, color: widget.order.status.step >= 4 ? Colors.white : AppColor.lightGreyTextColor),
+                              ),
+                            ),
+                          ),
+                        SizedBox(width: 10),
+                        StatusWidget(
+                          status: 'collected',
+                        ),
+                      ],
+                    )),
+                    if (widget.order.status.step >= 4)
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 5),
+                        child: Row(
+                          children: [
+                            Container(
                               width: 40,
                             ),
                             SizedBox(width: 10),
-                            Text('${DateHelper.getFormattedDateAndTime(widget.order.readyAt!)}', style: /*AppTextStyle.lightTextStyle(fontSize: 16)*/ Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 16)),
+                            Text('${DateHelper.getFormattedDateAndTime(widget.order.collectedAt!)}', style: /*AppTextStyle.lightTextStyle(fontSize: 16)*/ FluentTheme.of(context).typography.body!.copyWith(fontSize: 16)),
                           ],
                         ),
                       ),
@@ -357,148 +423,165 @@ class StatusButton extends StatefulWidget {
 class _StatusButtonState extends State<StatusButton> {
   @override
   Widget build(BuildContext context) {
-    return MaterialButton(
-      onPressed: () {
-        if (widget.order.status.step == 1) {
-          Get.dialog(AlertDialog(
-            icon: Icon(Icons.warning, color: Colors.red, size: 100),
-            iconColor: Colors.red,
-            titleTextStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 24),
-            contentTextStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
-            title: Text('Start cooking'),
-            content: Text('Are you sure you want to start cooking?'),
-            actionsAlignment: MainAxisAlignment.spaceAround,
-            actions: [
-              MaterialButton(
-                minWidth: 100,
-                height: 40,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                color: AppColor.completedForegroundColor,
-                textColor: Theme.of(context).primaryColor,
-                onPressed: () {
-                  print('order id: ${widget.order.id}');
-                  Get.back();
-                  context.read<OrderProvider>().changeOrderStatus(widget.order.id, widget.order.date, 2).whenComplete(() {
-                    print('order id: ${widget.order.id}');
-
-                    ElegantNotification.success(
-                      width: 360,
-                      height: 100,
-                      position: Alignment.topRight,
-                      animation: AnimationType.fromRight,
-                      title: Text('Update', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20, color: AppColor.darkGreyTextColor)),
-                      description: Container(
-                        child: Expanded(
-                          child: Column(
-                            children: [
-                              Text('Order #${widget.order.id} has been updated successfully', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16, color: AppColor.darkGreyTextColor)),
-                            ],
+    return Container(
+      height: 50,
+      width: double.infinity,
+      child: FilledButton(
+        onPressed: () async {
+          if (widget.order.status.step == 1) {
+            bool? res = await showDialog<bool>(
+              context: context,
+              builder: (context) {
+                return ContentDialog(
+                  title: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Start cooking',
+                      style: FluentTheme.of(context).typography.title!.copyWith(fontSize: 24),
+                    ),
+                  ),
+                  content: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: 400,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(FluentIcons.warning, size: 100, color: AppColor.canceledForegroundColor),
+                        SizedBox(height: 10),
+                        Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Are you sure you want to start cooking?\nYou will not be able to change the status once you start cooking.',
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                      ),
-                      onDismiss: () {},
-                    ).show(context);
-                  });
-                },
-                child: Text('Yes'),
-              ),
-              MaterialButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                color: AppColor.canceledForegroundColor,
-                textColor: Theme.of(context).primaryColor,
-                minWidth: 100,
-                height: 40,
-                onPressed: () {
-                  Get.back();
-                },
-                child: Text('No'),
-              ),
-            ],
-          ));
-        } else {
-          Get.dialog(AlertDialog(
-            icon: Icon(Icons.warning, color: Colors.red, size: 100),
-            iconColor: Colors.red,
-            titleTextStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 24),
-            contentTextStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
-            title: Text('Mark as completed'),
-            content: Container(
-              constraints: BoxConstraints(
-                maxWidth: 400,
-              ),
-              child: Text(
-                'Are you sure you want to mark as completed? If you do, all items in the cart will be marked as completed.',
-                textAlign: TextAlign.center,
-              ),
-            ),
-            actionsAlignment: MainAxisAlignment.spaceAround,
-            actions: [
-              MaterialButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                color: AppColor.completedForegroundColor,
-                textColor: Theme.of(context).primaryColor,
-                minWidth: 100,
-                height: 40,
-                onPressed: () {
-                  Get.back();
-                  context.read<OrderProvider>().changeOrderStatus(widget.order.id, widget.order.date, 3);
-                  ElegantNotification.success(
-                    width: 360,
-                    height: 100,
-                    position: Alignment.topRight,
-                    animation: AnimationType.fromRight,
-                    title: Text('Update', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20, color: AppColor.darkGreyTextColor)),
-                    description: Container(
-                      child: Expanded(
-                        child: Column(
-                          children: [
-                            Text('Order #${widget.order.id} has been updated successfully', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16, color: AppColor.darkGreyTextColor)),
-                          ],
-                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    FilledButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                      child: Text('Yes'),
+                    ),
+                    Button(
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      child: Text('No'),
+                    ),
+                  ],
+                );
+              },
+            );
+
+            if (res != null && res) {
+              context.read<OrderProvider>().changeOrderStatus(widget.order.id, widget.order.date, 2).whenComplete(() {
+                ElegantNotification.success(
+                  width: 360,
+                  height: 100,
+                  position: Alignment.topRight,
+                  animation: AnimationType.fromRight,
+                  title: Text('Update', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20, color: AppColor.darkGreyTextColor)),
+                  description: Container(
+                    child: Expanded(
+                      child: Column(
+                        children: [
+                          Text('Order #${widget.order.id} has been updated successfully', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 16, color: AppColor.darkGreyTextColor)),
+                        ],
                       ),
                     ),
-                    onDismiss: () {},
-                  ).show(context);
-                },
-                child: Text(
-                  'Yes',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        fontSize: 16,
-                      ),
+                  ),
+                  onDismiss: () {},
+                ).show(context);
+              });
+            }
+          } else {
+            bool? res = await showDialog<bool>(
+              context: context,
+              builder: (context) {
+                return ContentDialog(
+                  title: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Mark as completed',
+                      style: FluentTheme.of(context).typography.title!.copyWith(fontSize: 24),
+                    ),
+                  ),
+                  content: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: 400,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(FluentIcons.warning, size: 100, color: AppColor.canceledForegroundColor),
+                        SizedBox(height: 10),
+                        Text(
+                          'Are you sure you want to mark as completed? If you do, all items in the cart will be marked as completed.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    FilledButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                      child: Text('Yes'),
+                    ),
+                    Button(
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      child: Text('No'),
+                    ),
+                  ],
+                );
+              },
+            );
+
+            if (res != null && res) {
+              context.read<OrderProvider>().changeOrderStatus(widget.order.id, widget.order.date, 3);
+              ElegantNotification.success(
+                width: 360,
+                height: 100,
+                position: Alignment.topRight,
+                animation: AnimationType.fromRight,
+                title: Text('Update', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20, color: AppColor.darkGreyTextColor)),
+                description: Container(
+                  child: Expanded(
+                    child: Column(
+                      children: [
+                        Text('Order #${widget.order.id} has been updated successfully', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 16, color: AppColor.darkGreyTextColor)),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              MaterialButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                color: AppColor.canceledForegroundColor,
-                textColor: Theme.of(context).primaryColor,
-                minWidth: 100,
-                height: 40,
-                onPressed: () {
-                  Get.back();
-                },
-                child: Text(
-                  'No',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        fontSize: 16,
-                      ),
-                ),
-              ),
-            ],
-          ));
-        }
-      },
-      child: Text(widget.order.status.step == 1 ? 'Start cooking' : 'Mark as completed', style: AppTextStyle.boldTextStyle(fontSize: 20, color: Theme.of(context).colorScheme.secondary)),
-      color: widget.order.status.step == 1 ? AppColor.cookingForegroundColor : AppColor.completedForegroundColor,
-      height: 60,
-      minWidth: double.infinity,
+                onDismiss: () {},
+              ).show(context);
+            }
+          }
+        },
+        child: Text(widget.order.status.step == 1 ? 'Start cooking' : 'Mark as completed'),
+        style: ButtonStyle(
+          foregroundColor: ButtonState.all(Colors.white),
+          backgroundColor: ButtonState.resolveWith((states) {
+            switch (states) {
+              case ButtonStates.hovering:
+                return AppColor.cookingForegroundColor;
+              case ButtonStates.pressing:
+                return AppColor.cookingForegroundColor;
+              default:
+                return AppColor.cookingForegroundColor;
+            }
+          }),
+        ),
+      ),
     );
   }
 }
@@ -509,175 +592,212 @@ class ProductsItemListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Card(
+        padding: const EdgeInsets.all(0),
         margin: !ResponsiveHelper.isMobile(context) ? const EdgeInsets.only(left: 20, right: 10, top: 20, bottom: 20) : EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-        height: !ResponsiveHelper.isMobile(context) ? MediaQuery.of(context).size.height : null,
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              alignment: Alignment.centerLeft,
-              height: 60,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Theme.of(context).colorScheme.secondary,
-                    width: 1,
+        child: Container(
+          height: !ResponsiveHelper.isMobile(context) ? MediaQuery.of(context).size.height : null,
+          /*decoration: BoxDecoration(
+            color: FluentTheme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(16),
+          ),*/
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                alignment: Alignment.centerLeft,
+                height: 60,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: FluentTheme.of(context).scaffoldBackgroundColor,
+                  border: Border(
+                    bottom: BorderSide(
+                      color: FluentTheme.of(context).navigationPaneTheme.backgroundColor!,
+                      width: 1,
+                    ),
                   ),
                 ),
+                child: Text('${order!.nbTotalItemsCart} items', style: FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 20) /*AppTextStyle.boldTextStyle(fontSize: 20)*/),
               ),
-              child: Text('${order!.nbTotalItemsCart} items', style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 20) /*AppTextStyle.boldTextStyle(fontSize: 20)*/),
-            ),
-            if (!ResponsiveHelper.isMobile(context))
-              Expanded(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: order!.cart.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        children: [
-                          CheckboxListTile(
-                            enabled: order!.status.step == 2,
-                            activeColor: AppColor.completedForegroundColor,
-                            title: Row(children: [
-                              Container(
-                                width: 100,
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      height: 60,
-                                      width: 60,
-                                      decoration: BoxDecoration(
-                                        color: AppColor.lightCardColor,
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                      child: Image.network(
-                                        order!.cart[index].product.photoUrl ?? '',
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => Icon(Icons.fastfood_rounded, size: 40),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          '${order!.cart[index].quantity}',
-                                          style: /*AppTextStyle.boldTextStyle(
-                                            fontSize: 24),*/
-                                              Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 24),
+              if (!ResponsiveHelper.isMobile(context))
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: order!.cart.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children: [
+                            Card(
+                              child: ListTile(
+                                title: Row(children: [
+                                  Container(
+                                    width: 100,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          height: 60,
+                                          width: 60,
+                                          decoration: BoxDecoration(
+                                            color: AppColor.lightCardColor,
+                                            borderRadius: BorderRadius.circular(5),
+                                          ),
+                                          child: Image.network(
+                                            order!.cart[index].product.photoUrl ?? '',
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) => Icon(FluentIcons.eat_drink, size: 40),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                    Text(
-                                      'x',
-                                      style: /*AppTextStyle.lightTextStyle(
+                                        Expanded(
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              '${order!.cart[index].quantity}',
+                                              style: /*AppTextStyle.boldTextStyle(
+                                            fontSize: 24),*/
+                                                  FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 24),
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          'x',
+                                          style: /*AppTextStyle.lightTextStyle(
                                           fontSize: 14)*/
-                                          Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 14),
+                                              FluentTheme.of(context).typography.body!.copyWith(fontSize: 14),
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text('${order!.cart[index].product.name}', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                                  ),
+                                  /*  AppTextStyle.boldTextStyle(fontSize: 16)),*/
+                                ]),
+                                trailing: Checkbox(
+                                  checked: order!.cart[index].isDone,
+                                  onChanged: order!.status.step == 2
+                                      ? (value) {
+                                          print('value: $value');
+                                          int cartId = order!.cart[index].id!;
+                                          print('cartId: $cartId');
+                                          context.read<OrderProvider>().changeIsDoneCart(order!.id, cartId, order!.cart[index].product.id, order!.date, value ?? false);
+                                        }
+                                      : null,
                                 ),
                               ),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: Text('${order!.cart[index].product.name}', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)),
-                              ),
-                              /*  AppTextStyle.boldTextStyle(fontSize: 16)),*/
-                            ]),
-                            value: order!.cart[index].isDone,
-                            onChanged: (value) {
-                              print('value: $value');
-                              int cartId = order!.cart[index].id!;
-                              print('cartId: $cartId');
-                              context.read<OrderProvider>().changeIsDoneCart(order!.id, cartId, order!.cart[index].product.id, order!.date, value!);
-                            },
-                          ),
-                          Divider(
-                            color: Theme.of(context).dividerColor,
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              )
-            else
-              Column(
-                children: List.generate(order.cart.length, (index) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        CheckboxListTile(
-                          enabled: order!.status.step == 2,
-                          activeColor: AppColor.completedForegroundColor,
-                          title: Row(children: [
-                            Container(
-                              width: 100,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    height: 60,
-                                    width: 60,
-                                    decoration: BoxDecoration(
-                                      color: AppColor.lightCardColor,
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: Image.network(
-                                      order!.cart[index].product.photoUrl ?? '',
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) => Icon(Icons.fastfood_rounded, size: 40),
-                                    ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                )
+              else
+                Column(
+                  children: List.generate(order.cart.length, (index) {
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      padding: const EdgeInsets.all(0),
+                      child: ListTile(
+                        /* enabled: order!.status.step == 2,
+                          activeColor: AppColor.completedForegroundColor,*/
+                        title: Row(children: [
+                          Container(
+                            width: 100,
+                            child: Row(
+                              children: [
+                                Container(
+                                  height: 60,
+                                  width: 60,
+                                  decoration: BoxDecoration(
+                                    color: AppColor.lightCardColor,
+                                    borderRadius: BorderRadius.circular(5),
                                   ),
-                                  Expanded(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        '${order!.cart[index].quantity}',
+                                  child: Image.network(
+                                    order!.cart[index].product.photoUrl ?? '',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => Icon(FluentIcons.eat_drink, size: 40),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    child: Text('${order!.cart[index].quantity}',
                                         style: /*AppTextStyle.boldTextStyle(
                                             fontSize: 24),*/
-                                            Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 24),
-                                      ),
-                                    ),
+                                            FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 24)),
                                   ),
-                                  Text(
-                                    'x',
-                                    style: /*AppTextStyle.lightTextStyle(
+                                ),
+                                Text(
+                                  'x',
+                                  style: /*AppTextStyle.lightTextStyle(
                                           fontSize: 14)*/
-                                        Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 14),
+                                      FluentTheme.of(context).typography.body!.copyWith(fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text('${order!.cart[index].product.name}', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                          ),
+                          /*  AppTextStyle.boldTextStyle(fontSize: 16)),*/
+                        ]),
+                        trailing: Container(
+                          height: 36,
+                          width: 36,
+                          child: Checkbox(
+                            style: CheckboxThemeData(
+                              checkedIconColor: ButtonState.all(Colors.white),
+                              checkedDecoration: ButtonState.all(BoxDecoration(
+                                color: AppColor.completedForegroundColor,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: FluentTheme.of(context).shadowColor.withOpacity(0.2),
+                                    spreadRadius: 1,
+                                    blurRadius: 1,
+                                    offset: Offset(0, 0.5),
                                   ),
                                 ],
-                              ),
+                              )),
+                              uncheckedDecoration: ButtonState.all(BoxDecoration(
+                                color: FluentTheme.of(context).navigationPaneTheme.backgroundColor!,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: FluentTheme.of(context).shadowColor.withOpacity(0.2),
+                                    spreadRadius: 1,
+                                    blurRadius: 1,
+                                    offset: Offset(0, 0.5),
+                                  ),
+                                ],
+                              )),
                             ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Text('${order!.cart[index].product.name}', style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20)),
-                            ),
-                            /*  AppTextStyle.boldTextStyle(fontSize: 16)),*/
-                          ]),
-                          value: order!.cart[index].isDone,
-                          onChanged: (value) {
-                            print('value: $value');
-                            int cartId = order!.cart[index].id!;
-                            print('cartId: $cartId');
-                            context.read<OrderProvider>().changeIsDoneCart(order!.id, cartId, order!.cart[index].product.id, order!.date, value!);
-                          },
+                            checked: order!.cart[index].isDone,
+                            onChanged: order!.status.step == 2
+                                ? (value) {
+                                    print('value: $value');
+                                    int cartId = order!.cart[index].id!;
+                                    print('cartId: $cartId');
+                                    order!.cart[index].isDone = value ?? false;
+                                    context.read<OrderProvider>().changeIsDoneCart(order!.id, cartId, order!.cart[index].product.id, order!.date, value ?? false);
+                                  }
+                                : null,
+                          ),
                         ),
-                        Divider(
+                      ),
+
+                      /*Divider(
                           color: Theme.of(context).dividerColor,
-                        )
-                      ],
-                    ),
-                  );
-                }),
-              )
-          ],
+                        )*/
+                    );
+                  }),
+                )
+            ],
+          ),
         ));
   }
 }
@@ -688,7 +808,8 @@ class CustomerHourWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Card(
+      padding: const EdgeInsets.all(0),
       margin: !ResponsiveHelper.isMobile(context)
           ? const EdgeInsets.only(left: 10, right: 20, top: 20, bottom: 20)
           : const EdgeInsets.only(
@@ -696,31 +817,31 @@ class CustomerHourWidget extends StatelessWidget {
               left: 10,
               right: 10,
             ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+      /* decoration: BoxDecoration(
+        color: FluentTheme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-      ),
+      ),*/
       child: Row(children: [
         Expanded(
           child: Container(
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                const Icon(Icons.person_outlined, size: 50),
+                const Icon(FluentIcons.contact, size: 50),
                 Expanded(
                   child: Container(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(
                         'Customer',
                         style: /*AppTextStyle.lightTextStyle(fontSize: 12)*/
-                            Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 12),
+                            FluentTheme.of(context).typography.body!.copyWith(fontSize: 12),
                       ),
                       Container(
                         child: Text(
                           '${order!.customer.lName} ${order!.customer.fName}',
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20),
+                          style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20),
                         ),
                       ),
                     ]),
@@ -735,15 +856,15 @@ class CustomerHourWidget extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Icon(Icons.access_time_outlined, size: 50),
+                Icon(FluentIcons.clock, size: 50),
                 Container(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text('Hour',
                         style: /*AppTextStyle.lightTextStyle(fontSize: 12)),*/
-                            Theme.of(context).textTheme.bodySmall),
+                            FluentTheme.of(context).typography.body),
                     Text(
                       '${order!.time.hour < 10 ? '0${order!.time.hour}' : order!.time.hour} : ${order!.time.minute < 10 ? '0${order!.time.minute}' : order!.time.minute}',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 20),
+                      style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20),
                     ),
                   ]),
                 ),
@@ -762,18 +883,20 @@ class StatusWithButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Card(
       padding: const EdgeInsets.all(20),
       margin: !ResponsiveHelper.isMobile(context) ? const EdgeInsets.only(left: 10, right: 20, top: 20, bottom: 20) : EdgeInsets.only(left: 10, right: 10, bottom: 20),
-      constraints: BoxConstraints(
-        maxHeight: order.status.step * 90 + 90,
-      ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: StatusStepWidget(
-        order: order!,
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: order.status.step * 90 + 90,
+        ),
+        // decoration: BoxDecoration(
+        //   color: FluentTheme.of(context).cardColor,
+        //   borderRadius: BorderRadius.circular(16),
+        // ),
+        child: StatusStepWidget(
+          order: order!,
+        ),
       ),
     );
   }

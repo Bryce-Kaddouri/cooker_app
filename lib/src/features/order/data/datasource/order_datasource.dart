@@ -94,8 +94,7 @@ class OrderDataSource {
 
   final streamController = StreamController<List<Map<String, dynamic>>>();
 
-  StreamSubscription<List<Map<String, dynamic>>>? getOrdersStream(
-      DateTime date, SortType sortType, bool isAscending) {
+  StreamSubscription<List<Map<String, dynamic>>>? getOrdersStream(DateTime date, SortType sortType, bool isAscending) {
     var response = _client
         .from('all_orders_view')
         .stream(primaryKey: [
@@ -116,14 +115,9 @@ class OrderDataSource {
     streamController.close();
   }
 
-  Future<Either<DatabaseFailure, List<OrderModel>>> getOrdersByDate(
-      DateTime date, SortType sortType, bool isAscending) async {
+  Future<Either<DatabaseFailure, List<OrderModel>>> getOrdersByDate(DateTime date, SortType sortType, bool isAscending) async {
     try {
-      var response = await _client
-          .from('all_orders_view')
-          .select()
-          .eq('order_date', date.toIso8601String())
-          .order(getSortTypeString(sortType), ascending: isAscending);
+      var response = await _client.from('all_orders_view').select().eq('order_date', date.toIso8601String()).order(getSortTypeString(sortType), ascending: isAscending);
 
       print('response from getOrders');
       print(response);
@@ -132,8 +126,7 @@ class OrderDataSource {
       }
 
       if (response.isNotEmpty) {
-        List<OrderModel> orderList =
-            response.map((e) => OrderModel.fromJson(e)).toList();
+        List<OrderModel> orderList = response.map((e) => OrderModel.fromJson(e)).toList();
         print('order list');
         print(orderList);
         return Right(orderList);
@@ -150,16 +143,10 @@ class OrderDataSource {
     }
   }
 
-  Future<Either<DatabaseFailure, OrderModel>> getOrderById(
-      DateTime date, int id) async {
+  Future<Either<DatabaseFailure, OrderModel>> getOrderById(DateTime date, int id) async {
     print('getOrderById method called');
     try {
-      var response = await _client
-          .from('all_orders_view')
-          .select()
-          .eq('order_id', id)
-          .eq('order_date', date.toIso8601String())
-          .single();
+      var response = await _client.from('all_orders_view').select().eq('order_id', id).eq('order_date', date.toIso8601String()).single();
 
       print('response from getOrderById data source');
       print(response);
@@ -177,28 +164,15 @@ class OrderDataSource {
     }
   }
 
-  Future<Either<DatabaseFailure, bool>> changeOrderStatus(
-      DateTime date, int orderId, int step) async {
+  Future<Either<DatabaseFailure, bool>> changeOrderStatus(DateTime date, int orderId, int step) async {
     try {
-      var responseForStatus =
-          await _client.from('status').select().eq('step', step).single();
+      var responseForStatus = await _client.from('status').select().eq('step', step).single();
 
       int statusId = responseForStatus['id'];
       print('statusId');
       print(statusId);
 
-      var response = await _client
-          .from('orders')
-          .update({
-            'status_id': statusId,
-            'updated_at': DateTime.now().toIso8601String(),
-            step == 2 ? 'cooking_date' : 'ready_date':
-                DateTime.now().toIso8601String()
-          })
-          .eq('id', orderId)
-          .eq('date', date.toIso8601String())
-          .select()
-          .single();
+      var response = await _client.from('orders').update({'status_id': statusId, 'updated_at': DateTime.now().toIso8601String(), step == 2 ? 'cooking_date' : 'ready_date': DateTime.now().toIso8601String()}).eq('id', orderId).eq('date', date.toIso8601String()).select().single();
 
       print('response from changeOrderStatus');
       print(response);
@@ -213,8 +187,7 @@ class OrderDataSource {
     }
   }
 
-  Future<Either<DatabaseFailure, bool>> changeIsDoneCart(DateTime date,
-      int cartId, int orderId, int productId, bool isDone) async {
+  Future<Either<DatabaseFailure, bool>> changeIsDoneCart(DateTime date, int cartId, int orderId, int productId, bool isDone) async {
     try {
       var responseForCart = await _client
           .from('cart')
@@ -253,14 +226,8 @@ class OrderDataSource {
       String productName = response['name'];
       String productImageUrl = response['photo_url'];
       double productPrice = response['price'];
-      CategoryModel productCategory =
-          CategoryModel.fromJsonTable(response['categories']);
-      ProductModel productModel = ProductModel(
-          id: productId,
-          name: productName,
-          imageUrl: productImageUrl,
-          price: productPrice,
-          category: productCategory);
+      CategoryModel productCategory = CategoryModel.fromJsonTable(response['categories']);
+      ProductModel productModel = ProductModel(id: productId, name: productName, imageUrl: productImageUrl, price: productPrice, category: productCategory);
 
       return productModel;
     } on PostgrestException catch (error) {
@@ -272,8 +239,7 @@ class OrderDataSource {
     }
   }
 
-  Stream<List<Map<String, dynamic>>> getCartStream(
-      int orderId, DateTime orderDate) {
+  Stream<List<Map<String, dynamic>>> getCartStream(int orderId, DateTime orderDate) {
     return _client.from('cart').stream(
       primaryKey: ['id', 'date', 'product_id'],
     ).eq('date', orderDate.toIso8601String());
@@ -281,12 +247,7 @@ class OrderDataSource {
 
   Future<UserModel> getUserById(String uid) async {
     try {
-      List<Map<String, dynamic>> response = await _client
-          .from('employees_view')
-          .select()
-          .eq('id', uid)
-          .limit(1)
-          .order('id', ascending: true);
+      List<Map<String, dynamic>> response = await _client.from('employees_view').select().eq('id', uid).limit(1).order('id', ascending: true);
       if (response.isNotEmpty) {
         UserModel userModel = UserModel.fromJson(response[0]);
         return userModel;
@@ -304,54 +265,25 @@ class OrderDataSource {
 
   Future<CustomerModel> getCustomerById(int id) async {
     try {
-      List<Map<String, dynamic>> response = await _client
-          .from('customers')
-          .select()
-          .eq('id', id)
-          .limit(1)
-          .order('id', ascending: true);
+      List<Map<String, dynamic>> response = await _client.from('customers').select().eq('id', id).limit(1).order('id', ascending: true);
       if (response.isNotEmpty) {
-        CustomerModel customerModel =
-            CustomerModel.fromJsonFromTable(response[0]);
+        CustomerModel customerModel = CustomerModel.fromJsonFromTable(response[0]);
         return customerModel;
       } else {
-        return CustomerModel(
-            id: 0,
-            createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
-            fName: '',
-            lName: '',
-            phoneNumber: '');
+        return CustomerModel(id: 0, createdAt: DateTime.now(), updatedAt: DateTime.now(), fName: '', lName: '', phoneNumber: '');
       }
     } on PostgrestException catch (error) {
       print('postgrest error');
       print(error);
-      return CustomerModel(
-          id: 0,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          fName: '',
-          lName: '',
-          phoneNumber: '');
+      return CustomerModel(id: 0, createdAt: DateTime.now(), updatedAt: DateTime.now(), fName: '', lName: '', phoneNumber: '');
     } catch (e) {
-      return CustomerModel(
-          id: 0,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          fName: '',
-          lName: '',
-          phoneNumber: '');
+      return CustomerModel(id: 0, createdAt: DateTime.now(), updatedAt: DateTime.now(), fName: '', lName: '', phoneNumber: '');
     }
   }
 
   Future<StatusModel> getStatusById(int id) async {
     try {
-      List<Map<String, dynamic>> response = await _client
-          .from('status')
-          .select()
-          .eq('id', id)
-          .limit(1)
-          .order('id', ascending: true);
+      List<Map<String, dynamic>> response = await _client.from('status').select().eq('id', id).limit(1).order('id', ascending: true);
       if (response.isNotEmpty) {
         StatusModel statusModel = StatusModel.fromJson(response[0]);
         return statusModel;
@@ -367,20 +299,14 @@ class OrderDataSource {
     }
   }
 
-  Future<Either<DatabaseFailure, List<OrderModel>>> getOrdersByCustomerId(
-      int customerId) async {
+  Future<Either<DatabaseFailure, List<OrderModel>>> getOrdersByCustomerId(int customerId) async {
     print('getOrdersBySupplierId');
     try {
-      List<Map<String, dynamic>> response = await _client
-          .from('all_orders_view')
-          .select()
-          .eq('customer ->> customer_id', customerId)
-          .order('order_time', ascending: true);
+      List<Map<String, dynamic>> response = await _client.from('all_orders_view').select().eq('customer ->> customer_id', customerId).order('order_time', ascending: true);
 /*
           response = response.where((element) => element['customer']['customer_id'] == supplierId).toList();
 */
-      List<OrderModel> orderList =
-          response.map((e) => OrderModel.fromJson(e)).toList();
+      List<OrderModel> orderList = response.map((e) => OrderModel.fromJson(e)).toList();
 
       return Right(orderList);
       /*.from('all_orders_view')

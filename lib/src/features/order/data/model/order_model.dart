@@ -95,22 +95,17 @@ class OrderModel {
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
-    List<CartModel> cart =
-        List<CartModel>.from(json['cart'].map((x) => CartModel.fromJson(x)));
+    List<CartModel> cart = List<CartModel>.from(json['cart'].map((x) => CartModel.fromJson(x)));
+
+    cart.sort((a, b) => a.product.id!.compareTo(b.product.id!));
 
     return OrderModel(
       id: json['order_id'],
       createdAt: DateTime.parse(json['order_created_at']),
       updatedAt: DateTime.parse(json['order_updated_at']),
-      cookingStartedAt: json['order_cooking_date'] != null
-          ? DateTime.parse(json['order_cooking_date'])
-          : null,
-      readyAt: json['order_ready_date'] != null
-          ? DateTime.parse(json['order_ready_date'])
-          : null,
-      collectedAt: json['order_collected_date'] != null
-          ? DateTime.parse(json['order_collected_date'])
-          : null,
+      cookingStartedAt: json['order_cooking_date'] != null ? DateTime.parse(json['order_cooking_date']) : null,
+      readyAt: json['order_ready_date'] != null ? DateTime.parse(json['order_ready_date']) : null,
+      collectedAt: json['order_collected_date'] != null ? DateTime.parse(json['order_collected_date']) : null,
       date: DateTime.parse(json['order_date']),
       time: TimeOfDay(
         hour: int.parse(json['order_time'].split(':')[0]),

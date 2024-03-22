@@ -47,11 +47,19 @@ class _OrderScreenState extends State<OrderScreen> {
   orders = orders.where((element) => element.toStringForSearch().contains(searchController.text.toLowerCase())).toList();
   }*/
 
-  List<OrderModel> pendingOrders = [] /*orders.where((element) => element.status.name == 'pending').toList()*/;
-  List<OrderModel> cookingOrders = [] /*orders.where((element) => element.status.name == 'inProgress').toList()*/;
-  List<OrderModel> completedOrders = [] /*orders.where((element) => element.status.name == 'completed').toList()*/;
+  List<OrderModel> pendingOrders =
+      [] /*orders.where((element) => element.status.name == 'pending').toList()*/;
+  List<OrderModel> cookingOrders =
+      [] /*orders.where((element) => element.status.name == 'inProgress').toList()*/;
+  List<OrderModel> completedOrders =
+      [] /*orders.where((element) => element.status.name == 'completed').toList()*/;
 
-  late List<int> nbOrders = [0, 0, 0, 0] /*[orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length]*/;
+  late List<int> nbOrders = [
+    0,
+    0,
+    0,
+    0
+  ] /*[orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length]*/;
   @override
   void initState() {
     super.initState();
@@ -69,60 +77,123 @@ class _OrderScreenState extends State<OrderScreen> {
               /*initData();*/
 
               if (payload.eventType == PostgresChangeEvent.insert) {
-                if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
-                  context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending).then((value) {
+                if (DateTime.parse(payload.newRecord['date']) ==
+                    widget.selectedDate) {
+                  context
+                      .read<OrderProvider>()
+                      .getOrdersByDate(
+                          widget.selectedDate,
+                          context.read<SortProvider>().sortType,
+                          context.read<SortProvider>().isAscending)
+                      .then((value) {
                     setState(() {
                       orders = value;
-                      pendingOrders = value.where((element) => element.status.name == 'pending').toList();
-                      cookingOrders = value.where((element) => element.status.name == 'inProgress').toList();
-                      completedOrders = value.where((element) => element.status.name == 'completed').toList();
+                      pendingOrders = value
+                          .where((element) => element.status.name == 'pending')
+                          .toList();
+                      cookingOrders = value
+                          .where(
+                              (element) => element.status.name == 'inProgress')
+                          .toList();
+                      completedOrders = value
+                          .where(
+                              (element) => element.status.name == 'completed')
+                          .toList();
 
-                      nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
+                      nbOrders = [
+                        orders.length,
+                        pendingOrders.length,
+                        cookingOrders.length,
+                        completedOrders.length
+                      ];
                     });
                   });
                   ElegantNotification.info(
                     title: Text('New Order'),
-                    description: Text('Order #${payload.newRecord['id']} has been added'),
+                    description: Text(
+                        'Order #${payload.newRecord['id']} has been added'),
                     width: 360,
                     position: Alignment.topRight,
                     animation: AnimationType.fromRight,
                   ).show(context);
                 }
               } else if (payload.eventType == PostgresChangeEvent.update) {
-                if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
-                  context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending).then((value) {
+                if (DateTime.parse(payload.newRecord['date']) ==
+                    widget.selectedDate) {
+                  context
+                      .read<OrderProvider>()
+                      .getOrdersByDate(
+                          widget.selectedDate,
+                          context.read<SortProvider>().sortType,
+                          context.read<SortProvider>().isAscending)
+                      .then((value) {
                     setState(() {
                       orders = value;
-                      pendingOrders = value.where((element) => element.status.name == 'pending').toList();
-                      cookingOrders = value.where((element) => element.status.name == 'inProgress').toList();
-                      completedOrders = value.where((element) => element.status.name == 'completed').toList();
+                      pendingOrders = value
+                          .where((element) => element.status.name == 'pending')
+                          .toList();
+                      cookingOrders = value
+                          .where(
+                              (element) => element.status.name == 'inProgress')
+                          .toList();
+                      completedOrders = value
+                          .where(
+                              (element) => element.status.name == 'completed')
+                          .toList();
 
-                      nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
+                      nbOrders = [
+                        orders.length,
+                        pendingOrders.length,
+                        cookingOrders.length,
+                        completedOrders.length
+                      ];
                     });
                   });
                   ElegantNotification.info(
                     title: Text('Order Updated'),
-                    description: Text('Order #${payload.newRecord['id']} has been updated'),
+                    description: Text(
+                        'Order #${payload.newRecord['id']} has been updated'),
                     width: 360,
                     position: Alignment.topRight,
                     animation: AnimationType.fromRight,
                   ).show(context);
                 }
               } else if (payload.eventType == PostgresChangeEvent.delete) {
-                if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
-                  context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending).then((value) {
+                if (DateTime.parse(payload.newRecord['date']) ==
+                    widget.selectedDate) {
+                  context
+                      .read<OrderProvider>()
+                      .getOrdersByDate(
+                          widget.selectedDate,
+                          context.read<SortProvider>().sortType,
+                          context.read<SortProvider>().isAscending)
+                      .then((value) {
                     setState(() {
                       orders = value;
-                      pendingOrders = value.where((element) => element.status.name == 'pending').toList();
-                      cookingOrders = value.where((element) => element.status.name == 'inProgress').toList();
-                      completedOrders = value.where((element) => element.status.name == 'completed').toList();
+                      pendingOrders = value
+                          .where((element) => element.status.name == 'pending')
+                          .toList();
+                      cookingOrders = value
+                          .where(
+                              (element) => element.status.name == 'inProgress')
+                          .toList();
+                      completedOrders = value
+                          .where(
+                              (element) => element.status.name == 'completed')
+                          .toList();
 
-                      nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
+                      nbOrders = [
+                        orders.length,
+                        pendingOrders.length,
+                        cookingOrders.length,
+                        completedOrders.length
+                      ];
                     });
                   });
                   ElegantNotification.info(
                     title: Text('Order Deleted'),
-                    description: Text('Order #${payload.newRecord['id']} has been deleted'),
+                    description: Text(
+                        'Order #${payload.newRecord['id']} has been deleted'),
                     width: 360,
                     position: Alignment.topRight,
                     animation: AnimationType.fromRight,
@@ -133,14 +204,36 @@ class _OrderScreenState extends State<OrderScreen> {
         .subscribe();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending, notify: true).then((value) {
+      context
+          .read<OrderProvider>()
+          .getOrdersByDate(
+              widget.selectedDate,
+              context.read<SortProvider>().sortType,
+              context.read<SortProvider>().isAscending,
+              notify: true)
+          .then((value) {
+        for (var val in value) {
+          print('val');
+          print(val.toJson());
+        }
         setState(() {
           orders = value;
-          pendingOrders = value.where((element) => element.status.name == 'pending').toList();
-          cookingOrders = value.where((element) => element.status.name == 'inProgress').toList();
-          completedOrders = value.where((element) => element.status.name == 'completed').toList();
+          pendingOrders = value
+              .where((element) => element.status.name == 'pending')
+              .toList();
+          cookingOrders = value
+              .where((element) => element.status.name == 'inProgress')
+              .toList();
+          completedOrders = value
+              .where((element) => element.status.name == 'completed')
+              .toList();
 
-          nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
+          nbOrders = [
+            orders.length,
+            pendingOrders.length,
+            cookingOrders.length,
+            completedOrders.length
+          ];
         });
       });
     });
@@ -156,14 +249,32 @@ class _OrderScreenState extends State<OrderScreen> {
   void didUpdateWidget(covariant OrderScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.selectedDate != widget.selectedDate) {
-      context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending, notify: true).then((value) {
+      context
+          .read<OrderProvider>()
+          .getOrdersByDate(
+              widget.selectedDate,
+              context.read<SortProvider>().sortType,
+              context.read<SortProvider>().isAscending,
+              notify: true)
+          .then((value) {
         setState(() {
           orders = value;
-          pendingOrders = value.where((element) => element.status.name == 'pending').toList();
-          cookingOrders = value.where((element) => element.status.name == 'inProgress').toList();
-          completedOrders = value.where((element) => element.status.name == 'completed').toList();
+          pendingOrders = value
+              .where((element) => element.status.name == 'pending')
+              .toList();
+          cookingOrders = value
+              .where((element) => element.status.name == 'inProgress')
+              .toList();
+          completedOrders = value
+              .where((element) => element.status.name == 'completed')
+              .toList();
 
-          nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
+          nbOrders = [
+            orders.length,
+            pendingOrders.length,
+            cookingOrders.length,
+            completedOrders.length
+          ];
         });
       });
     }
@@ -218,7 +329,8 @@ class _OrderScreenState extends State<OrderScreen> {
                 List<int> nbOrders = [orders.length, pendingOrders.length, cookingOrders.length, completedOrders.length];
                 return */
         material.Scaffold(
-            backgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
+            backgroundColor:
+                FluentTheme.of(context).navigationPaneTheme.backgroundColor,
             drawer: Builder(
               builder: (context) => material.Drawer(
                 child: Column(
@@ -242,7 +354,13 @@ class _OrderScreenState extends State<OrderScreen> {
                                 Expanded(
                                   child: Container(
                                     alignment: Alignment.center,
-                                    child: Text('Bryce Kaddouri', style: FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
+                                    child: Text('Bryce Kaddouri',
+                                        style: FluentTheme.of(context)
+                                            .typography
+                                            .bodyLarge!
+                                            .copyWith(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold)),
                                   ),
                                 ),
                               ],
@@ -252,7 +370,11 @@ class _OrderScreenState extends State<OrderScreen> {
                             leading: Icon(
                               FluentIcons.product_catalog,
                             ),
-                            title: Text('Order List', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                            title: Text('Order List',
+                                style: FluentTheme.of(context)
+                                    .typography
+                                    .body!
+                                    .copyWith(fontSize: 20)),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
@@ -261,7 +383,11 @@ class _OrderScreenState extends State<OrderScreen> {
                             leading: Icon(
                               FluentIcons.product_catalog,
                             ),
-                            title: Text('Recettes', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                            title: Text('Recettes',
+                                style: FluentTheme.of(context)
+                                    .typography
+                                    .body!
+                                    .copyWith(fontSize: 20)),
                             onPressed: () {
                               context.goNamed('products');
                             },
@@ -270,7 +396,11 @@ class _OrderScreenState extends State<OrderScreen> {
                             leading: Icon(
                               FluentIcons.settings,
                             ),
-                            title: Text('Settings', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                            title: Text('Settings',
+                                style: FluentTheme.of(context)
+                                    .typography
+                                    .body!
+                                    .copyWith(fontSize: 20)),
                             onPressed: () {
                               context.goNamed('setting');
                             },
@@ -287,7 +417,8 @@ class _OrderScreenState extends State<OrderScreen> {
                             builder: (context) {
                               return ContentDialog(
                                 title: Text('Logout'),
-                                content: Text('Are you sure you want to logout?'),
+                                content:
+                                    Text('Are you sure you want to logout?'),
                                 actions: [
                                   FilledButton(
                                     onPressed: () {
@@ -295,7 +426,10 @@ class _OrderScreenState extends State<OrderScreen> {
                                     },
                                     child: Text('Yes'),
                                   ),
-                                  Button(child: Text('No'), onPressed: () => Navigator.of(context).pop(false)),
+                                  Button(
+                                      child: Text('No'),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false)),
                                 ],
                               );
                             },
@@ -327,8 +461,10 @@ class _OrderScreenState extends State<OrderScreen> {
             appBar: material.AppBar(
               elevation: 4,
               shadowColor: FluentTheme.of(context).shadowColor,
-              surfaceTintColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
-              backgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
+              surfaceTintColor:
+                  FluentTheme.of(context).navigationPaneTheme.backgroundColor,
+              backgroundColor:
+                  FluentTheme.of(context).navigationPaneTheme.backgroundColor,
               toolbarHeight: 70,
               title: /*Container(
                         padding: EdgeInsets.symmetric(vertical: 10),
@@ -386,7 +522,9 @@ class _OrderScreenState extends State<OrderScreen> {
                   ),
                   child: material.InkWell(
                     onTap: () async {
-                      DateTime? date = await context.read<OrderProvider>().chooseDate(context, widget.selectedDate);
+                      DateTime? date = await context
+                          .read<OrderProvider>()
+                          .chooseDate(context, widget.selectedDate);
                       if (date != null) {
                         context.goNamed('orders', pathParameters: {
                           'date': DateHelper.getFormattedDate(date),
@@ -406,15 +544,18 @@ class _OrderScreenState extends State<OrderScreen> {
                   message: 'Filter',
                   displayHorizontally: false,
                   useMousePosition: false,
-                  style: const TooltipThemeData(preferBelow: true, verticalOffset: 30),
+                  style: const TooltipThemeData(
+                      preferBelow: true, verticalOffset: 30),
                   child: Container(
                     height: 50,
                     width: 50,
                     child: Button(
                       style: ButtonStyle(
-                        backgroundColor: ButtonState.all(FluentTheme.of(context).cardColor),
+                        backgroundColor:
+                            ButtonState.all(FluentTheme.of(context).cardColor),
                         elevation: ButtonState.all(0),
-                        shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(25))),
+                        shape: ButtonState.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25))),
                       ),
                       onPressed: () async {
                         // display dialog in full screen
@@ -427,11 +568,15 @@ class _OrderScreenState extends State<OrderScreen> {
                                   Container(
                                     padding: const EdgeInsets.all(10),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           'Filter',
-                                          style: FluentTheme.of(context).typography.bodyLarge!.copyWith(
+                                          style: FluentTheme.of(context)
+                                              .typography
+                                              .bodyLarge!
+                                              .copyWith(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.bold,
                                               ),
@@ -455,7 +600,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                   )),
                                   Container(
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Button(
                                           onPressed: () {},
@@ -509,15 +655,27 @@ class _OrderScreenState extends State<OrderScreen> {
                     suggestionsBuilder: (context, searchController) async {
                       print('searchController.text');
                       print(searchController.text);
-                      List<OrderModel> orders = await context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending);
+                      List<OrderModel> orders = await context
+                          .read<OrderProvider>()
+                          .getOrdersByDate(
+                              widget.selectedDate,
+                              context.read<SortProvider>().sortType,
+                              context.read<SortProvider>().isAscending);
                       List<OrderModel> filteredOrders = orders.where((element) {
                         print('element.toStringForSearch()');
                         print(element.toStringForSearch());
-                        return element.toStringForSearch().contains(searchController.text.toLowerCase());
+                        return element
+                            .toStringForSearch()
+                            .contains(searchController.text.toLowerCase());
                       }).toList();
                       print('filteredOrders');
                       print(filteredOrders.length);
-                      return List.generate(filteredOrders.length, (index) => Container(padding: EdgeInsets.symmetric(horizontal: 10), child: OrderItemWidget(order: filteredOrders[index])));
+                      return List.generate(
+                          filteredOrders.length,
+                          (index) => Container(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              child: OrderItemWidget(
+                                  order: filteredOrders[index])));
                     }),
               ],
             ),
@@ -534,12 +692,16 @@ class _OrderScreenState extends State<OrderScreen> {
                           isDesktop: ResponsiveHelper.isDesktop(context),
                           child: Container(
                             height: 80,
-                            color: FluentTheme.of(context).scaffoldBackgroundColor,
+                            color:
+                                FluentTheme.of(context).scaffoldBackgroundColor,
                             child: Column(children: [
                               if (!ResponsiveHelper.isDesktop(context))
                                 Container(
                                   height: 70,
-                                  padding: ResponsiveHelper.isMobile(context) ? const EdgeInsets.all(0) : const EdgeInsets.only(left: 20, bottom: 10, right: 20),
+                                  padding: ResponsiveHelper.isMobile(context)
+                                      ? const EdgeInsets.all(0)
+                                      : const EdgeInsets.only(
+                                          left: 20, bottom: 10, right: 20),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -634,7 +796,9 @@ class _OrderScreenState extends State<OrderScreen> {
                       ),
                     SliverToBoxAdapter(
                       child: Container(
-                        height: ResponsiveHelper.isDesktop(context) ? MediaQuery.of(context).size.height - 170 : MediaQuery.of(context).size.height - 300,
+                        height: ResponsiveHelper.isDesktop(context)
+                            ? MediaQuery.of(context).size.height - 170
+                            : MediaQuery.of(context).size.height - 300,
                         padding: const EdgeInsets.all(10),
                         width: double.infinity,
                         decoration: BoxDecoration(
@@ -647,45 +811,88 @@ class _OrderScreenState extends State<OrderScreen> {
                             ? Column(
                                 children: [
                                   // pending orders
-                                  if (pendingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.pending))
+                                  if (pendingOrders.isNotEmpty &&
+                                      (context
+                                                  .watch<FilterProvider>()
+                                                  .selectedStatus ==
+                                              Status.all ||
+                                          context
+                                                  .watch<FilterProvider>()
+                                                  .selectedStatus ==
+                                              Status.pending))
                                     OrdersItemViewByStatus(
                                       status: 'pending',
                                       orders: pendingOrders,
                                     ),
-                                  if (cookingOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.cooking))
+                                  if (cookingOrders.isNotEmpty &&
+                                      (context
+                                                  .watch<FilterProvider>()
+                                                  .selectedStatus ==
+                                              Status.all ||
+                                          context
+                                                  .watch<FilterProvider>()
+                                                  .selectedStatus ==
+                                              Status.cooking))
                                     OrdersItemViewByStatus(
                                       status: 'inProgress',
                                       orders: cookingOrders,
                                     ),
-                                  if (completedOrders.isNotEmpty && (context.watch<FilterProvider>().selectedStatus == Status.all || context.watch<FilterProvider>().selectedStatus == Status.completed))
+                                  if (completedOrders.isNotEmpty &&
+                                      (context
+                                                  .watch<FilterProvider>()
+                                                  .selectedStatus ==
+                                              Status.all ||
+                                          context
+                                                  .watch<FilterProvider>()
+                                                  .selectedStatus ==
+                                              Status.completed))
                                     OrdersItemViewByStatus(
                                       status: 'completed',
                                       orders: completedOrders,
                                     ),
 
                                   // if status != all and no order
-                                  if (context.watch<FilterProvider>().selectedStatus == Status.pending && pendingOrders.isEmpty)
+                                  if (context
+                                              .watch<FilterProvider>()
+                                              .selectedStatus ==
+                                          Status.pending &&
+                                      pendingOrders.isEmpty)
                                     Container(
-                                      height: MediaQuery.of(context).size.height - 300,
+                                      height:
+                                          MediaQuery.of(context).size.height -
+                                              300,
                                       alignment: Alignment.center,
                                       child: Text("No Pending Orders"),
                                     ),
-                                  if (context.watch<FilterProvider>().selectedStatus == Status.cooking && cookingOrders.isEmpty)
+                                  if (context
+                                              .watch<FilterProvider>()
+                                              .selectedStatus ==
+                                          Status.cooking &&
+                                      cookingOrders.isEmpty)
                                     Container(
-                                      height: MediaQuery.of(context).size.height - 300,
+                                      height:
+                                          MediaQuery.of(context).size.height -
+                                              300,
                                       alignment: Alignment.center,
                                       child: Text("No Cooking Orders"),
                                     ),
-                                  if (context.watch<FilterProvider>().selectedStatus == Status.completed && completedOrders.isEmpty)
+                                  if (context
+                                              .watch<FilterProvider>()
+                                              .selectedStatus ==
+                                          Status.completed &&
+                                      completedOrders.isEmpty)
                                     Container(
-                                      height: MediaQuery.of(context).size.height - 300,
+                                      height:
+                                          MediaQuery.of(context).size.height -
+                                              300,
                                       alignment: Alignment.center,
                                       child: Text("No Completed Orders"),
                                     ),
                                 ],
                               )
                             : Container(
-                                height: MediaQuery.of(context).size.height - 300,
+                                height:
+                                    MediaQuery.of(context).size.height - 300,
                                 alignment: Alignment.center,
                                 child: Text("No orders"),
                               ),
@@ -715,7 +922,9 @@ class StatusBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         /* borderRadius: BorderRadius.circular(25),*/
-        color: !ResponsiveHelper.isDesktop(context) ? FluentTheme.of(context).cardColor : null,
+        color: !ResponsiveHelper.isDesktop(context)
+            ? FluentTheme.of(context).cardColor
+            : null,
       ),
       child: ListView(
         scrollDirection: Axis.horizontal,
@@ -724,10 +933,27 @@ class StatusBar extends StatelessWidget {
             padding: const EdgeInsets.all(5),
             child: Button(
                 style: ButtonStyle(
-                  elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.all ? 2 : 0),
-                  shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: FluentTheme.of(context).navigationPaneTheme.backgroundColor!, width: 1))),
-                  padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
-                  backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.all ? FluentTheme.of(context).navigationPaneTheme.backgroundColor : null),
+                  elevation: ButtonState.all(
+                      context.watch<FilterProvider>().selectedStatus ==
+                              Status.all
+                          ? 2
+                          : 0),
+                  shape: ButtonState.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                          color: FluentTheme.of(context)
+                              .navigationPaneTheme
+                              .backgroundColor!,
+                          width: 1))),
+                  padding: ButtonState.all(
+                      EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
+                  backgroundColor: ButtonState.all(
+                      context.watch<FilterProvider>().selectedStatus ==
+                              Status.all
+                          ? FluentTheme.of(context)
+                              .navigationPaneTheme
+                              .backgroundColor
+                          : null),
                 ),
                 child: Text('All (${nbOrders[0]})'),
                 onPressed: () {
@@ -738,42 +964,105 @@ class StatusBar extends StatelessWidget {
             padding: const EdgeInsets.all(5),
             child: Button(
                 style: ButtonStyle(
-                  elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.pending ? 2 : 0),
-                  shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColor.pendingForegroundColor, width: 1))),
-                  padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
-                  backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.pending ? AppColor.pendingBackgroundColor : null),
+                  elevation: ButtonState.all(
+                      context.watch<FilterProvider>().selectedStatus ==
+                              Status.pending
+                          ? 2
+                          : 0),
+                  shape: ButtonState.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                          color: AppColor.pendingForegroundColor, width: 1))),
+                  padding: ButtonState.all(
+                      EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
+                  backgroundColor: ButtonState.all(
+                      context.watch<FilterProvider>().selectedStatus ==
+                              Status.pending
+                          ? AppColor.pendingBackgroundColor
+                          : null),
                 ),
-                child: Text('Pending (${nbOrders[1]})', style: TextStyle(color: AppColor.pendingForegroundColor, fontWeight: context.watch<FilterProvider>().selectedStatus == Status.pending ? FontWeight.bold : FontWeight.normal)),
+                child: Text('Pending (${nbOrders[1]})',
+                    style: TextStyle(
+                        color: AppColor.pendingForegroundColor,
+                        fontWeight:
+                            context.watch<FilterProvider>().selectedStatus ==
+                                    Status.pending
+                                ? FontWeight.bold
+                                : FontWeight.normal)),
                 onPressed: () {
-                  context.read<FilterProvider>().setSelectedStatus(Status.pending);
+                  context
+                      .read<FilterProvider>()
+                      .setSelectedStatus(Status.pending);
                 }),
           ),
           Container(
             padding: const EdgeInsets.all(5),
             child: Button(
                 style: ButtonStyle(
-                  elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.cooking ? 2 : 0),
-                  shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColor.cookingForegroundColor, width: 1))),
-                  padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
-                  backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.cooking ? AppColor.cookingBackgroundColor : null),
+                  elevation: ButtonState.all(
+                      context.watch<FilterProvider>().selectedStatus ==
+                              Status.cooking
+                          ? 2
+                          : 0),
+                  shape: ButtonState.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                          color: AppColor.cookingForegroundColor, width: 1))),
+                  padding: ButtonState.all(
+                      EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
+                  backgroundColor: ButtonState.all(
+                      context.watch<FilterProvider>().selectedStatus ==
+                              Status.cooking
+                          ? AppColor.cookingBackgroundColor
+                          : null),
                 ),
-                child: Text('In Progress (${nbOrders[2]})', style: TextStyle(color: AppColor.cookingForegroundColor, fontWeight: context.watch<FilterProvider>().selectedStatus == Status.cooking ? FontWeight.bold : FontWeight.normal)),
+                child: Text('In Progress (${nbOrders[2]})',
+                    style: TextStyle(
+                        color: AppColor.cookingForegroundColor,
+                        fontWeight:
+                            context.watch<FilterProvider>().selectedStatus ==
+                                    Status.cooking
+                                ? FontWeight.bold
+                                : FontWeight.normal)),
                 onPressed: () {
-                  context.read<FilterProvider>().setSelectedStatus(Status.cooking);
+                  context
+                      .read<FilterProvider>()
+                      .setSelectedStatus(Status.cooking);
                 }),
           ),
           Container(
             padding: const EdgeInsets.all(5),
             child: Button(
                 style: ButtonStyle(
-                  elevation: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.completed ? 2 : 0),
-                  shape: ButtonState.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColor.completedForegroundColor, width: 1))),
-                  padding: ButtonState.all(EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
-                  backgroundColor: ButtonState.all(context.watch<FilterProvider>().selectedStatus == Status.completed ? AppColor.completedBackgroundColor : null),
+                  elevation: ButtonState.all(
+                      context.watch<FilterProvider>().selectedStatus ==
+                              Status.completed
+                          ? 2
+                          : 0),
+                  shape: ButtonState.all(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                          color: AppColor.completedForegroundColor, width: 1))),
+                  padding: ButtonState.all(
+                      EdgeInsets.symmetric(vertical: 5, horizontal: 16)),
+                  backgroundColor: ButtonState.all(
+                      context.watch<FilterProvider>().selectedStatus ==
+                              Status.completed
+                          ? AppColor.completedBackgroundColor
+                          : null),
                 ),
-                child: Text('Completed (${nbOrders[3]})', style: TextStyle(color: AppColor.completedForegroundColor, fontWeight: context.watch<FilterProvider>().selectedStatus == Status.completed ? FontWeight.bold : FontWeight.normal)),
+                child: Text('Completed (${nbOrders[3]})',
+                    style: TextStyle(
+                        color: AppColor.completedForegroundColor,
+                        fontWeight:
+                            context.watch<FilterProvider>().selectedStatus ==
+                                    Status.completed
+                                ? FontWeight.bold
+                                : FontWeight.normal)),
                 onPressed: () {
-                  context.read<FilterProvider>().setSelectedStatus(Status.completed);
+                  context
+                      .read<FilterProvider>()
+                      .setSelectedStatus(Status.completed);
                 }),
           ),
         ],
@@ -807,7 +1096,9 @@ class DateBar extends StatelessWidget {
             ),
             child:*/
         Text(
-      ResponsiveHelper.isMobile(context) ? DateHelper.getFullFormattedDateReduce(selectedDate) : DateHelper.getFullFormattedDate(selectedDate),
+      ResponsiveHelper.isMobile(context)
+          ? DateHelper.getFullFormattedDateReduce(selectedDate)
+          : DateHelper.getFullFormattedDate(selectedDate),
       style: FluentTheme.of(context).typography.body!.copyWith(
             fontSize: 16,
             fontWeight: FontWeight.normal,
@@ -875,12 +1166,16 @@ class StatusWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: context.watch<SettingProvider>().isDarkMode ? getFgColor() : getBgColor(),
+        color: context.watch<SettingProvider>().isDarkMode
+            ? getFgColor()
+            : getBgColor(),
       ),
       child: Text(
         getStatusName(),
         style: TextStyle(
-          color: context.watch<SettingProvider>().isDarkMode ? getBgColor() : getFgColor(),
+          color: context.watch<SettingProvider>().isDarkMode
+              ? getBgColor()
+              : getFgColor(),
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -929,12 +1224,16 @@ class NbOrderWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: context.watch<SettingProvider>().isDarkMode ? getFgColor() : getBgColor(),
+        color: context.watch<SettingProvider>().isDarkMode
+            ? getFgColor()
+            : getBgColor(),
       ),
       child: Text(
         nbOrder.toString(),
         style: TextStyle(
-          color: context.watch<SettingProvider>().isDarkMode ? getBgColor() : getFgColor(),
+          color: context.watch<SettingProvider>().isDarkMode
+              ? getBgColor()
+              : getFgColor(),
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -945,7 +1244,8 @@ class NbOrderWidget extends StatelessWidget {
 class OrdersItemViewByStatus extends StatelessWidget {
   final String status;
   List<OrderModel> orders;
-  OrdersItemViewByStatus({super.key, required this.status, required this.orders});
+  OrdersItemViewByStatus(
+      {super.key, required this.status, required this.orders});
 
   @override
   Widget build(BuildContext context) {
@@ -995,7 +1295,10 @@ class OrderItemWidget extends StatelessWidget {
         contentPadding: EdgeInsets.all(10),
         onPressed: () {
           int orderId = order.id;
-          context.goNamed('order-details', pathParameters: {'id': orderId.toString(), 'date': DateHelper.getFormattedDate(order.date)});
+          context.goNamed('order-details', pathParameters: {
+            'id': orderId.toString(),
+            'date': DateHelper.getFormattedDate(order.date)
+          });
         },
         trailing: Container(
           alignment: Alignment.center,
@@ -1066,7 +1369,8 @@ class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   SliverAppBarDelegate({required this.child, required this.isDesktop});
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     return child;
   }
 

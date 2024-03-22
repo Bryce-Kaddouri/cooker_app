@@ -112,4 +112,126 @@ class FilterProvider with ChangeNotifier {
     _selectedStatus = value;
     notifyListeners();
   }
+
+  bool _isFilteringByStatus = true;
+  bool get isFilteringByStatus => _isFilteringByStatus;
+
+  void setIsFilteringByStatus(bool value) {
+    _isFilteringByStatus = value;
+    notifyListeners();
+  }
+
+  bool _isFilteringByHour = false;
+  bool get isFilteringByHour => _isFilteringByHour;
+
+  void setIsFilteringByHour(bool value) {
+    _isFilteringByHour = value;
+    notifyListeners();
+  }
+
+  TimeOfDay? _selectedHour;
+  TimeOfDay? get selectedHour => _selectedHour;
+
+  void setSelectedHour(TimeOfDay? value) {
+    _selectedHour = value;
+    notifyListeners();
+  }
+
+  bool _isFilteringByCustomer = false;
+  bool get isFilteringByCustomer => _isFilteringByCustomer;
+
+  void setIsFilteringByCustomer(bool value) {
+    _isFilteringByCustomer = value;
+    notifyListeners();
+  }
+
+  int? _selectedCustomerId;
+  int? get selectedCustomerId => _selectedCustomerId;
+
+  void setSelectedCustomerId(int? value) {
+    _selectedCustomerId = value;
+    notifyListeners();
+  }
+
+  bool _isFilteringByProduct = false;
+  bool get isFilteringByProduct => _isFilteringByProduct;
+
+  void setIsFilteringByProduct(bool value) {
+    _isFilteringByProduct = value;
+    notifyListeners();
+  }
+
+  int? _selectedProductId;
+  int? get selectedProductId => _selectedProductId;
+
+  void setSelectedProductId(int? value) {
+    _selectedProductId = value;
+    notifyListeners();
+  }
+
+  bool _isFilteringByCategory = false;
+  bool get isFilteringByCategory => _isFilteringByCategory;
+
+  void setIsFilteringByCategory(bool value) {
+    _isFilteringByCategory = value;
+    notifyListeners();
+  }
+
+  int? _selectedCategoryId;
+  int? get selectedCategoryId => _selectedCategoryId;
+
+  void setSelectedCategoryId(int? value) {
+    _selectedCategoryId = value;
+    notifyListeners();
+  }
+
+  void toggleRadioFilterButton(FilterType filterType) {
+    // only one filter can be active at a time
+    switch (filterType) {
+      case FilterType.status:
+        setIsFilteringByStatus(true);
+        setIsFilteringByHour(false);
+        setIsFilteringByCustomer(false);
+        setIsFilteringByProduct(false);
+        setIsFilteringByCategory(false);
+        break;
+      case FilterType.hour:
+        setIsFilteringByStatus(false);
+        setIsFilteringByHour(true);
+        setIsFilteringByCustomer(false);
+        setIsFilteringByProduct(false);
+        setIsFilteringByCategory(false);
+        break;
+      case FilterType.customer:
+        setIsFilteringByStatus(false);
+        setIsFilteringByHour(false);
+        setIsFilteringByCustomer(true);
+        setIsFilteringByProduct(false);
+        setIsFilteringByCategory(false);
+        break;
+
+      case FilterType.product:
+        setIsFilteringByStatus(false);
+        setIsFilteringByHour(false);
+        setIsFilteringByCustomer(false);
+        setIsFilteringByProduct(true);
+        setIsFilteringByCategory(false);
+        break;
+      case FilterType.category:
+        setIsFilteringByStatus(false);
+        setIsFilteringByHour(false);
+        setIsFilteringByCustomer(false);
+        setIsFilteringByCategory(true);
+        setIsFilteringByProduct(false);
+        break;
+    }
+  }
+}
+
+enum FilterType {
+  status,
+  hour,
+  customer,
+  category,
+  product,
 }

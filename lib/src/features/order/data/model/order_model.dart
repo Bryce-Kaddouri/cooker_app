@@ -95,7 +95,7 @@ class OrderModel {
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
-    List<CartModel> cart = List<CartModel>.from(json['cart'].map((x) => CartModel.fromJson(x)));
+    List<CartModel> cart = List<CartModel>.from(json['cart'].map((x) => CartModel.fromJson(x, orderId: json['order_id'], orderDate: DateTime.parse(json['order_date']))));
 
     cart.sort((a, b) => a.product.id!.compareTo(b.product.id!));
 

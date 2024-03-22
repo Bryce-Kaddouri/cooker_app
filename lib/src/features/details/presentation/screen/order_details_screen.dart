@@ -90,12 +90,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   Widget build(BuildContext context) {
     return material.Scaffold(
       backgroundColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
-      appBar: /*AppBar(
-        backgroundColor: Theme.of(context).cardColor,
-        elevation: 0,
-        title: Text('Order #${widget.orderId}', style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 32)),
-      ),*/
-          material.AppBar(
+      appBar: material.AppBar(
         elevation: 4,
         shadowColor: FluentTheme.of(context).shadowColor,
         surfaceTintColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
@@ -104,14 +99,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       ),
       body: order == null
           ? Container(
-/*
-              color: Theme.of(context).scaffoldBackgroundColor,
-*/
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
               child: Center(child: ProgressRing()),
             )
-          : !ResponsiveHelper.isMobile(context)
+          : ResponsiveHelper.isDesktop(context)
               ? Container(
 /*
                   color: Theme.of(context).scaffoldBackgroundColor,
@@ -126,11 +118,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ),
                       ),
                       Expanded(
-                        child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+                        child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                           CustomerHourWidget(
                             order: order!,
                           ),
-                          Spacer(),
                           StatusWithButtonWidget(
                             order: order!,
                           ),
@@ -162,7 +153,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     ),
                   ),
                 ),
-      persistentFooterButtons: order != null && (order!.status.step == 1 || order!.status.step == 2) && ResponsiveHelper.isMobile(context)
+      persistentFooterButtons: order != null && (order!.status.step == 1 || order!.status.step == 2) && !ResponsiveHelper.isDesktop(context)
           ? [
               StatusButton(
                 order: order!,
@@ -404,7 +395,8 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
           ],
         ),
       )),
-      if ((widget.order.status.step == 1 || widget.order.status.step == 2) && !ResponsiveHelper.isMobile(context))
+      SizedBox(height: 30),
+      if ((widget.order.status.step == 1 || widget.order.status.step == 2) && ResponsiveHelper.isDesktop(context))
         StatusButton(
           order: widget.order,
         ),
@@ -593,116 +585,42 @@ class ProductsItemListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-        padding: const EdgeInsets.all(0),
-        margin: !ResponsiveHelper.isMobile(context) ? const EdgeInsets.only(left: 20, right: 10, top: 20, bottom: 20) : EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-        child: Container(
-          height: !ResponsiveHelper.isMobile(context) ? MediaQuery.of(context).size.height : null,
-          /*decoration: BoxDecoration(
+      padding: const EdgeInsets.all(0),
+      margin: !ResponsiveHelper.isMobile(context) ? const EdgeInsets.only(left: 20, right: 10, top: 20, bottom: 20) : EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      child: Container(
+        height: ResponsiveHelper.isDesktop(context) ? MediaQuery.of(context).size.height : null,
+        /*decoration: BoxDecoration(
             color: FluentTheme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
           ),*/
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                alignment: Alignment.centerLeft,
-                height: 60,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: FluentTheme.of(context).scaffoldBackgroundColor,
-                  border: Border(
-                    bottom: BorderSide(
-                      color: FluentTheme.of(context).navigationPaneTheme.backgroundColor!,
-                      width: 1,
-                    ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              alignment: Alignment.centerLeft,
+              height: 60,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: FluentTheme.of(context).scaffoldBackgroundColor,
+                border: Border(
+                  bottom: BorderSide(
+                    color: FluentTheme.of(context).navigationPaneTheme.backgroundColor!,
+                    width: 1,
                   ),
                 ),
-                child: Text('${order!.nbTotalItemsCart} items', style: FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 20) /*AppTextStyle.boldTextStyle(fontSize: 20)*/),
               ),
-              if (!ResponsiveHelper.isMobile(context))
-                Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: order!.cart.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          children: [
-                            Card(
-                              child: ListTile(
-                                title: Row(children: [
-                                  Container(
-                                    width: 100,
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          height: 60,
-                                          width: 60,
-                                          decoration: BoxDecoration(
-                                            color: AppColor.lightCardColor,
-                                            borderRadius: BorderRadius.circular(5),
-                                          ),
-                                          child: Image.network(
-                                            order!.cart[index].product.photoUrl ?? '',
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) => Icon(FluentIcons.eat_drink, size: 40),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              '${order!.cart[index].quantity}',
-                                              style: /*AppTextStyle.boldTextStyle(
-                                            fontSize: 24),*/
-                                                  FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 24),
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          'x',
-                                          style: /*AppTextStyle.lightTextStyle(
-                                          fontSize: 14)*/
-                                              FluentTheme.of(context).typography.body!.copyWith(fontSize: 14),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text('${order!.cart[index].product.name}', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
-                                  ),
-                                  /*  AppTextStyle.boldTextStyle(fontSize: 16)),*/
-                                ]),
-                                trailing: Checkbox(
-                                  checked: order!.cart[index].isDone,
-                                  onChanged: order!.status.step == 2
-                                      ? (value) {
-                                          print('value: $value');
-                                          int cartId = order!.cart[index].id!;
-                                          print('cartId: $cartId');
-                                          context.read<OrderProvider>().changeIsDoneCart(order!.id, cartId, order!.cart[index].product.id, order!.date, value ?? false);
-                                        }
-                                      : null,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                )
-              else
-                Column(
-                  children: List.generate(order.cart.length, (index) {
+              child: Text('${order!.nbTotalItemsCart} items', style: FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 20) /*AppTextStyle.boldTextStyle(fontSize: 20)*/),
+            ),
+            if (ResponsiveHelper.isDesktop(context))
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: order!.cart.length,
+                  itemBuilder: (context, index) {
                     return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                       padding: const EdgeInsets.all(0),
+                      margin: const EdgeInsets.symmetric(vertical: 10),
                       child: ListTile(
-                        /* enabled: order!.status.step == 2,
-                          activeColor: AppColor.completedForegroundColor,*/
                         title: Row(children: [
                           Container(
                             width: 100,
@@ -724,10 +642,12 @@ class ProductsItemListView extends StatelessWidget {
                                 Expanded(
                                   child: Container(
                                     alignment: Alignment.center,
-                                    child: Text('${order!.cart[index].quantity}',
-                                        style: /*AppTextStyle.boldTextStyle(
+                                    child: Text(
+                                      '${order!.cart[index].quantity}',
+                                      style: /*AppTextStyle.boldTextStyle(
                                             fontSize: 24),*/
-                                            FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 24)),
+                                          FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 24),
+                                    ),
                                   ),
                                 ),
                                 Text(
@@ -789,16 +709,116 @@ class ProductsItemListView extends StatelessWidget {
                           ),
                         ),
                       ),
+                    );
+                  },
+                ),
+              )
+            else
+              Column(
+                children: List.generate(order.cart.length, (index) {
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    padding: const EdgeInsets.all(0),
+                    child: ListTile(
+                      /* enabled: order!.status.step == 2,
+                          activeColor: AppColor.completedForegroundColor,*/
+                      title: Row(children: [
+                        Container(
+                          width: 100,
+                          child: Row(
+                            children: [
+                              Container(
+                                height: 60,
+                                width: 60,
+                                decoration: BoxDecoration(
+                                  color: AppColor.lightCardColor,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Image.network(
+                                  order!.cart[index].product.photoUrl ?? '',
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => Icon(FluentIcons.eat_drink, size: 40),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  child: Text('${order!.cart[index].quantity}',
+                                      style: /*AppTextStyle.boldTextStyle(
+                                            fontSize: 24),*/
+                                          FluentTheme.of(context).typography.bodyLarge!.copyWith(fontSize: 24)),
+                                ),
+                              ),
+                              Text(
+                                'x',
+                                style: /*AppTextStyle.lightTextStyle(
+                                          fontSize: 14)*/
+                                    FluentTheme.of(context).typography.body!.copyWith(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text('${order!.cart[index].product.name}', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                        ),
+                        /*  AppTextStyle.boldTextStyle(fontSize: 16)),*/
+                      ]),
+                      trailing: Container(
+                        height: 36,
+                        width: 36,
+                        child: Checkbox(
+                          style: CheckboxThemeData(
+                            checkedIconColor: ButtonState.all(Colors.white),
+                            checkedDecoration: ButtonState.all(BoxDecoration(
+                              color: AppColor.completedForegroundColor,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: FluentTheme.of(context).shadowColor.withOpacity(0.2),
+                                  spreadRadius: 1,
+                                  blurRadius: 1,
+                                  offset: Offset(0, 0.5),
+                                ),
+                              ],
+                            )),
+                            uncheckedDecoration: ButtonState.all(BoxDecoration(
+                              color: FluentTheme.of(context).navigationPaneTheme.backgroundColor!,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: FluentTheme.of(context).shadowColor.withOpacity(0.2),
+                                  spreadRadius: 1,
+                                  blurRadius: 1,
+                                  offset: Offset(0, 0.5),
+                                ),
+                              ],
+                            )),
+                          ),
+                          checked: order!.cart[index].isDone,
+                          onChanged: order!.status.step == 2
+                              ? (value) {
+                                  print('value: $value');
+                                  int cartId = order!.cart[index].id!;
+                                  print('cartId: $cartId');
+                                  order!.cart[index].isDone = value ?? false;
+                                  context.read<OrderProvider>().changeIsDoneCart(order!.id, cartId, order!.cart[index].product.id, order!.date, value ?? false);
+                                }
+                              : null,
+                        ),
+                      ),
+                    ),
 
-                      /*Divider(
+                    /*Divider(
                           color: Theme.of(context).dividerColor,
                         )*/
-                    );
-                  }),
-                )
-            ],
-          ),
-        ));
+                  );
+                }),
+              )
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -888,7 +908,7 @@ class StatusWithButtonWidget extends StatelessWidget {
       margin: !ResponsiveHelper.isMobile(context) ? const EdgeInsets.only(left: 10, right: 20, top: 20, bottom: 20) : EdgeInsets.only(left: 10, right: 10, bottom: 20),
       child: Container(
         constraints: BoxConstraints(
-          maxHeight: order.status.step * 90 + 90,
+          maxHeight: order.status.step * 90 + 120,
         ),
         // decoration: BoxDecoration(
         //   color: FluentTheme.of(context).cardColor,

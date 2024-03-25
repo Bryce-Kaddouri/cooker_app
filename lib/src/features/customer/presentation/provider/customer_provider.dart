@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 import '../../../../core/data/usecase/usecase.dart';
 import '../../business/usecase/customer_get_customer_by_id_usecase.dart';
 import '../../business/usecase/customer_get_customers_usecase.dart';
@@ -10,11 +9,9 @@ class CustomerProvider with ChangeNotifier {
   final CustomerGetCustomersUseCase customerGetCustomersUseCase;
   final CustomerGetCustomerByIdUseCase customerGetCustomersByIdUseCase;
 
-
   CustomerProvider({
     required this.customerGetCustomersUseCase,
     required this.customerGetCustomersByIdUseCase,
-
   });
 
   bool _isLoading = false;
@@ -24,6 +21,20 @@ class CustomerProvider with ChangeNotifier {
   void setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+
+  List<CustomerModel> _customerList = [];
+  List<CustomerModel> get customerList => _customerList;
+
+  void initCustomerList() async {
+    customerGetCustomersUseCase.call(NoParams()).then((value) {
+      value.fold((l) {
+        print(l.errorMessage);
+      }, (r) {
+        _customerList = r;
+        notifyListeners();
+      });
+    });
   }
 
   CustomerModel? _customerModel;
@@ -82,8 +93,6 @@ class CustomerProvider with ChangeNotifier {
     return res;
 
   }*/
-
-
 
   Future<List<CustomerModel>?> getCustomers() async {
     List<CustomerModel>? customerModelList;

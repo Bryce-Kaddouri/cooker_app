@@ -100,6 +100,24 @@ class ProductProvider with ChangeNotifier {
     return productModel;
   }
 
+  List<ProductModel> _productList = [];
+  List<ProductModel> get productList => _productList;
+
+  void setProductList(List<ProductModel> value) {
+    _productList = value;
+    notifyListeners();
+  }
+
+  void initProductList() async {
+    final result = await productGetProductsUseCase.call(NoParams());
+    result.fold((l) {
+      print(l.errorMessage);
+    }, (r) {
+      _productList = r;
+      notifyListeners();
+    });
+  }
+
   Future<List<ProductModel>> getProducts() async {
     List<ProductModel> productList = [];
     final result = await productGetProductsUseCase.call(NoParams());

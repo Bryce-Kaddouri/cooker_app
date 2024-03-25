@@ -9,7 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/data/exception/failure.dart';
 import '../../../customer/data/model/customer_model.dart';
 import '../../../employee/model/model/user_model.dart';
-import '../../../status/model/status_model.dart';
+import '../../../status/data/model/status_model.dart';
 import '../model/order_model.dart';
 
 enum Event { increment, decrement }

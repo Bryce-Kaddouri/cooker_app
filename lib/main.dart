@@ -8,6 +8,12 @@ import 'package:cooker_app/src/features/auth/business/usecase/auth_on_auth_chang
 import 'package:cooker_app/src/features/auth/data/datasource/auth_datasource.dart';
 import 'package:cooker_app/src/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:cooker_app/src/features/auth/presentation/provider/auth_provider.dart';
+import 'package:cooker_app/src/features/customer/business/repository/customer_repository.dart';
+import 'package:cooker_app/src/features/customer/business/usecase/customer_get_customer_by_id_usecase.dart';
+import 'package:cooker_app/src/features/customer/business/usecase/customer_get_customers_usecase.dart';
+import 'package:cooker_app/src/features/customer/data/datasource/customer_datasource.dart';
+import 'package:cooker_app/src/features/customer/data/repository/customer_repository_impl.dart';
+import 'package:cooker_app/src/features/customer/presentation/provider/customer_provider.dart';
 import 'package:cooker_app/src/features/order/business/repository/order_repository.dart';
 import 'package:cooker_app/src/features/order/business/usecase/change_is_done_cart_by_id_usecase.dart';
 import 'package:cooker_app/src/features/order/business/usecase/change_status_order_by_id_usecase.dart';
@@ -18,7 +24,19 @@ import 'package:cooker_app/src/features/order/data/repository/order_repository_i
 import 'package:cooker_app/src/features/order/presentation/provider/filter_provider.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/order_provider.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/sort_provider.dart';
+import 'package:cooker_app/src/features/product/business/repository/product_repository.dart';
+import 'package:cooker_app/src/features/product/business/usecase/product_get_product_by_id_usecase.dart';
+import 'package:cooker_app/src/features/product/business/usecase/product_get_products_usecase.dart';
+import 'package:cooker_app/src/features/product/business/usecase/product_get_signed_url_usecase.dart';
+import 'package:cooker_app/src/features/product/data/datasource/product_datasource.dart';
+import 'package:cooker_app/src/features/product/data/repository/product_repository_impl.dart';
+import 'package:cooker_app/src/features/product/presentation/provider/product_provider.dart';
 import 'package:cooker_app/src/features/setting/presentation/setting_provider.dart';
+import 'package:cooker_app/src/features/status/business/repository/status_repository.dart';
+import 'package:cooker_app/src/features/status/business/usecase/status_get_all_status_usecase.dart';
+import 'package:cooker_app/src/features/status/data/datasource/status_datasource.dart';
+import 'package:cooker_app/src/features/status/data/repository/status_repository_impl.dart';
+import 'package:cooker_app/src/features/status/presentation/provider/status_provider.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
@@ -38,6 +56,9 @@ Future<void> main() async {
   final supabaseClient = Supabase.instance;
   AuthRepository authRepository = AuthRepositoryImpl(dataSource: AuthDataSource());
   OrderRepository orderRepository = OrderRepositoryImpl(orderDataSource: OrderDataSource());
+  StatusRepository statusRepository = StatusRepositoryImpl(dataSource: StatusDataSource());
+  CustomerRepository customerRepository = CustomerRepositoryImpl(dataSource: CustomerDataSource());
+  ProductRepository productRepository = ProductRepositoryImpl(dataSource: ProductDataSource());
   /*CategoryRepository categoryRepository = CategoryRepositoryImpl(dataSource: CategoryDataSource());
   ProductRepository productRepository = ProductRepositoryImpl(dataSource: ProductDataSource());
   UserRepository userRepository = UserRepositoryImpl(dataSource: UserDataSource());*/
@@ -73,6 +94,23 @@ Future<void> main() async {
         ChangeNotifierProvider<SettingProvider>(
           create: (context) => SettingProvider(),
         ),
+        ChangeNotifierProvider<StatusProvider>(
+          create: (context) => StatusProvider(statusGetAllStatusUseCase: StatusGetAllStatusUseCase(statusRepository: statusRepository)),
+        ),
+        ChangeNotifierProvider<CustomerProvider>(
+          create: (context) => CustomerProvider(
+            customerGetCustomersUseCase: CustomerGetCustomersUseCase(customerRepository: customerRepository),
+            customerGetCustomersByIdUseCase: CustomerGetCustomerByIdUseCase(customerRepository: customerRepository),
+          ),
+        ),
+        ChangeNotifierProvider<ProductProvider>(
+          create: (context) => ProductProvider(
+            productGetProductsUseCase: ProductGetProductsUseCase(productRepository: productRepository),
+            productGetProductByIdUseCase: ProductGetProductByIdUseCase(productRepository: productRepository),
+            productGetSignedUrlUseCase: ProductGetSignedUrlUseCase(productRepository: productRepository),
+          ),
+        ),
+
         /*ChangeNotifierProvider<CategoryProvider>(
           create: (context) => CategoryProvider(
             categoryAddUseCase: CategoryAddUseCase(categoryRepository: categoryRepository),

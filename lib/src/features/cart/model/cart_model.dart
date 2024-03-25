@@ -17,14 +17,25 @@ class CartModel {
     required this.orderId,
   });
 
-  factory CartModel.fromJson(Map<String, dynamic> json, {required int orderId, required DateTime orderDate}) => CartModel(
-        id: json['cart_id'],
+  factory CartModel.fromJson(Map<String, dynamic> json, {required int orderId, required DateTime orderDate, bool isFromTable = false, ProductModel? product}) {
+    if (isFromTable) {
+      return CartModel(
         quantity: json['quantity'],
         isDone: json['is_done'],
-        product: ProductModel.fromJson(json['product_info']),
+        product: !isFromTable ? ProductModel.fromJson(json) : product!,
         orderDate: orderDate,
         orderId: orderId,
       );
+    }
+    return CartModel(
+      id: json['cart_id'],
+      quantity: json['quantity'],
+      isDone: json['is_done'],
+      product: ProductModel.fromJson(json['product_info']),
+      orderDate: orderDate,
+      orderId: orderId,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'cart_id': id,

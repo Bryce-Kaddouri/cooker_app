@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../cart/model/cart_model.dart';
 import '../../../customer/data/model/customer_model.dart';
 import '../../../employee/model/model/user_model.dart';
-import '../../../status/model/status_model.dart';
+import '../../../status/data/model/status_model.dart';
 
 class OrderTableModel {
   final int id;
@@ -70,7 +70,7 @@ class OrderModel {
 
   final CustomerModel customer;
   final StatusModel status;
-  final UserModel user;
+  final UserModel? user;
 
   final List<CartModel> cart;
 
@@ -88,7 +88,7 @@ class OrderModel {
     required this.time,
     required this.customer,
     required this.status,
-    required this.user,
+    this.user,
     required this.cart,
     this.totalAmount = 0.0,
     required this.nbTotalItemsCart,
@@ -133,7 +133,7 @@ class OrderModel {
         'time': '${time.hour}:${time.minute}',
         'customer': customer.toJson(),
         'status': status.toJson(),
-        'user': user.toJson(),
+        'user': user?.toJson(),
         'cart': cart.map((e) => e.toJson()).toList(),
       };
 }

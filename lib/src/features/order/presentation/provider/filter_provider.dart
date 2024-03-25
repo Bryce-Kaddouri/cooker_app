@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../status/model/status_model.dart';
+import '../../../status/data/model/status_model.dart';
 import '../../data/model/order_model.dart';
 
 class FilterProvider with ChangeNotifier {

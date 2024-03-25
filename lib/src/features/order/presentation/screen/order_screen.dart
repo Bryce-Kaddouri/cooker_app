@@ -6,9 +6,7 @@ import 'package:cooker_app/src/core/helper/price_helper.dart';
 import 'package:cooker_app/src/core/helper/responsive_helper.dart';
 import 'package:cooker_app/src/features/order/data/model/order_model.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/filter_provider.dart';
-import 'package:cooker_app/src/features/status/model/status_model.dart';
-import 'package:elegant_notification/elegant_notification.dart';
-import 'package:elegant_notification/resources/arrays.dart';
+import 'package:cooker_app/src/features/status/data/model/status_model.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:go_router/go_router.dart';
@@ -19,9 +17,20 @@ import '../../../auth/presentation/provider/auth_provider.dart';
 import '../../../cart/model/cart_model.dart';
 import '../../../category/model/category_model.dart';
 import '../../../customer/data/model/customer_model.dart';
+import '../../../customer/presentation/provider/customer_provider.dart';
 import '../../../product/data/model/product_model.dart';
+import '../../../product/presentation/provider/product_provider.dart';
+import '../../../status/presentation/provider/status_provider.dart';
 import '../provider/order_provider.dart';
 import '../provider/sort_provider.dart';
+
+enum TableEnum {
+  orders,
+  /*products,
+  customers,
+  categories,*/
+  cart,
+}
 
 class OrderScreen extends StatefulWidget {
   DateTime selectedDate;
@@ -116,7 +125,7 @@ class _OrderScreenState extends State<OrderScreen> {
               print(' ------------------- payload -------------------');
               /*initData();*/
 
-              if (payload.eventType == PostgresChangeEvent.insert) {
+              /*if (payload.eventType == PostgresChangeEvent.insert) {
                 if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
                   context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending).then((value) {
                     setState(() {
@@ -176,11 +185,97 @@ class _OrderScreenState extends State<OrderScreen> {
                     animation: AnimationType.fromRight,
                   ).show(context);
                 }
+              }*/
+              TableEnum tableEnum = TableEnum.values.firstWhere((element) => element.toString().split('.').last == payload.table);
+              print('tableEnum');
+              print(tableEnum);
+
+              if (DateTime.parse(payload.newRecord['date']) == widget.selectedDate) {
+                switch (tableEnum) {
+                  case TableEnum.orders:
+                    print('orders case');
+                    print(tableEnum);
+
+                    switch (payload.eventType) {
+                      case PostgresChangeEvent.insert:
+                        try {
+                          print('case PostgresChangeEvent.insert on orders');
+                          int orderId = payload.newRecord['id'];
+                          DateTime orderDate = DateTime.parse(payload.newRecord['date']);
+                          material.TimeOfDay orderTime = material.TimeOfDay(hour: int.parse(payload.newRecord['time'].split(':')[0]), minute: int.parse(payload.newRecord['time'].split(':')[1]));
+                          DateTime createdAt = DateTime.parse(payload.newRecord['created_at']);
+
+                          int statusId = payload.newRecord['status_id'];
+                          List<StatusModel> statusList = context.read<StatusProvider>().statusList;
+                          StatusModel status = statusList.firstWhere((element) => element.id == statusId);
+
+                          int customerId = payload.newRecord['customer_id'];
+                          List<CustomerModel> customerList = context.read<CustomerProvider>().customerList;
+                          CustomerModel customer = customerList.firstWhere((element) => element.id == customerId);
+
+                          OrderModel newOrder = OrderModel(id: orderId, createdAt: createdAt, updatedAt: createdAt, cookingStartedAt: null, readyAt: null, collectedAt: null, date: orderDate, time: orderTime, customer: customer, status: status, user: null, cart: [], nbTotalItemsCart: 0);
+                          print('newOrder');
+                          print(newOrder.toJson());
+                          setState(() {
+                            orders.add(newOrder);
+                            pendingOrders = orders.where((element) => element.status.name == 'pending').toList();
+
+                            nbOrders[0] = orders.length;
+                            nbOrders[1] = pendingOrders.length;
+                          });
+                        } catch (e) {
+                          print('error');
+                          print(e);
+                        }
+
+                        break;
+                      default:
+                        break;
+                    }
+                    break;
+
+                  case TableEnum.cart:
+                    print('cart case');
+                    print(tableEnum);
+                    switch (payload.eventType) {
+                      case PostgresChangeEvent.insert:
+                        try {
+                          print('case PostgresChangeEvent.insert on cart');
+                          print('payload.newRecord');
+                          print(payload.newRecord);
+                          int orderId = payload.newRecord['id'];
+                          ProductModel product = context.read<ProductProvider>().productList.firstWhere((element) => element.id == payload.newRecord['product_id']);
+                          CartModel cart = CartModel.fromJson(payload.newRecord, isFromTable: true, orderId: orderId, orderDate: DateTime.parse(payload.newRecord['date']), product: product);
+                          print('cart');
+                          print(cart.toJson());
+                          OrderModel order = orders.firstWhere((element) => element.id == orderId);
+                          setState(() {
+                            order.cart.add(cart);
+                            order.totalAmount = order.cart.fold(0, (previousValue, element) => previousValue + (element.product.price * element.quantity));
+                            order.nbTotalItemsCart = order.cart.fold(0, (previousValue, element) => previousValue + element.quantity);
+                          });
+                        } catch (e) {
+                          print('error');
+                          print(e);
+                        }
+
+                        break;
+                      default:
+                        break;
+                    }
+                    break;
+                  default:
+                    break;
+                }
               }
             })
         .subscribe();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<ProductProvider>().initProductList();
+
+      context.read<StatusProvider>().getAllStatus();
+      context.read<CustomerProvider>().initCustomerList();
       context.read<OrderProvider>().getOrdersByDate(widget.selectedDate, context.read<SortProvider>().sortType, context.read<SortProvider>().isAscending, notify: true).then((value) {
         for (var val in value) {
           print('val');
@@ -981,7 +1076,7 @@ class _ProductItemWidgetState extends State<ProductItemWidget> {
   Widget build(BuildContext context) {
     return Expander(
       initiallyExpanded: true,
-      header: Text('${widget.product.name} (${widget.lstCart.length})'),
+      header: Text('${widget.product.name} (${widget.lstCart.fold(0, (previousValue, element) => previousValue + element.quantity)})'),
       content: Column(
         children: List.generate(
           widget.lstCart.length,
@@ -995,28 +1090,46 @@ class _ProductItemWidgetState extends State<ProductItemWidget> {
                   String date = DateHelper.getFormattedDate(widget.lstCart[index].orderDate);
                   context.go('/orders/$date/$id');
                 },
-                leading: Container(
-                  height: 50,
-                  width: 50,
-                  child: Image.network(
-                    widget.lstCart[index].product.photoUrl ?? '',
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(
-                        FluentIcons.image_pixel,
-                        size: 50,
-                        color: Colors.red,
-                      );
-                    },
-                  ),
+                leading: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: Text('#${widget.lstCart[index].orderId}', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 16, fontWeight: FontWeight.bold)),
+                    ),
+                    if (widget.lstCart[index].product.photoUrl != null && widget.lstCart[index].product.photoUrl!.isNotEmpty)
+                      Container(
+                        height: 50,
+                        width: 50,
+                        child: Image.network(
+                          widget.lstCart[index].product.photoUrl ?? '',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              FluentIcons.image_pixel,
+                              size: 50,
+                              color: Colors.red,
+                            );
+                          },
+                        ),
+                      ),
+                  ],
                 ),
                 title: Text(widget.lstCart[index].product.name),
                 subtitle: Text('Quantity: ${widget.lstCart[index].quantity}'),
                 trailing: Row(
                   children: [
-                    Text(
+                    /*Text(
                       PriceHelper.getFormattedPrice(widget.lstCart[index].product.price * widget.lstCart[index].quantity),
-                    ),
+                    ),*/
+                    if (widget.lstCart[index].isDone)
+                      Container(
+                        padding: const EdgeInsets.all(5),
+                        child: Icon(
+                          FluentIcons.skype_circle_check,
+                          color: Colors.green,
+                          size: 32,
+                        ),
+                      ),
                     SizedBox(
                       width: 10,
                     ),
@@ -1760,6 +1873,47 @@ class _CustomerBarState extends State<CustomerBar> {
         }
       }
     }
+    // if ascending sort
+    if (context.read<SortProvider>().isAscending) {
+      lstOrderModelByCustomerIdTemp.sort((a, b) => a.values.first.first.customer!.fName.compareTo(b.values.first.first.customer!.fName));
+    } else {
+      lstOrderModelByCustomerIdTemp.sort((a, b) => b.values.first.first.customer!.fName.compareTo(a.values.first.first.customer!.fName));
+    }
+    setState(() {
+      lstOrderModelByCustomerId = lstOrderModelByCustomerIdTemp;
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomerBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    List<Map<int, List<OrderModel>>> lstOrderModelByCustomerIdTemp = [];
+    for (var order in widget.lstOrder) {
+      if (lstOrderModelByCustomerIdTemp.isEmpty) {
+        lstOrderModelByCustomerIdTemp.add({
+          order.customer!.id!: [order]
+        });
+      } else {
+        bool isExist = false;
+        for (var orderModel in lstOrderModelByCustomerIdTemp) {
+          if (orderModel.containsKey(order.customer!.id)) {
+            isExist = true;
+            orderModel[order.customer!.id]!.add(order);
+          }
+        }
+        if (!isExist) {
+          lstOrderModelByCustomerIdTemp.add({
+            order.customer!.id!: [order]
+          });
+        }
+      }
+    }
+    // if ascending sort
+    if (context.read<SortProvider>().isAscending) {
+      lstOrderModelByCustomerIdTemp.sort((a, b) => a.values.first.first.customer!.fName.compareTo(b.values.first.first.customer!.fName));
+    } else {
+      lstOrderModelByCustomerIdTemp.sort((a, b) => b.values.first.first.customer!.fName.compareTo(a.values.first.first.customer!.fName));
+    }
     setState(() {
       lstOrderModelByCustomerId = lstOrderModelByCustomerIdTemp;
     });
@@ -1901,6 +2055,35 @@ class _CustomerItemListWidgetState extends State<CustomerItemListWidget> {
 
     print('allCustomerOfTheDayTemp');
     print(allCustomerOfTheDayTemp.length);
+
+    if (context.read<SortProvider>().isAscending) {
+      allCustomerOfTheDayTemp.sort((a, b) => a.fName.compareTo(b.fName));
+    } else {
+      allCustomerOfTheDayTemp.sort((a, b) => b.fName.compareTo(a.fName));
+    }
+
+    setState(() {
+      allCustomerOfTheDay = allCustomerOfTheDayTemp;
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomerItemListWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    List<CustomerModel> allCustomerOfTheDayTemp = [];
+    List<int> allCustomerOfTheDayTempId = [];
+    for (var order in widget.lstOrder) {
+      if (!allCustomerOfTheDayTempId.contains(order.customer!.id)) {
+        allCustomerOfTheDayTempId.add(order.customer!.id!);
+        allCustomerOfTheDayTemp.add(order.customer!);
+      }
+    }
+    // if ascending sort
+    if (context.read<SortProvider>().isAscending) {
+      allCustomerOfTheDayTemp.sort((a, b) => a.fName.compareTo(b.fName));
+    } else {
+      allCustomerOfTheDayTemp.sort((a, b) => b.fName.compareTo(a.fName));
+    }
     setState(() {
       allCustomerOfTheDay = allCustomerOfTheDayTemp;
     });

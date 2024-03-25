@@ -116,7 +116,7 @@ class OrderModel {
       status: StatusModel.fromJson(json['status']),
       user: UserModel.fromJson(json['user']),
       cart: cart,
-      totalAmount: json['total_amount'],
+      totalAmount: double.parse(json['total_amount'].toString()),
       nbTotalItemsCart: json['nb_items_cart'],
     );
   }

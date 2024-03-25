@@ -584,6 +584,7 @@ class ProductsItemListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('order.cart.length: ${order.cart.length}');
     return Card(
       padding: const EdgeInsets.all(0),
       margin: !ResponsiveHelper.isMobile(context) ? const EdgeInsets.only(left: 20, right: 10, top: 20, bottom: 20) : EdgeInsets.symmetric(horizontal: 10, vertical: 20),
@@ -716,6 +717,7 @@ class ProductsItemListView extends StatelessWidget {
             else
               Column(
                 children: List.generate(order.cart.length, (index) {
+                  print('order.cart.length: ${order.cart.length}');
                   return Card(
                     margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                     padding: const EdgeInsets.all(0),

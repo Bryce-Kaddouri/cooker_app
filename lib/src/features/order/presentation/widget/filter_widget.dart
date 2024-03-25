@@ -1,3 +1,4 @@
+/*
 import 'dart:math' as math;
 
 import 'package:cooker_app/src/core/helper/responsive_helper.dart';
@@ -40,7 +41,7 @@ class _FilterWidgetState extends State<FilterWidget> {
           context.read<OrderProvider>().getAllCategoryOfSelectedDate(lstOrders);
       lstProducts =
           context.read<OrderProvider>().getAllProductOfSelectedDate(lstOrders);
-      List<double> lstPrice = lstOrders.map((e) => e.totalAmount).toList();
+      List<num> lstPrice = lstOrders.map((e) => e.totalAmount).toList();
       maxRangePrice = lstPrice.isNotEmpty ? lstPrice.reduce(math.max) : 100;
       context.read<FilterProvider>().setMaxRangePrice(
             maxRangePrice,
@@ -55,7 +56,8 @@ class _FilterWidgetState extends State<FilterWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return /*FutureBuilder(
+    return */
+/*FutureBuilder(
       future: context.read<OrderProvider>().getOrdersByDate(
           selectedDate,
           context.read<SortProvider>().sortType,
@@ -104,11 +106,14 @@ class _FilterWidgetState extends State<FilterWidget> {
               }
             });
 
-            return*/
+            return*/ /*
+
         ResponsiveHelper.isDesktop(context)
             ? Container(
-                /* padding: const EdgeInsets.symmetric(
-                                            vertical: 5, horizontal: 16),*/
+                */
+/* padding: const EdgeInsets.symmetric(
+                                            vertical: 5, horizontal: 16),*/ /*
+
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
                   color: Theme.of(context).primaryColor,
@@ -199,10 +204,12 @@ class _FilterWidgetState extends State<FilterWidget> {
                             Text('Time Range'),
                             TextButton(
                               onPressed: () {
-                                /* context
+                                */
+/* context
                                                                     .read<
                                                                     FilterProvider>()
-                                                                    .resetSelectedCategoryFilter();*/
+                                                                    .resetSelectedCategoryFilter();*/ /*
+
                               },
                               child: Text(
                                 'Reset',
@@ -743,13 +750,16 @@ class _FilterWidgetState extends State<FilterWidget> {
                 ),
                 child: Icon(Icons.filter_alt_outlined),
               );
-    /* } else {
+    */
+/* } else {
             return Container();
           }
         } else {
           return Container();
         }
       },
-    );*/
+    );*/ /*
+
   }
 }
+*/

@@ -112,22 +112,22 @@ class FilterProvider with ChangeNotifier {
     _selectedStatus = value;
     notifyListeners();
   }
-
+/*
   bool _isFilteringByStatus = true;
   bool get isFilteringByStatus => _isFilteringByStatus;
 
   void setIsFilteringByStatus(bool value) {
     _isFilteringByStatus = value;
     notifyListeners();
-  }
+  }*/
 
-  bool _isFilteringByHour = false;
+  /*bool _isFilteringByHour = false;
   bool get isFilteringByHour => _isFilteringByHour;
 
   void setIsFilteringByHour(bool value) {
     _isFilteringByHour = value;
     notifyListeners();
-  }
+  }*/
 
   TimeOfDay? _selectedHour;
   TimeOfDay? get selectedHour => _selectedHour;
@@ -137,13 +137,13 @@ class FilterProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  bool _isFilteringByCustomer = false;
+  /* bool _isFilteringByCustomer = false;
   bool get isFilteringByCustomer => _isFilteringByCustomer;
 
   void setIsFilteringByCustomer(bool value) {
     _isFilteringByCustomer = value;
     notifyListeners();
-  }
+  }*/
 
   int? _selectedCustomerId;
   int? get selectedCustomerId => _selectedCustomerId;
@@ -153,13 +153,13 @@ class FilterProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  bool _isFilteringByProduct = false;
+  /*bool _isFilteringByProduct = false;
   bool get isFilteringByProduct => _isFilteringByProduct;
 
   void setIsFilteringByProduct(bool value) {
     _isFilteringByProduct = value;
     notifyListeners();
-  }
+  }*/
 
   int? _selectedProductId;
   int? get selectedProductId => _selectedProductId;
@@ -169,13 +169,13 @@ class FilterProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  bool _isFilteringByCategory = false;
+  /* bool _isFilteringByCategory = false;
   bool get isFilteringByCategory => _isFilteringByCategory;
 
   void setIsFilteringByCategory(bool value) {
     _isFilteringByCategory = value;
     notifyListeners();
-  }
+  }*/
 
   int? _selectedCategoryId;
   int? get selectedCategoryId => _selectedCategoryId;
@@ -185,7 +185,15 @@ class FilterProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleRadioFilterButton(FilterType filterType) {
+  FilterType _selectedFilterType = FilterType.status;
+  FilterType get selectedFilterType => _selectedFilterType;
+
+  void setSelectedFilterType(FilterType value) {
+    _selectedFilterType = value;
+    notifyListeners();
+  }
+
+  /*void toggleRadioFilterButton(FilterType filterType) {
     // only one filter can be active at a time
     switch (filterType) {
       case FilterType.status:
@@ -225,7 +233,7 @@ class FilterProvider with ChangeNotifier {
         setIsFilteringByProduct(false);
         break;
     }
-  }
+  }*/
 }
 
 enum FilterType {

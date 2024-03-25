@@ -58,6 +58,53 @@ class _OrderScreenState extends State<OrderScreen> {
     super.initState();
     print('initState OrderScreen');
 
+    SortProvider sortProvider = context.read<SortProvider>();
+    FilterProvider filterProvider = context.read<FilterProvider>();
+
+    // add listener to sortProvider
+    sortProvider.addListener(() {
+      print('sortProvider.sortType');
+      setState(() {
+        bool isAscending = sortProvider.isAscending;
+        if (isAscending) {
+          switch (filterProvider.selectedFilterType) {
+            case FilterType.hour:
+              orders.sort((a, b) => a.time.hour.compareTo(b.time.hour));
+              break;
+            /*case FilterType.product:
+              orders.sort((a, b) => a.cart.length.compareTo(b.cart.length));
+              break;*/
+            /*case FilterType.category:
+              orders.sort((a, b) => a.cart.length.compareTo(b.cart.length));
+              break;*/
+            case FilterType.customer:
+              orders.sort((a, b) => a.customer.fName.compareTo(b.customer.fName));
+              break;
+            default:
+              orders.sort((a, b) => a.time.hour.compareTo(b.time.hour));
+          }
+        } else {
+          switch (filterProvider.selectedFilterType) {
+            case FilterType.status:
+            case FilterType.hour:
+              orders.sort((a, b) => b.time.hour.compareTo(a.time.hour));
+              break;
+            /* case FilterType.product:
+              orders.sort((a, b) => b.cart.length.compareTo(a.cart.length));
+              break;*/
+            /*case FilterType.category:
+              orders.sort((a, b) => b.cart.length.compareTo(a.cart.length));
+              break;*/
+            case FilterType.customer:
+              orders.sort((a, b) => b.customer.fName.compareTo(a.customer.fName));
+              break;
+            default:
+              orders.sort((a, b) => b.time.hour.compareTo(a.time.hour));
+          }
+        }
+      });
+    });
+
     Supabase.instance.client
         .channel('all_orders_view')
         .onPostgresChanges(
@@ -341,15 +388,15 @@ class _OrderScreenState extends State<OrderScreen> {
                     Expanded(
                       child: Container(
                         alignment: Alignment.center,
-                        child: context.watch<FilterProvider>().isFilteringByStatus
+                        child: context.watch<FilterProvider>().selectedFilterType == FilterType.status
                             ? StatusBar(nbOrders: nbOrders)
-                            : context.watch<FilterProvider>().isFilteringByHour
+                            : context.watch<FilterProvider>().selectedFilterType == FilterType.hour
                                 ? HourBar(lstOrder: orders)
-                                : context.watch<FilterProvider>().isFilteringByProduct
+                                : context.watch<FilterProvider>().selectedFilterType == FilterType.product
                                     ? ProductBar(lstOrder: orders)
-                                    : context.watch<FilterProvider>().isFilteringByCategory
+                                    : context.watch<FilterProvider>().selectedFilterType == FilterType.category
                                         ? CategoryBar(lstOrder: orders)
-                                        : context.watch<FilterProvider>().isFilteringByCustomer
+                                        : context.watch<FilterProvider>().selectedFilterType == FilterType.customer
                                             ? CustomerBar(lstOrder: orders)
                                             : Container(),
                       ),
@@ -455,9 +502,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                     padding: const EdgeInsets.all(0),
                                     child: ListTile.selectable(
                                       onPressed: () {
-                                        context.read<FilterProvider>().toggleRadioFilterButton(FilterType.status);
+                                        context.read<FilterProvider>().setSelectedFilterType(FilterType.status);
                                       },
-                                      selected: context.watch<FilterProvider>().isFilteringByStatus,
+                                      selected: context.watch<FilterProvider>().selectedFilterType == FilterType.status,
                                       leading: Container(
                                         height: 50,
                                         width: 50,
@@ -469,9 +516,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                       ),
                                       title: Text('Filter by Status', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
                                       trailing: RadioButton(
-                                        checked: context.watch<FilterProvider>().isFilteringByStatus,
+                                        checked: context.watch<FilterProvider>().selectedFilterType == FilterType.status,
                                         onChanged: (value) {
-                                          context.read<FilterProvider>().toggleRadioFilterButton(FilterType.status);
+                                          context.read<FilterProvider>().setSelectedFilterType(FilterType.status);
                                         },
                                       ),
                                     ),
@@ -482,9 +529,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                     padding: const EdgeInsets.all(0),
                                     child: ListTile.selectable(
                                       onPressed: () {
-                                        context.read<FilterProvider>().toggleRadioFilterButton(FilterType.hour);
+                                        context.read<FilterProvider>().setSelectedFilterType(FilterType.hour);
                                       },
-                                      selected: context.watch<FilterProvider>().isFilteringByHour,
+                                      selected: context.watch<FilterProvider>().selectedFilterType == FilterType.hour,
                                       leading: Container(
                                         height: 50,
                                         width: 50,
@@ -496,9 +543,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                       ),
                                       title: Text('Filter by Hour', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
                                       trailing: RadioButton(
-                                        checked: context.watch<FilterProvider>().isFilteringByHour,
+                                        checked: context.watch<FilterProvider>().selectedFilterType == FilterType.hour,
                                         onChanged: (value) {
-                                          context.read<FilterProvider>().toggleRadioFilterButton(FilterType.hour);
+                                          context.read<FilterProvider>().setSelectedFilterType(FilterType.hour);
                                         },
                                       ),
                                     ),
@@ -508,9 +555,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                     padding: const EdgeInsets.all(0),
                                     child: ListTile.selectable(
                                       onPressed: () {
-                                        context.read<FilterProvider>().toggleRadioFilterButton(FilterType.product);
+                                        context.read<FilterProvider>().setSelectedFilterType(FilterType.product);
                                       },
-                                      selected: context.watch<FilterProvider>().isFilteringByProduct,
+                                      selected: context.watch<FilterProvider>().selectedFilterType == FilterType.product,
                                       leading: Container(
                                         height: 50,
                                         width: 50,
@@ -522,9 +569,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                       ),
                                       title: Text('Filter by Product', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
                                       trailing: RadioButton(
-                                        checked: context.watch<FilterProvider>().isFilteringByProduct,
+                                        checked: context.watch<FilterProvider>().selectedFilterType == FilterType.product,
                                         onChanged: (value) {
-                                          context.read<FilterProvider>().toggleRadioFilterButton(FilterType.product);
+                                          context.read<FilterProvider>().setSelectedFilterType(FilterType.product);
                                         },
                                       ),
                                     ),
@@ -534,9 +581,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                     padding: const EdgeInsets.all(0),
                                     child: ListTile.selectable(
                                       onPressed: () {
-                                        context.read<FilterProvider>().toggleRadioFilterButton(FilterType.category);
+                                        context.read<FilterProvider>().setSelectedFilterType(FilterType.category);
                                       },
-                                      selected: context.watch<FilterProvider>().isFilteringByCategory,
+                                      selected: context.watch<FilterProvider>().selectedFilterType == FilterType.category,
                                       leading: Container(
                                         height: 50,
                                         width: 50,
@@ -548,9 +595,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                       ),
                                       title: Text('Filter by Category', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
                                       trailing: RadioButton(
-                                        checked: context.watch<FilterProvider>().isFilteringByCategory,
+                                        checked: context.watch<FilterProvider>().selectedFilterType == FilterType.category,
                                         onChanged: (value) {
-                                          context.read<FilterProvider>().toggleRadioFilterButton(FilterType.category);
+                                          context.read<FilterProvider>().setSelectedFilterType(FilterType.category);
                                         },
                                       ),
                                     ),
@@ -560,9 +607,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                     padding: const EdgeInsets.all(0),
                                     child: ListTile.selectable(
                                       onPressed: () {
-                                        context.read<FilterProvider>().toggleRadioFilterButton(FilterType.customer);
+                                        context.read<FilterProvider>().setSelectedFilterType(FilterType.customer);
                                       },
-                                      selected: context.watch<FilterProvider>().isFilteringByCustomer,
+                                      selected: context.watch<FilterProvider>().selectedFilterType == FilterType.customer,
                                       leading: Container(
                                         height: 50,
                                         width: 50,
@@ -574,79 +621,81 @@ class _OrderScreenState extends State<OrderScreen> {
                                       ),
                                       title: Text('Filter by Customer', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
                                       trailing: RadioButton(
-                                        checked: context.watch<FilterProvider>().isFilteringByCustomer,
+                                        checked: context.watch<FilterProvider>().selectedFilterType == FilterType.customer,
                                         onChanged: (value) {
-                                          context.read<FilterProvider>().toggleRadioFilterButton(FilterType.customer);
+                                          context.read<FilterProvider>().setSelectedFilterType(FilterType.customer);
                                         },
                                       ),
                                     ),
                                   ),
 
                                   // sort title
-                                  Container(
-                                    padding: const EdgeInsets.all(10),
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      'Sort',
-                                      style: FluentTheme.of(context).typography.bodyLarge!.copyWith(
-                                            fontSize: 32,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                  ),
-
-                                  Card(
-                                    margin: const EdgeInsets.all(10),
-                                    padding: const EdgeInsets.all(0),
-                                    child: ListTile.selectable(
-                                      onPressed: () {
-                                        context.read<SortProvider>().setAscending(true);
-                                      },
-                                      selected: context.watch<SortProvider>().isAscending,
-                                      leading: Container(
-                                        height: 50,
-                                        width: 50,
-                                        alignment: Alignment.center,
-                                        child: Icon(
-                                          FluentIcons.sort_up,
-                                          size: 40,
-                                        ),
+                                  if (context.watch<FilterProvider>().selectedFilterType != FilterType.status)
+                                    Container(
+                                      padding: const EdgeInsets.all(10),
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        'Sort',
+                                        style: FluentTheme.of(context).typography.bodyLarge!.copyWith(
+                                              fontSize: 32,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
-                                      title: Text('Ascending', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
-                                      trailing: RadioButton(
-                                        checked: context.watch<SortProvider>().isAscending,
-                                        onChanged: (value) {
+                                    ),
+                                  if (context.watch<FilterProvider>().selectedFilterType != FilterType.status)
+                                    Card(
+                                      margin: const EdgeInsets.all(10),
+                                      padding: const EdgeInsets.all(0),
+                                      child: ListTile.selectable(
+                                        onPressed: () {
                                           context.read<SortProvider>().setAscending(true);
                                         },
-                                      ),
-                                    ),
-                                  ),
-                                  Card(
-                                    margin: const EdgeInsets.all(10),
-                                    padding: const EdgeInsets.all(0),
-                                    child: ListTile.selectable(
-                                      onPressed: () {
-                                        context.read<SortProvider>().setAscending(false);
-                                      },
-                                      selected: !context.watch<SortProvider>().isAscending,
-                                      leading: Container(
-                                        height: 50,
-                                        width: 50,
-                                        alignment: Alignment.center,
-                                        child: Icon(
-                                          FluentIcons.sort_down,
-                                          size: 40,
+                                        selected: context.watch<SortProvider>().isAscending,
+                                        leading: Container(
+                                          height: 50,
+                                          width: 50,
+                                          alignment: Alignment.center,
+                                          child: Icon(
+                                            FluentIcons.sort_up,
+                                            size: 40,
+                                          ),
+                                        ),
+                                        title: Text('Ascending', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                                        trailing: RadioButton(
+                                          checked: context.watch<SortProvider>().isAscending,
+                                          onChanged: (value) {
+                                            context.read<SortProvider>().setAscending(true);
+                                          },
                                         ),
                                       ),
-                                      title: Text('Descending', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
-                                      trailing: RadioButton(
-                                        checked: !context.watch<SortProvider>().isAscending,
-                                        onChanged: (value) {
+                                    ),
+                                  if (context.watch<FilterProvider>().selectedFilterType != FilterType.status)
+                                    Card(
+                                      margin: const EdgeInsets.all(10),
+                                      padding: const EdgeInsets.all(0),
+                                      child: ListTile.selectable(
+                                        onPressed: () {
                                           context.read<SortProvider>().setAscending(false);
                                         },
+                                        selected: !context.watch<SortProvider>().isAscending,
+                                        leading: Container(
+                                          height: 50,
+                                          width: 50,
+                                          alignment: Alignment.center,
+                                          child: Icon(
+                                            FluentIcons.sort_down,
+                                            size: 40,
+                                          ),
+                                        ),
+                                        title: Text('Descending', style: FluentTheme.of(context).typography.body!.copyWith(fontSize: 20)),
+                                        trailing: RadioButton(
+                                          checked: !context.watch<SortProvider>().isAscending,
+                                          onChanged: (value) {
+                                            context.read<SortProvider>().setAscending(false);
+                                          },
+                                        ),
                                       ),
                                     ),
-                                  ),
                                 ],
                               )),
                             ],
@@ -725,15 +774,15 @@ class _OrderScreenState extends State<OrderScreen> {
                               child: Row(
                                 children: [
                                   Expanded(
-                                    child: context.watch<FilterProvider>().isFilteringByStatus
+                                    child: context.watch<FilterProvider>().selectedFilterType == FilterType.status
                                         ? StatusBar(nbOrders: nbOrders)
-                                        : context.watch<FilterProvider>().isFilteringByHour
+                                        : context.watch<FilterProvider>().selectedFilterType == FilterType.hour
                                             ? HourBar(lstOrder: orders)
-                                            : context.watch<FilterProvider>().isFilteringByProduct
+                                            : context.watch<FilterProvider>().selectedFilterType == FilterType.product
                                                 ? ProductBar(lstOrder: orders)
-                                                : context.watch<FilterProvider>().isFilteringByCategory
+                                                : context.watch<FilterProvider>().selectedFilterType == FilterType.category
                                                     ? CategoryBar(lstOrder: orders)
-                                                    : context.watch<FilterProvider>().isFilteringByCustomer
+                                                    : context.watch<FilterProvider>().selectedFilterType == FilterType.customer
                                                         ? CustomerBar(lstOrder: orders)
                                                         : Container(),
                                   ),
@@ -748,23 +797,23 @@ class _OrderScreenState extends State<OrderScreen> {
                   child: orders.isNotEmpty
                       ? Container(
                           padding: const EdgeInsets.all(10),
-                          child: context.watch<FilterProvider>().isFilteringByProduct
+                          child: context.watch<FilterProvider>().selectedFilterType == FilterType.product
                               ? ProductItemListWidget(lstOrder: orders)
-                              : context.watch<FilterProvider>().isFilteringByHour
+                              : context.watch<FilterProvider>().selectedFilterType == FilterType.hour
                                   ? HourItemListWidget(
                                       lstOrder: context.watch<FilterProvider>().selectedHour == null
                                           ? orders
                                           : orders.where((element) {
                                               return element.time.hour == context.watch<FilterProvider>().selectedHour?.hour;
                                             }).toList())
-                                  : context.watch<FilterProvider>().isFilteringByCategory
+                                  : context.watch<FilterProvider>().selectedFilterType == FilterType.category
                                       ? CategoryItemListWidget(
                                           lstOrder: context.watch<FilterProvider>().selectedCategoryId == null
                                               ? orders
                                               : orders.where((element) {
                                                   return element.cart.any((element) => element.product.category!.id == context.watch<FilterProvider>().selectedCategoryId);
                                                 }).toList())
-                                      : context.watch<FilterProvider>().isFilteringByCustomer
+                                      : context.watch<FilterProvider>().selectedFilterType == FilterType.customer
                                           ? CustomerItemListWidget(
                                               lstOrder: context.watch<FilterProvider>().selectedCustomerId == null
                                                   ? orders
@@ -859,6 +908,31 @@ class _ProductItemListWidgetState extends State<ProductItemListWidget> {
           allProductOfTheDayTemp.add(cart.product);
         }
       }
+    }
+    setState(() {
+      allProductOfTheDay = allProductOfTheDayTemp;
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant ProductItemListWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print('didUpdateWidget');
+    List<ProductModel> allProductOfTheDayTemp = [];
+    List<int> allProductOfTheDayTempId = [];
+    for (var order in widget.lstOrder) {
+      for (var cart in order.cart) {
+        if (!allProductOfTheDayTempId.contains(cart.product.id)) {
+          allProductOfTheDayTempId.add(cart.product.id);
+          allProductOfTheDayTemp.add(cart.product);
+        }
+      }
+    }
+    // if ascending sort
+    if (context.read<SortProvider>().isAscending) {
+      allProductOfTheDayTemp.sort((a, b) => a.name.compareTo(b.name));
+    } else {
+      allProductOfTheDayTemp.sort((a, b) => b.name.compareTo(a.name));
     }
     setState(() {
       allProductOfTheDay = allProductOfTheDayTemp;
@@ -982,6 +1056,21 @@ class _HourBarState extends State<HourBar> {
       material.TimeOfDay time = material.TimeOfDay(hour: order.time.hour, minute: 0);
       print('time');
       print(time);
+      if (!lstHourTemp.contains(time)) {
+        lstHourTemp.add(time);
+      }
+    }
+    setState(() {
+      lstHour = lstHourTemp;
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant HourBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    List<material.TimeOfDay> lstHourTemp = [];
+    for (var order in widget.lstOrder) {
+      material.TimeOfDay time = material.TimeOfDay(hour: order.time.hour, minute: 0);
       if (!lstHourTemp.contains(time)) {
         lstHourTemp.add(time);
       }
@@ -1131,6 +1220,21 @@ class _HourItemListWidgetState extends State<HourItemListWidget> {
   }
 
   @override
+  void didUpdateWidget(covariant HourItemListWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    List<material.TimeOfDay> lstHourTemp = [];
+    for (var order in widget.lstOrder) {
+      material.TimeOfDay time = material.TimeOfDay(hour: order.time.hour, minute: 0);
+      if (!lstHourTemp.contains(time)) {
+        lstHourTemp.add(time);
+      }
+    }
+    setState(() {
+      lstHour = lstHourTemp;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: List.generate(
@@ -1243,6 +1347,43 @@ class _ProductBarState extends State<ProductBar> {
   }
 
   @override
+  void didUpdateWidget(covariant ProductBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    List<Map<int, List<CartModel>>> lstCartModelByProductIdTemp = [];
+    for (var order in widget.lstOrder) {
+      for (var cart in order.cart) {
+        if (lstCartModelByProductIdTemp.isEmpty) {
+          lstCartModelByProductIdTemp.add({
+            cart.product.id: [cart]
+          });
+        } else {
+          bool isExist = false;
+          for (var cartModel in lstCartModelByProductIdTemp) {
+            if (cartModel.containsKey(cart.product.id)) {
+              isExist = true;
+              cartModel[cart.product.id]!.add(cart);
+            }
+          }
+          if (!isExist) {
+            lstCartModelByProductIdTemp.add({
+              cart.product.id: [cart]
+            });
+          }
+        }
+      }
+    }
+    // if ascending sort
+    if (context.read<SortProvider>().isAscending) {
+      lstCartModelByProductIdTemp.sort((a, b) => a.values.first.first.product.name.compareTo(b.values.first.first.product.name));
+    } else {
+      lstCartModelByProductIdTemp.sort((a, b) => b.values.first.first.product.name.compareTo(a.values.first.first.product.name));
+    }
+    setState(() {
+      lstCartModelByProductId = lstCartModelByProductIdTemp;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -1330,6 +1471,43 @@ class _CategoryBarState extends State<CategoryBar> {
           }
         }
       }
+    }
+    setState(() {
+      lstCartModelByCategoryId = lstCartModelByCategoryIdTemp;
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant CategoryBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    List<Map<int, List<CartModel>>> lstCartModelByCategoryIdTemp = [];
+    for (var order in widget.lstOrder) {
+      for (var cart in order.cart) {
+        if (lstCartModelByCategoryIdTemp.isEmpty) {
+          lstCartModelByCategoryIdTemp.add({
+            cart.product.category!.id: [cart]
+          });
+        } else {
+          bool isExist = false;
+          for (var cartModel in lstCartModelByCategoryIdTemp) {
+            if (cartModel.containsKey(cart.product.category!.id)) {
+              isExist = true;
+              cartModel[cart.product.category!.id]!.add(cart);
+            }
+          }
+          if (!isExist) {
+            lstCartModelByCategoryIdTemp.add({
+              cart.product.category!.id: [cart]
+            });
+          }
+        }
+      }
+    }
+    // if ascending sort
+    if (context.read<SortProvider>().isAscending) {
+      lstCartModelByCategoryIdTemp.sort((a, b) => a.values.first.first.product.category!.name.compareTo(b.values.first.first.product.category!.name));
+    } else {
+      lstCartModelByCategoryIdTemp.sort((a, b) => b.values.first.first.product.category!.name.compareTo(a.values.first.first.product.category!.name));
     }
     setState(() {
       lstCartModelByCategoryId = lstCartModelByCategoryIdTemp;
@@ -1491,6 +1669,30 @@ class _CategoryItemListWidgetState extends State<CategoryItemListWidget> {
 
     print('allCategoryOfTheDayTemp');
     print(allCategoryOfTheDayTemp.length);
+    setState(() {
+      allCategoryOfTheDay = allCategoryOfTheDayTemp;
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant CategoryItemListWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    List<CategoryModel> allCategoryOfTheDayTemp = [];
+    List<int> allCategoryOfTheDayTempId = [];
+    for (var order in widget.lstOrder) {
+      for (var cart in order.cart) {
+        if (!allCategoryOfTheDayTempId.contains(cart.product.category!.id)) {
+          allCategoryOfTheDayTempId.add(cart.product.category!.id!);
+          allCategoryOfTheDayTemp.add(cart.product.category!);
+        }
+      }
+    }
+    // if ascending sort
+    if (context.read<SortProvider>().isAscending) {
+      allCategoryOfTheDayTemp.sort((a, b) => a.name.compareTo(b.name));
+    } else {
+      allCategoryOfTheDayTemp.sort((a, b) => b.name.compareTo(a.name));
+    }
     setState(() {
       allCategoryOfTheDay = allCategoryOfTheDayTemp;
     });
@@ -1736,7 +1938,6 @@ class StatusBar extends StatelessWidget {
   StatusBar({super.key, required this.nbOrders});
 
   // global key to manage the state button of pending status
-
   @override
   Widget build(BuildContext context) {
     return Container(

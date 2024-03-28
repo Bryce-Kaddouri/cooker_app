@@ -6,6 +6,7 @@ import 'package:cooker_app/src/features/order/business/usecase/order_get_orders_
 import 'package:cooker_app/src/features/order/data/model/order_model.dart';
 import 'package:cooker_app/src/features/order/presentation/provider/sort_provider.dart';
 import 'package:cooker_app/src/features/product/data/model/product_model.dart';
+import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter/material.dart';
 
 import '../../business/param/changeIsDoneCartByIdParam.dart';
@@ -100,14 +101,54 @@ class OrderProvider with ChangeNotifier {
   }
 
   Future<DateTime?> chooseDate(BuildContext context, DateTime currentDate) async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: currentDate,
-      currentDate: DateTime.now(),
-      firstDate: DateTime(2015, 8),
-      lastDate: DateTime(2101),
-      keyboardType: TextInputType.datetime,
-    );
+    DateTime? picked = await fluent.showDialog<DateTime?>(
+        context: context,
+        builder: (context) {
+          DateTime selectedDate = currentDate;
+          return fluent.ContentDialog(
+            title: Container(
+              alignment: Alignment.center,
+              child: Text('Select Date'),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Card(
+                  elevation: 0,
+                  child: CalendarDatePicker(
+                    initialDate: selectedDate,
+                    firstDate: DateTime.now().subtract(Duration(days: 365)),
+                    lastDate: DateTime.now().add(Duration(days: 365)),
+                    onDateChanged: (DateTime date) {
+                      selectedDate = date;
+                    },
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              Container(
+                height: 50,
+                child: fluent.FilledButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(selectedDate);
+                  },
+                  child: Text('Confirm'),
+                ),
+              ),
+              Container(
+                height: 50,
+                child: fluent.Button(
+                  onPressed: () {
+                    Navigator.of(context).pop(null);
+                  },
+                  child: Text('Cancel'),
+                ),
+              ),
+            ],
+          );
+        });
+
     return picked;
   }
 

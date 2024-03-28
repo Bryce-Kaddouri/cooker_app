@@ -322,14 +322,48 @@ class _OrderScreenState extends State<OrderScreen> {
 
   Future<DateTime?> selectDate() async {
     // global key for the form
-    return material.showDatePicker(
+    return /*material.showDatePicker(
         barrierColor: Colors.red,
         context: context,
         currentDate: widget.selectedDate,
         initialDate: widget.selectedDate,
         // first date of the year
         firstDate: DateTime.now().subtract(Duration(days: 365)),
-        lastDate: DateTime.now().add(Duration(days: 365)));
+        lastDate: DateTime.now().add(Duration(days: 365)),);*/
+        showDialog(
+            context: context,
+            builder: (context) {
+              return ContentDialog(
+                title: Container(
+                  alignment: Alignment.center,
+                  child: Text('Select Date'),
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      height: 300,
+                      child: material.CalendarDatePicker(
+                        initialDate: widget.selectedDate,
+                        firstDate: DateTime.now().subtract(Duration(days: 365)),
+                        lastDate: DateTime.now().add(Duration(days: 365)),
+                        onDateChanged: (DateTime date) {
+                          Navigator.of(context).pop(date);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                actions: [
+                  Button(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Cancel'),
+                  ),
+                ],
+              );
+            });
   }
 
   List<ProductModel> allProductofTheDay = [];
@@ -546,6 +580,7 @@ class _OrderScreenState extends State<OrderScreen> {
                   onPressed: () async {
                     // display dialog in full screen
                     material.showDialog(
+                      barrierColor: FluentTheme.of(context).navigationPaneTheme.backgroundColor,
                       context: context,
                       builder: (context) {
                         return material.Dialog.fullscreen(

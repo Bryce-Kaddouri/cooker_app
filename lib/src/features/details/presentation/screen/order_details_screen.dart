@@ -153,7 +153,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     ),
                   ),
                 ),
-      persistentFooterButtons: order != null && (order!.status.step == 1 || order!.status.step == 2) && !ResponsiveHelper.isDesktop(context)
+      persistentFooterButtons: order != null && (order!.status.step == 1 || order!.status.step == 2) && !ResponsiveHelper.isDesktop(context) && !order!.date.isBefore(DateTime.now().copyWith(hour: 0, minute: 0, second: 0, millisecond: 0))
           ? [
               StatusButton(
                 order: order!,
@@ -396,7 +396,7 @@ class _StatusStepWidgetState extends State<StatusStepWidget> {
         ),
       )),
       SizedBox(height: 30),
-      if ((widget.order.status.step == 1 || widget.order.status.step == 2) && ResponsiveHelper.isDesktop(context))
+      if ((widget.order.status.step == 1 || widget.order.status.step == 2) && ResponsiveHelper.isDesktop(context) && !widget.order.date.isBefore(DateTime.now().copyWith(hour: 0, minute: 0, second: 0, millisecond: 0)))
         StatusButton(
           order: widget.order,
         ),
@@ -698,7 +698,7 @@ class ProductsItemListView extends StatelessWidget {
                               )),
                             ),
                             checked: order!.cart[index].isDone,
-                            onChanged: order!.status.step == 2
+                            onChanged: order!.status.step == 2 || !order.date.isBefore(DateTime.now().copyWith(hour: 0, minute: 0, second: 0, millisecond: 0))
                                 ? (value) {
                                     print('value: $value');
                                     int cartId = order!.cart[index].id!;

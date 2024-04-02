@@ -113,7 +113,7 @@ class OrderModel {
       ),
       /*json['order_is_paid'],*/
       customer: CustomerModel.fromJson(json['customer']),
-      status: StatusModel.fromJson(json['status']),
+      status: StatusModel.fromJson(json['status'], isFromTable: false),
       user: UserModel.fromJson(json['user']),
       cart: cart,
       totalAmount: double.parse(json['total_amount'].toString()),

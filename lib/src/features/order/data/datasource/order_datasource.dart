@@ -117,22 +117,25 @@ class OrderDataSource {
 
   Future<Either<DatabaseFailure, List<OrderModel>>> getOrdersByDate(DateTime date, SortType sortType, bool isAscending) async {
     try {
-      var response = await _client.from('all_orders_view').select().eq('order_date', date.toIso8601String()).order(getSortTypeString(sortType), ascending: isAscending);
+      List<Map<String, dynamic>> response;
 
-      print('response from getOrders');
-      print(response);
-      for (var res in response) {
-        print(res['customer_full_name']);
-      }
-
-      if (response.isNotEmpty) {
-        List<OrderModel> orderList = response.map((e) => OrderModel.fromJson(e)).toList();
-        print('order list');
-        print(orderList);
-        return Right(orderList);
+      if (date.isBefore(DateTime.now().copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0))) {
+        response = await _client.from('order_history').select().eq('order_date', date.toIso8601String());
       } else {
-        return Left(DatabaseFailure(errorMessage: 'Error getting orders'));
+        response = await _client.from('all_orders_view').select().eq('order_date', date.toIso8601String()).order(getSortTypeString(sortType), ascending: isAscending);
       }
+      print('response from getOrders data source');
+      print(response);
+
+      List<OrderModel> orderList = [];
+      if (response != null) {
+        orderList = response.map((e) => OrderModel.fromJson(e)).toList();
+      }
+
+      print('orderList');
+      print(orderList);
+
+      return Right(orderList);
     } on PostgrestException catch (error) {
       print('postgrest error');
       print(error);
@@ -146,7 +149,12 @@ class OrderDataSource {
   Future<Either<DatabaseFailure, OrderModel>> getOrderById(DateTime date, int id) async {
     print('getOrderById method called');
     try {
-      var response = await _client.from('all_orders_view').select().eq('order_id', id).eq('order_date', date.toIso8601String()).single();
+      var response;
+      if (date.isBefore(DateTime.now().copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0))) {
+        response = await _client.from('order_history').select().eq('order_id', id).eq('order_date', date.toIso8601String()).single();
+      } else {
+        response = await _client.from('all_orders_view').select().eq('order_id', id).eq('order_date', date.toIso8601String()).single();
+      }
 
       print('response from getOrderById data source');
       print(response);
